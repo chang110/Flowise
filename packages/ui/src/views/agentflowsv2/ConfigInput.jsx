@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { cloneDeep } from 'lodash'
+import { useTranslation } from 'react-i18next'
 
 // Material
 import { Accordion, AccordionSummary, AccordionDetails, Box, Typography, Tooltip, IconButton } from '@mui/material'
@@ -22,6 +23,7 @@ import { useNodeLocale } from '@/i18n/nodeLocale'
 
 export const ConfigInput = ({ data, inputParam, disabled = false, arrayIndex = null, parentParamForArray = null }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const { nodeLabel } = useNodeLocale()
     const { reactFlowInstance } = useContext(flowContext)
 

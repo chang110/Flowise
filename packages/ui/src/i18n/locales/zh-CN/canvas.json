@@ -3,6 +3,6 @@
         "saveItem": "保存{{item}}",
         "saveNewItem": "保存新建{{item}}",
         "saveBeforeTemplate": "导出为模板前请先保存该流程",
-        "parametersOf": "{{item}}参数"
+        "parametersOf": "{{item}} 参数"
     }
 }

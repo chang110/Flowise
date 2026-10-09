@@ -120,6 +120,7 @@ const getRecordingExtensionForMime = (mime) => {
 }
 
 const CardWithDeleteOverlay = ({ item, disabled, customization, onDelete }) => {
+    const { t } = useTranslation()
     const [isHovered, setIsHovered] = useState(false)
     const defaultBackgroundColor = customization.isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'transparent'
 
