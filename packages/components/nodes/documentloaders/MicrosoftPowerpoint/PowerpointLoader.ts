@@ -1,6 +1,7 @@
 import { Document } from '@langchain/core/documents'
 import { BufferLoader } from '@langchain/classic/document_loaders/fs/buffer'
 import { parseOfficeAsync } from 'officeparser'
+import { detectFileSignature, describeFileSignature, describeUnreadableArchive, describeEmptyContent } from '../../../src/fileSignature'
 
 /**
  * Document loader that uses officeparser to load PowerPoint documents.
@@ -31,30 +32,46 @@ export class PowerpointLoader extends BufferLoader {
             { name: 'documentType', description: 'Type of document', type: 'string' }
         ]
 
+        // Fail fast with an actionable message instead of officeparser's generic
+        // "error reading the file buffers" / "extension unsupported" errors.
+        const signature = detectFileSignature(raw)
+        if (signature !== 'ooxml') {
+            throw new Error(describeFileSignature(signature, '.pptx', 'PowerPoint', 'PDF File loader'))
+        }
+
+        let data: unknown
         try {
             // Use officeparser to extract text from PowerPoint
-            const data = await parseOfficeAsync(raw)
+            data = await parseOfficeAsync(raw)
+        } catch (error) {
+            console.error('Error parsing PowerPoint file:', error)
+            // officeparser reports "extension unsupported" for any ZIP it cannot
+            // read as OOXML, which is misleading for a .pptx upload.
+            throw new Error(describeUnreadableArchive('PowerPoint', '.pptx'))
+        }
 
-            if (typeof data === 'string' && data.trim()) {
-                // Split content by common slide separators or use the entire content as one document
-                const slides = this.splitIntoSlides(data)
+        if (typeof data !== 'string' || !data.trim()) {
+            throw new Error(describeEmptyContent('PowerPoint'))
+        }
 
-                slides.forEach((slideContent, index) => {
-                    if (slideContent.trim()) {
-                        result.push({
-                            pageContent: slideContent.trim(),
-                            metadata: {
-                                slideNumber: index + 1,
-                                documentType: 'powerpoint',
-                                ...metadata
-                            }
-                        })
+        // Split content by common slide separators or use the entire content as one document
+        const slides = this.splitIntoSlides(data)
+
+        slides.forEach((slideContent, index) => {
+            if (slideContent.trim()) {
+                result.push({
+                    pageContent: slideContent.trim(),
+                    metadata: {
+                        slideNumber: index + 1,
+                        documentType: 'powerpoint',
+                        ...metadata
                     }
                 })
             }
-        } catch (error) {
-            console.error('Error parsing PowerPoint file:', error)
-            throw new Error(`Failed to parse PowerPoint file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        })
+
+        if (result.length === 0) {
+            throw new Error(describeEmptyContent('PowerPoint'))
         }
 
         return result

@@ -29,7 +29,11 @@ class MicrosoftPowerpoint_DocumentLoaders implements INode {
                 label: 'PowerPoint File',
                 name: 'powerpointFile',
                 type: 'file',
-                fileType: '.pptx, .ppt'
+                // officeparser only supports the OOXML .pptx format.
+                // Legacy .ppt (PowerPoint 97-2003) files are rejected with a clear message.
+                fileType: '.pptx',
+                description:
+                    'Upload a .pptx file (PowerPoint 2007 or later). Legacy .ppt files are not supported - save them as .pptx first.'
             },
             {
                 label: 'Text Splitter',

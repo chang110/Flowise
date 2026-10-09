@@ -29,7 +29,10 @@ class MicrosoftWord_DocumentLoaders implements INode {
                 label: 'Word File',
                 name: 'docxFile',
                 type: 'file',
-                fileType: '.docx, .doc'
+                // officeparser only supports the OOXML .docx format.
+                // Legacy .doc (Word 97-2003) files are rejected with a clear message.
+                fileType: '.docx',
+                description: 'Upload a .docx file (Word 2007 or later). Legacy .doc files are not supported - save them as .docx first.'
             },
             {
                 label: 'Text Splitter',

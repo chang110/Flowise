@@ -1,6 +1,7 @@
 import { Document } from '@langchain/core/documents'
 import { BufferLoader } from '@langchain/classic/document_loaders/fs/buffer'
 import { parseOfficeAsync } from 'officeparser'
+import { detectFileSignature, describeFileSignature, describeUnreadableArchive, describeEmptyContent } from '../../../src/fileSignature'
 
 /**
  * Document loader that uses officeparser to load Word documents.
@@ -31,30 +32,46 @@ export class WordLoader extends BufferLoader {
             { name: 'pageCount', description: 'Number of pages/sections', type: 'number' }
         ]
 
+        // Fail fast with an actionable message instead of officeparser's generic
+        // "error reading the file buffers" / "extension unsupported" errors.
+        const signature = detectFileSignature(raw)
+        if (signature !== 'ooxml') {
+            throw new Error(describeFileSignature(signature, '.docx', 'Word', 'PDF File loader'))
+        }
+
+        let data: unknown
         try {
             // Use officeparser to extract text from Word document
-            const data = await parseOfficeAsync(raw)
+            data = await parseOfficeAsync(raw)
+        } catch (error) {
+            console.error('Error parsing Word file:', error)
+            // officeparser reports "extension unsupported" for any ZIP it cannot
+            // read as OOXML, which is misleading for a .docx upload.
+            throw new Error(describeUnreadableArchive('Word', '.docx'))
+        }
 
-            if (typeof data === 'string' && data.trim()) {
-                // Split content by common page/section separators
-                const sections = this.splitIntoSections(data)
+        if (typeof data !== 'string' || !data.trim()) {
+            throw new Error(describeEmptyContent('Word'))
+        }
 
-                sections.forEach((sectionContent, index) => {
-                    if (sectionContent.trim()) {
-                        result.push({
-                            pageContent: sectionContent.trim(),
-                            metadata: {
-                                documentType: 'word',
-                                pageNumber: index + 1,
-                                ...metadata
-                            }
-                        })
+        // Split content by common page/section separators
+        const sections = this.splitIntoSections(data)
+
+        sections.forEach((sectionContent, index) => {
+            if (sectionContent.trim()) {
+                result.push({
+                    pageContent: sectionContent.trim(),
+                    metadata: {
+                        documentType: 'word',
+                        pageNumber: index + 1,
+                        ...metadata
                     }
                 })
             }
-        } catch (error) {
-            console.error('Error parsing Word file:', error)
-            throw new Error(`Failed to parse Word file: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        })
+
+        if (result.length === 0) {
+            throw new Error(describeEmptyContent('Word'))
         }
 
         return result
