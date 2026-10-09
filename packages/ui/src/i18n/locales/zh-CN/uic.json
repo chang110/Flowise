@@ -51,9 +51,9 @@
             "errorMessagePlaceholder": "未授权的域名！"
         },
         "starterPrompts": {
-            "saved": "对话开场提示已保存",
-            "saveFailed": "保存对话开场提示失败：{{error}}",
-            "info": "仅当聊天中没有任何消息时才会显示开场提示"
+            "saved": "对话开场提示词已保存",
+            "saveFailed": "保存对话开场提示词失败:{{error}}",
+            "info": "仅当聊天中没有任何消息时才会显示开场提示词"
         },
         "leads": {
             "saved": "线索配置已保存",
@@ -159,9 +159,9 @@
             "promptDescription": "根据对话历史生成问题的提示词。您可以使用变量 {history} 引用对话历史。",
             "baseUrlDescription": "您的 Ollama 实例的基础 URL",
             "modelNameDescription": "要使用的 Ollama 模型名称",
-            "saved": "追问提示配置已保存",
-            "saveFailed": "保存追问提示配置失败：{{error}}",
-            "enable": "启用追问提示"
+            "saved": "追问提示词配置已保存",
+            "saveFailed": "保存追问提示词配置失败:{{error}}",
+            "enable": "启用追问提示词"
         },
         "speechToText": {
             "saved": "语音转文字配置已保存",
@@ -280,11 +280,11 @@
             "rename": "重命名",
             "renameTitle": "重命名{{type}}",
             "deleteConfirm": "确定删除{{type}} {{name}}？",
-            "starterPrompts": "开场提示",
+            "starterPrompts": "开场提示词",
             "chatFeedback": "聊天反馈",
             "speechToText": "语音转文字",
             "updateCategory": "更新分类",
-            "starterPromptsTitle": "开场提示 - {{name}}",
+            "starterPromptsTitle": "开场提示词 - {{name}}",
             "chatFeedbackTitle": "聊天反馈 - {{name}}",
             "allowedDomainsTitle": "允许的域名 - {{name}}",
             "speechToTextTitle": "语音转文字 - {{name}}"
