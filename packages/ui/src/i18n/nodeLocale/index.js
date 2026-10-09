@@ -36,7 +36,8 @@ const mergeModules = (modules) => {
         marketplaceUsecases: {},
         marketplaceBadges: {},
         marketplaceTypes: {},
-        marketplaceFrameworks: {}
+        marketplaceFrameworks: {},
+        stickyNotes: {}
     }
     Object.keys(modules)
         .sort()
@@ -193,6 +194,21 @@ export const localizeFramework = (framework, language) => {
     return dict?.marketplaceFrameworks?.[framework] ?? framework
 }
 
+/**
+ * Translate the text of a Sticky Note node.
+ *
+ * Sticky notes shipped inside the marketplace templates are authored by
+ * Flowise and are skipped during execution (`buildAgentflow.ts` filters
+ * `stickyNoteAgentflow`), so translating them is display-only and safe.
+ * Keyed by the exact English text: once a user edits a note the content no
+ * longer matches and their own wording is shown unchanged.
+ */
+export const localizeStickyNote = (text, language) => {
+    if (typeof text !== 'string') return text
+    const dict = getNodeDictionary(language)
+    return dict?.stickyNotes?.[text] ?? text
+}
+
 /** Translate a dropdown option label. Falls back to the English label. */
 export const localizeOptionLabel = (label, language) => {
     if (typeof label !== 'string') return label
@@ -224,7 +240,8 @@ export const useNodeLocale = () => {
             usecase: (usecase) => localizeUsecase(usecase, language),
             badge: (badge) => localizeBadge(badge, language),
             templateType: (type) => localizeTemplateType(type, language),
-            framework: (framework) => localizeFramework(framework, language)
+            framework: (framework) => localizeFramework(framework, language),
+            stickyNote: (text) => localizeStickyNote(text, language)
         }),
         [language]
     )

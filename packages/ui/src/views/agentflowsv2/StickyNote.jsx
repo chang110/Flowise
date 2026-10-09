@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useRef, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 import { useSelector } from 'react-redux'
 import { NodeToolbar } from 'reactflow'
 
@@ -37,6 +38,7 @@ const StyledNodeToolbar = styled(NodeToolbar)(({ theme }) => ({
 const StickyNote = ({ data }) => {
     const theme = useTheme()
     const { t } = useTranslation()
+    const { stickyNote, language } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const ref = useRef(null)
 
@@ -116,11 +118,11 @@ const StickyNote = ({ data }) => {
             >
                 <Box>
                     <Input
-                        key={data.id}
+                        key={`${data.id}-${language}`}
                         placeholder={inputParam.placeholder}
                         inputParam={inputParam}
                         onChange={(newValue) => (data.inputs[inputParam.name] = newValue)}
-                        value={data.inputs[inputParam.name] ?? inputParam.default ?? ''}
+                        value={stickyNote(data.inputs[inputParam.name] ?? inputParam.default ?? '')}
                         nodes={reactFlowInstance ? reactFlowInstance.getNodes() : []}
                         edges={reactFlowInstance ? reactFlowInstance.getEdges() : []}
                         nodeId={data.id}

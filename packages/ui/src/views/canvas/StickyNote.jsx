@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useContext, useState, memo } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 // material-ui
 import { useTheme, darken, lighten } from '@mui/material/styles'
@@ -19,6 +20,7 @@ import { flowContext } from '@/store/context/ReactFlowContext'
 const StickyNote = ({ data }) => {
     const theme = useTheme()
     const { t } = useTranslation()
+    const { stickyNote, language } = useNodeLocale()
     const canvas = useSelector((state) => state.canvas)
     const customization = useSelector((state) => state.customization)
     const { deleteNode, duplicateNode } = useContext(flowContext)
@@ -109,10 +111,10 @@ const StickyNote = ({ data }) => {
                 >
                     <Box>
                         <Input
-                            key={data.id}
+                            key={`${data.id}-${language}`}
                             inputParam={inputParam}
                             onChange={(newValue) => (data.inputs[inputParam.name] = newValue)}
-                            value={data.inputs[inputParam.name] ?? inputParam.default ?? ''}
+                            value={stickyNote(data.inputs[inputParam.name] ?? inputParam.default ?? '')}
                             nodes={inputParam?.acceptVariable && reactFlowInstance ? reactFlowInstance.getNodes() : []}
                             edges={inputParam?.acceptVariable && reactFlowInstance ? reactFlowInstance.getEdges() : []}
                             nodeId={data.id}
