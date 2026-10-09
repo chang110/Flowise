@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { cloneDeep } from 'lodash'
 import {
@@ -37,10 +38,13 @@ import nodesApi from '@/api/nodes'
 // Hooks
 import useApi from '@/hooks/useApi'
 import { initNode } from '@/utils/genericHelper'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const DeleteDocStoreDialog = ({ show, dialogProps, onCancel, onDelete }) => {
+    const { nodeLabel } = useNodeLocale()
     const portalElement = document.getElementById('portal')
     const theme = useTheme()
+    const { t } = useTranslation()
     const [nodeConfigExpanded, setNodeConfigExpanded] = useState({})
     const [vsFlowData, setVSFlowData] = useState([])
     const [rmFlowData, setRMFlowData] = useState([])
@@ -199,16 +203,14 @@ const DeleteDocStoreDialog = ({ show, dialogProps, onCancel, onDelete }) => {
                     >
                         <IconAlertTriangle size={70} color='orange' />
                         <span style={{ color: 'rgb(116,66,16)', marginLeft: 10 }}>
-                            <strong>Note:</strong> Without a Record Manager configured, only the document chunks will be removed from the
-                            document store. The actual vector embeddings in your vector store database will remain unchanged. To enable
-                            automatic cleanup of vector store data, please configure a Record Manager.{' '}
+                            <strong>{t('evals.docstore.note')}</strong> {t('evals.docstore.recordManagerWarning')}{' '}
                             <Link
                                 href='https://docs.flowiseai.com/integrations/langchain/record-managers'
                                 target='_blank'
                                 rel='noopener noreferrer'
                                 sx={{ fontWeight: 500, color: 'rgb(116,66,16)', textDecoration: 'underline' }}
                             >
-                                Learn more
+                                {t('evals.docstore.learnMore')}
                             </Link>
                         </span>
                     </div>
@@ -217,7 +219,7 @@ const DeleteDocStoreDialog = ({ show, dialogProps, onCancel, onDelete }) => {
                     <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 2 }} variant='outlined'>
                         <Stack sx={{ mt: 1, mb: 2, ml: 1, alignItems: 'center' }} direction='row' spacing={2}>
                             <SettingsIcon />
-                            <Typography variant='h4'>Configuration</Typography>
+                            <Typography variant='h4'>{t('menu.configuration')}</Typography>
                         </Stack>
                         <Stack direction='column'>
                             <TableContainer component={Paper} sx={{ maxHeight: '400px', overflow: 'auto' }}>
@@ -267,7 +269,7 @@ const DeleteDocStoreDialog = ({ show, dialogProps, onCancel, onDelete }) => {
                                                                                 src={`${baseURL}/api/v1/node-icon/${node.name}`}
                                                                             />
                                                                         </div>
-                                                                        <Typography variant='h5'>{node.label}</Typography>
+                                                                        <Typography variant='h5'>{nodeLabel(node)}</Typography>
                                                                     </div>
                                                                 </AccordionSummary>
                                                                 <AccordionDetails sx={{ p: 0 }}>
@@ -294,10 +296,10 @@ const DeleteDocStoreDialog = ({ show, dialogProps, onCancel, onDelete }) => {
             </DialogContent>
             <DialogActions sx={{ pr: 3, pb: 3 }}>
                 <Button onClick={onCancel} color='primary'>
-                    Cancel
+                    {t('common.cancel')}
                 </Button>
                 <Button variant='contained' onClick={() => onDelete(dialogProps.type, dialogProps.file)} color='error'>
-                    Delete
+                    {t('common.delete')}
                 </Button>
             </DialogActions>
         </Dialog>

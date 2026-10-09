@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Box, Stack, Skeleton } from '@mui/material'
@@ -28,6 +29,7 @@ import { gridSpacing } from '@/store/constant'
 
 const OpenAIAssistantLayout = () => {
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const getAllAssistantsApi = useApi(assistantsApi.getAllAssistants)
 
@@ -40,7 +42,7 @@ const OpenAIAssistantLayout = () => {
 
     const loadExisting = () => {
         const dialogProp = {
-            title: 'Load Existing Assistant'
+            title: t('dv.loadExistingAssistant')
         }
         setLoadDialogProps(dialogProp)
         setShowLoadDialog(true)
@@ -58,7 +60,7 @@ const OpenAIAssistantLayout = () => {
 
     const addNew = (selectedOpenAIAssistantId, credential) => {
         const dialogProp = {
-            title: 'Add New Assistant',
+            title: t('dv.addNewAssistant'),
             type: 'ADD',
             cancelButtonName: 'Cancel',
             confirmButtonName: 'Add',
@@ -71,7 +73,7 @@ const OpenAIAssistantLayout = () => {
 
     const edit = (selectedAssistant) => {
         const dialogProp = {
-            title: 'Edit Assistant',
+            title: t('dv.editAssistant'),
             type: 'EDIT',
             cancelButtonName: 'Cancel',
             confirmButtonName: 'Save',
@@ -118,9 +120,9 @@ const OpenAIAssistantLayout = () => {
                             isBackButton={true}
                             onSearchChange={onSearchChange}
                             search={true}
-                            searchPlaceholder='Search Assistants'
-                            title='OpenAI Assistant'
-                            description='Create assistants using OpenAI Assistant API'
+                            searchPlaceholder={t('dv.searchAssistants')}
+                            title={t('dv.openaiAssistant')}
+                            description={t('dv.openaiAssistantLayoutDescription')}
                             onBack={() => navigate(-1)}
                         >
                             <PermissionButton
@@ -130,7 +132,7 @@ const OpenAIAssistantLayout = () => {
                                 startIcon={<IconFileUpload />}
                                 sx={{ borderRadius: 2, height: 40 }}
                             >
-                                Load
+                                {t('common.load')}
                             </PermissionButton>
                             <StyledPermissionButton
                                 permissionId={'assistants:create'}
@@ -139,7 +141,7 @@ const OpenAIAssistantLayout = () => {
                                 onClick={addNew}
                                 startIcon={<IconPlus />}
                             >
-                                Add
+                                {t('common.add')}
                             </StyledPermissionButton>
                         </ViewHeader>
                         {isLoading ? (
@@ -173,7 +175,7 @@ const OpenAIAssistantLayout = () => {
                                         alt='AssistantEmptySVG'
                                     />
                                 </Box>
-                                <div>No OpenAI Assistants Added Yet</div>
+                                <div>{t('dv.noOpenAIAssistants')}</div>
                             </Stack>
                         )}
                     </Stack>

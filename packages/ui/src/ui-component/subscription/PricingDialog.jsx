@@ -23,6 +23,7 @@ import { IconAlertCircle, IconCheck, IconCreditCard, IconExternalLink, IconX } f
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 const PricingDialog = ({ open, onClose }) => {
@@ -30,6 +31,7 @@ const PricingDialog = ({ open, onClose }) => {
     const currentUser = useSelector((state) => state.auth.user)
     const theme = useTheme()
     const { enqueueSnackbar } = useSnackbar()
+    const { t } = useTranslation()
 
     const [openPlanDialog, setOpenPlanDialog] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState(null)
@@ -93,16 +95,16 @@ const PricingDialog = ({ open, onClose }) => {
             if (response.data.status === 'success') {
                 // Subscription updated successfully
                 store.dispatch(upgradePlanSuccess(response.data.user))
-                enqueueSnackbar('Subscription updated successfully!', { variant: 'success' })
+                enqueueSnackbar(t('uic.pricing.updated'), { variant: 'success' })
                 onClose(true)
             } else {
-                const errorMessage = response.data.message || 'Subscription failed to update'
+                const errorMessage = response.data.message || t('uic.pricing.updateFailed')
                 enqueueSnackbar(errorMessage, { variant: 'error' })
                 onClose()
             }
         } catch (error) {
             console.error('Error updating plan:', error)
-            const errorMessage = err.response?.data?.message || 'Failed to verify subscription'
+            const errorMessage = error.response?.data?.message || t('uic.pricing.verifyFailed')
             enqueueSnackbar(errorMessage, { variant: 'error' })
             onClose()
         } finally {
@@ -168,7 +170,7 @@ const PricingDialog = ({ open, onClose }) => {
             if (plan.title === 'Enterprise') {
                 return {
                     ...plan,
-                    buttonText: 'Contact Us',
+                    buttonText: t('uic.pricing.contactUs'),
                     buttonVariant: 'outlined',
                     buttonAction: () => handlePlanClick(plan)
                 }
@@ -186,7 +188,7 @@ const PricingDialog = ({ open, onClose }) => {
                 ...plan,
                 currentPlan: isCurrentPlanValue,
                 isStarterPlan,
-                buttonText: isCurrentPlanValue ? 'Current Plan' : 'Get Started',
+                buttonText: isCurrentPlanValue ? t('uic.pricing.currentPlan') : t('uic.pricing.getStarted'),
                 buttonVariant: plan.mostPopular ? 'contained' : 'outlined',
                 disabled: isCurrentPlanValue || !currentUser.isOrganizationAdmin,
                 buttonAction: () => handlePlanClick(plan)
@@ -234,7 +236,7 @@ const PricingDialog = ({ open, onClose }) => {
                         position: 'relative'
                     }}
                 >
-                    <Typography variant='h3'>Pricing Plans</Typography>
+                    <Typography variant='h3'>{t('uic.pricing.title')}</Typography>
                     <IconButton
                         onClick={handleClose}
                         sx={{
@@ -287,7 +289,7 @@ const PricingDialog = ({ open, onClose }) => {
                                             }}
                                         >
                                             <Typography sx={{ color: 'white' }} variant='caption' fontWeight='bold'>
-                                                Current Plan
+                                                {t('uic.pricing.currentPlan')}
                                             </Typography>
                                         </Box>
                                     )}
@@ -304,7 +306,7 @@ const PricingDialog = ({ open, onClose }) => {
                                             }}
                                         >
                                             <Typography sx={{ color: 'white' }} variant='caption' fontWeight='bold'>
-                                                Most Popular
+                                                {t('uic.pricing.mostPopular')}
                                             </Typography>
                                         </Box>
                                     )}
@@ -384,7 +386,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                     position: 'relative'
                                                 }}
                                             >
-                                                First Month Free
+                                                {t('uic.pricing.firstMonthFree')}
                                             </Box>
                                         </Box>
                                     )}
@@ -395,7 +397,7 @@ const PricingDialog = ({ open, onClose }) => {
                                         onClick={plan.buttonAction}
                                         disabled={plan.disabled}
                                     >
-                                        {plan.currentPlan ? 'Current Plan' : plan.buttonText}
+                                        {plan.currentPlan ? t('uic.pricing.currentPlan') : plan.buttonText}
                                     </Button>
                                 </Box>
                             </Grid>
@@ -405,7 +407,7 @@ const PricingDialog = ({ open, onClose }) => {
             </Dialog>
 
             <Dialog fullWidth maxWidth='sm' open={openPlanDialog} onClose={handlePlanDialogClose}>
-                <DialogTitle variant='h4'>Confirm Plan Change</DialogTitle>
+                <DialogTitle variant='h4'>{t('uic.pricing.confirmTitle')}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
                         {purchasedSeats > 0 || occupiedSeats > 1 ? (
@@ -420,7 +422,7 @@ const PricingDialog = ({ open, onClose }) => {
                                 }}
                             >
                                 <IconAlertCircle size={20} />
-                                You must remove additional seats and users before changing your plan.
+                                {t('uic.pricing.seatsWarning')}
                             </Typography>
                         ) : workspaceCount > 1 ? (
                             <>
@@ -435,7 +437,7 @@ const PricingDialog = ({ open, onClose }) => {
                                     }}
                                 >
                                     <IconAlertCircle size={20} />
-                                    You must remove all workspaces except the default workspace before changing your plan.
+                                    {t('uic.pricing.workspacesWarning')}
                                 </Typography>
                             </>
                         ) : proAPIKeysCount > 0 ? (
@@ -451,7 +453,7 @@ const PricingDialog = ({ open, onClose }) => {
                                     }}
                                 >
                                     <IconAlertCircle size={20} />
-                                    You must remove all API keys with sharing permissions before changing your plan.
+                                    {t('uic.pricing.apiKeysWarning')}
                                 </Typography>
                             </>
                         ) : (
@@ -460,7 +462,7 @@ const PricingDialog = ({ open, onClose }) => {
                                     <CircularProgress size={20} />
                                 ) : getCustomerDefaultSourceApi.data?.invoice_settings?.default_payment_method ? (
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 2 }}>
-                                        <Typography variant='subtitle2'>Payment Method</Typography>
+                                        <Typography variant='subtitle2'>{t('pages.account.paymentMethod')}</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             {getCustomerDefaultSourceApi.data.invoice_settings.default_payment_method.card && (
                                                 <>
@@ -480,7 +482,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                             }
                                                         </Typography>
                                                         <Typography color='text.secondary'>
-                                                            (expires{' '}
+                                                            ({t('uic.pricing.expires')}{' '}
                                                             {
                                                                 getCustomerDefaultSourceApi.data.invoice_settings.default_payment_method
                                                                     .card.exp_month
@@ -501,7 +503,7 @@ const PricingDialog = ({ open, onClose }) => {
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
                                         <Typography color='error' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <IconAlertCircle size={20} />
-                                            No payment method found
+                                            {t('uic.pricing.noPaymentMethod')}
                                         </Typography>
                                         <Button
                                             disabled={isOpeningBillingPortal}
@@ -512,10 +514,10 @@ const PricingDialog = ({ open, onClose }) => {
                                             {isOpeningBillingPortal ? (
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                     <CircularProgress size={16} color='inherit' />
-                                                    <span>Opening Billing Portal...</span>
+                                                    <span>{t('uic.pricing.openingPortal')}</span>
                                                 </Box>
                                             ) : (
-                                                'Add Payment Method in Billing Portal'
+                                                t('uic.pricing.addPaymentMethod')
                                             )}
                                         </Button>
                                     </Box>
@@ -567,14 +569,16 @@ const PricingDialog = ({ open, onClose }) => {
                                                 }}
                                             >
                                                 <Typography variant='body2' fontWeight='bold'>
-                                                    {`You're eligible for your first month free!`}
+                                                    {t('uic.pricing.eligibleFirstMonthFree')}
                                                 </Typography>
                                             </Box>
                                         )}
 
                                         {/* Base Plan */}
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Typography variant='body2'>{selectedPlan.title} Plan</Typography>
+                                            <Typography variant='body2'>
+                                                {t('uic.pricing.planSuffix', { title: selectedPlan.title })}
+                                            </Typography>
                                             <Typography variant='body2'>
                                                 {prorationInfo.currency} {Math.max(0, prorationInfo.newPlanAmount).toFixed(2)}
                                             </Typography>
@@ -582,7 +586,7 @@ const PricingDialog = ({ open, onClose }) => {
 
                                         {selectedPlan?.title === 'Starter' && prorationInfo.eligibleForFirstMonthFree && (
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Typography variant='body2'>First Month Discount</Typography>
+                                                <Typography variant='body2'>{t('uic.pricing.firstMonthDiscount')}</Typography>
                                                 <Typography variant='body2' color='success.main'>
                                                     -{prorationInfo.currency} {Math.max(0, prorationInfo.newPlanAmount).toFixed(2)}
                                                 </Typography>
@@ -598,7 +602,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                     alignItems: 'center'
                                                 }}
                                             >
-                                                <Typography variant='body2'>Applied account balance</Typography>
+                                                <Typography variant='body2'>{t('uic.pricing.appliedBalance')}</Typography>
                                                 <Typography
                                                     variant='body2'
                                                     color={prorationInfo.creditBalance < 0 ? 'success.main' : 'error.main'}
@@ -616,7 +620,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                     alignItems: 'center'
                                                 }}
                                             >
-                                                <Typography variant='body2'>Credit balance</Typography>
+                                                <Typography variant='body2'>{t('pages.account.creditBalance')}</Typography>
                                                 <Typography
                                                     variant='body2'
                                                     color={prorationInfo.prorationAmount < 0 ? 'success.main' : 'error.main'}
@@ -637,7 +641,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                 borderTop: `1px solid ${theme.palette.divider}`
                                             }}
                                         >
-                                            <Typography variant='h5'>Due today</Typography>
+                                            <Typography variant='h5'>{t('pages.account.dueToday')}</Typography>
                                             <Typography variant='h5'>
                                                 {prorationInfo.currency}{' '}
                                                 {Math.max(0, prorationInfo.prorationAmount + prorationInfo.creditBalance).toFixed(2)}
@@ -652,7 +656,7 @@ const PricingDialog = ({ open, onClose }) => {
                                                     fontStyle: 'italic'
                                                 }}
                                             >
-                                                Your available credit will automatically apply to your next invoice.
+                                                {t('uic.pricing.creditNotice')}
                                             </Typography>
                                         )}
                                     </Box>
@@ -664,7 +668,7 @@ const PricingDialog = ({ open, onClose }) => {
                 {getCustomerDefaultSourceApi.data?.invoice_settings?.default_payment_method && (
                     <DialogActions>
                         <Button onClick={handlePlanDialogClose} disabled={isUpdatingPlan}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant='contained'
@@ -684,10 +688,10 @@ const PricingDialog = ({ open, onClose }) => {
                             {isUpdatingPlan ? (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CircularProgress size={16} color='inherit' />
-                                    <span>Updating Plan...</span>
+                                    <span>{t('uic.pricing.updatingPlan')}</span>
                                 </Box>
                             ) : (
-                                'Confirm Change'
+                                t('uic.pricing.confirmChange')
                             )}
                         </Button>
                     </DialogActions>

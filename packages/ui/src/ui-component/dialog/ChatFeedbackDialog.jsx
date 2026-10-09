@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 // material-ui
 import { Dialog, DialogContent, DialogTitle } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 // store
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
@@ -14,6 +15,7 @@ import useNotifier from '@/utils/useNotifier'
 import ChatFeedback from '@/ui-component/extended/ChatFeedback'
 
 const ChatFeedbackDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
 
@@ -35,7 +37,7 @@ const ChatFeedbackDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             aria-describedby='alert-dialog-description'
         >
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
-                {dialogProps.title || 'Allowed Domains'}
+                {dialogProps.title || t('dlg.allowedDomains')}
             </DialogTitle>
             <DialogContent>
                 <ChatFeedback dialogProps={dialogProps} onConfirm={onConfirm} />

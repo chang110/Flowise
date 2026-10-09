@@ -18,9 +18,11 @@ import nodesApi from '@/api/nodes'
 import { initNode, showHideInputParams, initializeDefaultNodeData } from '@/utils/genericHelper'
 import { flowContext } from '@/store/context/ReactFlowContext'
 import { FLOWISE_CREDENTIAL_ID } from '@/store/constant'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 export const ConfigInput = ({ data, inputParam, disabled = false, arrayIndex = null, parentParamForArray = null }) => {
     const theme = useTheme()
+    const { nodeLabel } = useNodeLocale()
     const { reactFlowInstance } = useContext(flowContext)
 
     const [expanded, setExpanded] = useState(false)
@@ -294,7 +296,9 @@ export const ConfigInput = ({ data, inputParam, disabled = false, arrayIndex = n
                     <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ background: 'transparent' }}>
                         <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                             <IconSettings stroke={1.5} size='1.3rem' />
-                            <Typography sx={{ ml: 1 }}>{selectedComponentNodeData?.label} Parameters</Typography>
+                            <Typography sx={{ ml: 1 }}>
+                                {t('canvas.parametersOf', { item: nodeLabel(selectedComponentNodeData) })}
+                            </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                             {selectedComponentNodeData?.warning && (
                                 <Tooltip

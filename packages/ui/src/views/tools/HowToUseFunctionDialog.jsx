@@ -1,9 +1,11 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 
 const HowToUseFunctionDialog = ({ show, onCancel }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
 
     const component = show ? (
         <Dialog
@@ -15,24 +17,24 @@ const HowToUseFunctionDialog = ({ show, onCancel }) => {
             aria-describedby='alert-dialog-description'
         >
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
-                How To Use Function
+                {t('dv.howToUseFunctionTitle')}
             </DialogTitle>
             <DialogContent>
                 <ul>
-                    <li style={{ marginTop: 10 }}>You can use any libraries imported in Flowise</li>
+                    <li style={{ marginTop: 10 }}>{t('dv.functionUsageLibraries')}</li>
                     <li style={{ marginTop: 10 }}>
-                        You can use properties specified in Input Schema as variables with prefix $:
+                        {t('dv.functionUsageProperties')}
                         <ul style={{ marginTop: 10 }}>
                             <li>
-                                Property = <code>userid</code>
+                                {t('dv.propertyLabel')} = <code>userid</code>
                             </li>
                             <li>
-                                Variable = <code>$userid</code>
+                                {t('nouns.variable')} = <code>$userid</code>
                             </li>
                         </ul>
                     </li>
                     <li style={{ marginTop: 10 }}>
-                        You can get default flow config:
+                        {t('dv.functionUsageFlowConfig')}
                         <ul style={{ marginTop: 10 }}>
                             <li>
                                 <code>$flow.sessionId</code>
@@ -52,9 +54,9 @@ const HowToUseFunctionDialog = ({ show, onCancel }) => {
                         </ul>
                     </li>
                     <li style={{ marginTop: 10 }}>
-                        You can get custom variables:&nbsp;<code>{`$vars.<variable-name>`}</code>
+                        {t('dv.functionUsageCustomVariables')}:&nbsp;<code>{`$vars.<variable-name>`}</code>
                     </li>
-                    <li style={{ marginTop: 10 }}>Must return a string value at the end of function</li>
+                    <li style={{ marginTop: 10 }}>{t('dv.functionUsageReturn')}</li>
                 </ul>
             </DialogContent>
         </Dialog>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 // material-ui
@@ -38,6 +39,7 @@ import { evaluators as evaluatorsOptions, numericOperators } from '../evaluators
 
 const Evaluators = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const dispatch = useDispatch()
     const { confirm } = useConfirm()
@@ -101,8 +103,8 @@ const Evaluators = () => {
 
     const deleteEvaluator = async (item) => {
         const confirmPayload = {
-            title: `Delete`,
-            description: `Delete Evaluator ${item.name}?`,
+            title: t('common.delete'),
+            description: t('evals.evaluatorsPage.deleteConfirm', { name: item.name }),
             confirmButtonName: 'Delete',
             cancelButtonName: 'Cancel'
         }
@@ -113,7 +115,7 @@ const Evaluators = () => {
                 const deleteResp = await evaluatorsApi.deleteEvaluator(item.id)
                 if (deleteResp.data) {
                     enqueueSnackbar({
-                        message: 'Evaluator deleted',
+                        message: t('evals.evaluatorsPage.deleted'),
                         options: {
                             key: new Date().getTime() + Math.random(),
                             variant: 'success',
@@ -128,9 +130,9 @@ const Evaluators = () => {
                 }
             } catch (error) {
                 enqueueSnackbar({
-                    message: `Failed to delete Evaluator: ${
-                        typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                    }`,
+                    message: t('evals.evaluatorsPage.deleteFailed', {
+                        error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                    }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -184,7 +186,7 @@ const Evaluators = () => {
                             isEditButton={false}
                             onSearchChange={onSearchChange}
                             search={true}
-                            title='Evaluators'
+                            title={t('pages.evaluators.title')}
                             description=''
                         >
                             <StyledPermissionButton
@@ -194,7 +196,7 @@ const Evaluators = () => {
                                 onClick={newEvaluator}
                                 startIcon={<IconPlus />}
                             >
-                                New Evaluator
+                                {t('common.newItem', { item: t('nouns.evaluator') })}
                             </StyledPermissionButton>
                         </ViewHeader>
                         {!isLoading && evaluators.length <= 0 ? (
@@ -206,7 +208,7 @@ const Evaluators = () => {
                                         alt='empty_evaluatorSVG'
                                     />
                                 </Box>
-                                <div>No Evaluators Yet</div>
+                                <div>{t('pages.evaluators.noItems')}</div>
                             </Stack>
                         ) : (
                             <>
@@ -224,10 +226,10 @@ const Evaluators = () => {
                                             }}
                                         >
                                             <TableRow>
-                                                <TableCell>Type</TableCell>
-                                                <TableCell>Name</TableCell>
-                                                <TableCell>Details</TableCell>
-                                                <TableCell>Last Updated</TableCell>
+                                                <TableCell>{t('evals.table.type')}</TableCell>
+                                                <TableCell>{t('table.name')}</TableCell>
+                                                <TableCell>{t('evals.table.details')}</TableCell>
+                                                <TableCell>{t('evals.table.lastUpdated')}</TableCell>
                                                 <TableCell> </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -286,7 +288,7 @@ const Evaluators = () => {
                                                                         <Stack flexDirection='row' sx={{ alignItems: 'center' }}>
                                                                             <Chip
                                                                                 icon={<IconNumber123 />}
-                                                                                label='Numeric'
+                                                                                label={t('evals.evaluatorType.numeric')}
                                                                                 variant='outlined'
                                                                             />
                                                                         </Stack>
@@ -295,7 +297,7 @@ const Evaluators = () => {
                                                                         <Stack flexDirection='row' sx={{ alignItems: 'center' }}>
                                                                             <Chip
                                                                                 icon={<IconAbc />}
-                                                                                label='Text Based'
+                                                                                label={t('evals.evaluatorType.text')}
                                                                                 variant='outlined'
                                                                             />
                                                                         </Stack>
@@ -304,7 +306,7 @@ const Evaluators = () => {
                                                                         <Stack flexDirection='row' sx={{ alignItems: 'center' }}>
                                                                             <Chip
                                                                                 icon={<IconJson />}
-                                                                                label='JSON Based'
+                                                                                label={t('evals.evaluatorType.json')}
                                                                                 variant='outlined'
                                                                             />
                                                                         </Stack>
@@ -313,7 +315,7 @@ const Evaluators = () => {
                                                                         <Stack flexDirection='row' sx={{ alignItems: 'center' }}>
                                                                             <Chip
                                                                                 icon={<IconAugmentedReality />}
-                                                                                label='LLM Based'
+                                                                                label={t('evals.evaluatorType.llm')}
                                                                                 variant='outlined'
                                                                             />
                                                                         </Stack>
@@ -343,7 +345,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Measure</b>:{' '}
+                                                                                        <b>{t('evals.column.measure')}</b>:{' '}
                                                                                         {
                                                                                             [
                                                                                                 ...evaluatorsOptions,
@@ -368,7 +370,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Operator</b>:{' '}
+                                                                                        <b>{t('evals.column.operator')}</b>:{' '}
                                                                                         {
                                                                                             [
                                                                                                 ...evaluatorsOptions,
@@ -393,7 +395,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Value</b>: {ds?.value}
+                                                                                        <b>{t('evals.column.value')}</b>: {ds?.value}
                                                                                     </span>
                                                                                 }
                                                                             />
@@ -419,7 +421,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Operator</b>:{' '}
+                                                                                        <b>{t('evals.column.operator')}</b>:{' '}
                                                                                         {
                                                                                             [
                                                                                                 ...evaluatorsOptions,
@@ -444,7 +446,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Value</b>: {ds?.value}
+                                                                                        <b>{t('evals.column.value')}</b>: {ds?.value}
                                                                                     </span>
                                                                                 }
                                                                             />
@@ -470,7 +472,7 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Operator</b>:{' '}
+                                                                                        <b>{t('evals.column.operator')}</b>:{' '}
                                                                                         {
                                                                                             [...evaluatorsOptions].find(
                                                                                                 (item) => item.name === ds?.operator
@@ -501,7 +503,8 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Prompt</b>: {truncateString(ds?.prompt, 100)}
+                                                                                        <b>{t('evals.column.prompt')}</b>:
+                                                                                        {truncateString(ds?.prompt, 100)}
                                                                                     </span>
                                                                                 }
                                                                             />
@@ -519,12 +522,12 @@ const Evaluators = () => {
                                                                                 }}
                                                                                 label={
                                                                                     <span>
-                                                                                        <b>Output Schema Elements</b>:{' '}
+                                                                                        <b>{t('evals.column.outputSchemaElements')}</b>:{' '}
                                                                                         {ds?.outputSchema.length > 0
                                                                                             ? ds?.outputSchema
                                                                                                   .map((item) => item.property)
                                                                                                   .join(', ')
-                                                                                            : 'None'}
+                                                                                            : t('evals.none')}
                                                                                     </span>
                                                                                 }
                                                                             />
@@ -537,7 +540,7 @@ const Evaluators = () => {
                                                                 <TableCell>
                                                                     <PermissionIconButton
                                                                         permissionId={'evaluators:delete'}
-                                                                        title='Delete'
+                                                                        title={t('common.delete')}
                                                                         color='error'
                                                                         onClick={() => deleteEvaluator(ds)}
                                                                     >

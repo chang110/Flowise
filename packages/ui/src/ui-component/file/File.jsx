@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles'
 import { FormControl, Button } from '@mui/material'
 import { IconUpload } from '@tabler/icons-react'
@@ -7,6 +8,7 @@ import { getFileName } from '@/utils/genericHelper'
 
 export const File = ({ value, formDataUpload, fileType, onChange, onFormDataChange, disabled = false }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
 
     const [myValue, setMyValue] = useState(value ?? '')
 
@@ -88,7 +90,7 @@ export const File = ({ value, formDataUpload, fileType, onChange, onFormDataChan
                         marginBottom: '1rem'
                     }}
                 >
-                    {myValue ? getFileName(myValue) : 'Choose a file to upload'}
+                    {myValue ? getFileName(myValue) : t('canvas.chooseFileToUpload')}
                 </span>
             )}
             <Button
@@ -99,7 +101,7 @@ export const File = ({ value, formDataUpload, fileType, onChange, onFormDataChan
                 startIcon={<IconUpload />}
                 sx={{ marginRight: '1rem' }}
             >
-                {'Upload File'}
+                {t('uic.file.upload')}
                 <input
                     type='file'
                     multiple

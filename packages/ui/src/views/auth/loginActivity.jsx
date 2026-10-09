@@ -2,6 +2,7 @@ import moment from 'moment/moment'
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import {
@@ -58,6 +59,17 @@ const activityTypes = [
     'No Assigned Workspace',
     'Unknown Activity'
 ]
+
+// Display labels for the activity descriptions returned by getActivityDescription()
+const activityLabelKeys = {
+    'Login Success': 'dv.loginSuccess',
+    'Logout Success': 'dv.logoutSuccess',
+    'Unknown User': 'dv.unknownUser',
+    'Incorrect Credential': 'dv.incorrectCredential',
+    'User Disabled': 'dv.userDisabled',
+    'No Assigned Workspace': 'dv.noAssignedWorkspace',
+    'Unknown Activity': 'dv.unknownActivity'
+}
 const MenuProps = {
     PaperProps: {
         style: {
@@ -87,6 +99,7 @@ DatePickerCustomInput.propTypes = {
 }
 const LoginActivity = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     useNotifier()
     const { error, setError } = useError()
@@ -181,6 +194,8 @@ const LoginActivity = () => {
         }
     }
 
+    const getActivityLabel = (activityName) => t(activityLabelKeys[activityName] ?? activityName)
+
     useEffect(() => {
         getLoginActivityApi.request({
             pageNo: 1
@@ -217,7 +232,7 @@ const LoginActivity = () => {
                     <ErrorBoundary error={error} />
                 ) : (
                     <Stack flexDirection='column' sx={{ gap: 3 }}>
-                        <ViewHeader search={false} title='Login Activity'></ViewHeader>
+                        <ViewHeader search={false} title={t('menu.loginActivity')}></ViewHeader>
                         <Stack flexDirection='row'>
                             <Box sx={{ p: 2, height: 'auto', width: '100%' }}>
                                 <div
@@ -238,7 +253,7 @@ const LoginActivity = () => {
                                         }}
                                     >
                                         <div style={{ marginRight: 10 }}>
-                                            <b style={{ marginRight: 10 }}>From: </b>
+                                            <b style={{ marginRight: 10 }}>{t('dv.from')}: </b>
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(date) => onStartDateSelected(date)}
@@ -249,7 +264,7 @@ const LoginActivity = () => {
                                             />
                                         </div>
                                         <div style={{ marginRight: 10 }}>
-                                            <b style={{ marginRight: 10 }}>To: </b>
+                                            <b style={{ marginRight: 10 }}>{t('dv.to')}: </b>
                                             <DatePicker
                                                 selected={endDate}
                                                 onChange={(date) => onEndDateSelected(date)}
@@ -273,7 +288,7 @@ const LoginActivity = () => {
                                                 }}
                                             >
                                                 <InputLabel size='small' id='type-label'>
-                                                    Filter By
+                                                    {t('dv.filterBy')}
                                                 </InputLabel>
                                                 <Select
                                                     size='small'
@@ -282,8 +297,8 @@ const LoginActivity = () => {
                                                     value={typeFilter}
                                                     onChange={handleTypeFilterChange}
                                                     id='type-checkbox'
-                                                    input={<OutlinedInput label='Badge' />}
-                                                    renderValue={(selected) => selected.join(', ')}
+                                                    input={<OutlinedInput label={t('dv.badgeLabel')} />}
+                                                    renderValue={(selected) => selected.map((name) => getActivityLabel(name)).join(', ')}
                                                     MenuProps={MenuProps}
                                                     sx={SelectStyles}
                                                 >
@@ -294,7 +309,7 @@ const LoginActivity = () => {
                                                             sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}
                                                         >
                                                             <Checkbox checked={typeFilter.indexOf(name) > -1} sx={{ p: 0 }} />
-                                                            <ListItemText primary={name} />
+                                                            <ListItemText primary={getActivityLabel(name)} />
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
@@ -334,7 +349,7 @@ const LoginActivity = () => {
                                                     }
                                                 />
                                             </IconButton>
-                                            Showing {Math.min(start, totalRecords)}-{end} of {totalRecords} Records
+                                            {t('dv.showingRecords', { start: Math.min(start, totalRecords), end, total: totalRecords })}
                                             <IconButton
                                                 size='small'
                                                 onClick={() => changePage(currentPage + 1)}
@@ -372,11 +387,11 @@ const LoginActivity = () => {
                                             }}
                                         >
                                             <TableRow>
-                                                <StyledTableCell>Activity</StyledTableCell>
-                                                <StyledTableCell>User</StyledTableCell>
-                                                <StyledTableCell>Date</StyledTableCell>
-                                                <StyledTableCell>Method</StyledTableCell>
-                                                <StyledTableCell>Message</StyledTableCell>
+                                                <StyledTableCell>{t('dv.activity')}</StyledTableCell>
+                                                <StyledTableCell>{t('dv.user')}</StyledTableCell>
+                                                <StyledTableCell>{t('dv.date')}</StyledTableCell>
+                                                <StyledTableCell>{t('dv.method')}</StyledTableCell>
+                                                <StyledTableCell>{t('dv.message')}</StyledTableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -475,7 +490,7 @@ const LoginActivity = () => {
                                                                             />
                                                                         )}
                                                                     </div>
-                                                                    <div>{getActivityDescription(item.activityCode)}</div>
+                                                                    <div>{getActivityLabel(getActivityDescription(item.activityCode))}</div>
                                                                 </div>
                                                             </StyledTableCell>
                                                             <StyledTableCell>{item.username}</StyledTableCell>
@@ -483,7 +498,7 @@ const LoginActivity = () => {
                                                                 {moment(item.attemptedDateTime).format('MMMM Do, YYYY, HH:mm')}
                                                             </StyledTableCell>
                                                             <StyledTableCell>
-                                                                {item.loginMode ? item.loginMode : 'Email/Password'}
+                                                                {item.loginMode ? item.loginMode : t('dv.emailPassword')}
                                                             </StyledTableCell>
                                                             <StyledTableCell>{item.message}</StyledTableCell>
                                                         </StyledTableRow>

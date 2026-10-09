@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { FormControl, OutlinedInput, InputAdornment, IconButton, CircularProgress, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { IconEye, IconEyeOff } from '@tabler/icons-react'
@@ -10,6 +11,7 @@ const MULTILINE_DOTS = '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u
 
 export const SensitiveInput = ({ inputParam, value, onChange, disabled = false, onReveal }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const [myValue, setMyValue] = useState(value ?? '')
     const [isVisible, setIsVisible] = useState(false)
     const [isRevealing, setIsRevealing] = useState(false)
@@ -121,7 +123,7 @@ export const SensitiveInput = ({ inputParam, value, onChange, disabled = false, 
             </FormControl>
             {isUrl && onReveal && (
                 <Typography variant='caption' sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
-                    Click the eye icon to reveal the value before editing.
+                    {t('uic.sensitiveInput.revealHint')}
                 </Typography>
             )}
         </>

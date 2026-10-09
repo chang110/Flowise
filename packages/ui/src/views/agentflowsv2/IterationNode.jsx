@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useContext, memo, useRef, useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Background, Handle, Position, useUpdateNodeInternals, NodeToolbar, NodeResizer } from 'reactflow'
 
@@ -9,6 +10,7 @@ import { ButtonGroup, Avatar, Box, Typography, IconButton, Tooltip } from '@mui/
 
 // project imports
 import MainCard from '@/ui-component/cards/MainCard'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 import { flowContext } from '@/store/context/ReactFlowContext'
 import NodeInfoDialog from '@/ui-component/dialog/NodeInfoDialog'
 
@@ -50,6 +52,8 @@ const StyledNodeToolbar = styled(NodeToolbar)(({ theme }) => ({
 
 const IterationNode = ({ data }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { nodeLabel } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const ref = useRef(null)
     const reactFlowWrapper = useRef(null)
@@ -209,7 +213,7 @@ const IterationNode = ({ data }) => {
                             ml: 1
                         }}
                     >
-                        {data.label}
+                        {nodeLabel(data)}
                     </Typography>
                 </Box>
             </NodeToolbar>
@@ -217,7 +221,7 @@ const IterationNode = ({ data }) => {
                 <ButtonGroup sx={{ gap: 1 }} variant='outlined' aria-label='Basic button group'>
                     <IconButton
                         size={'small'}
-                        title='Duplicate'
+                        title={t('common.duplicate')}
                         onClick={() => {
                             duplicateNode(data.id)
                         }}
@@ -232,7 +236,7 @@ const IterationNode = ({ data }) => {
                     </IconButton>
                     <IconButton
                         size={'small'}
-                        title='Delete'
+                        title={t('common.delete')}
                         onClick={() => {
                             deleteNode(data.id)
                         }}
@@ -247,7 +251,7 @@ const IterationNode = ({ data }) => {
                     </IconButton>
                     <IconButton
                         size={'small'}
-                        title='Info'
+                        title={t('canvas.info')}
                         onClick={() => {
                             setInfoDialogProps({ data })
                             setShowInfoDialog(true)

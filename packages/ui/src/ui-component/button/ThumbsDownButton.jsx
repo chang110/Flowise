@@ -1,17 +1,19 @@
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { IconButton } from '@mui/material'
 import { IconThumbDown } from '@tabler/icons-react'
 
 const ThumbsDownButton = (props) => {
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
     return (
         <IconButton
             disabled={props.isDisabled || props.isLoading}
             onClick={props.onClick}
             size='small'
             sx={{ background: 'transparent', border: 'none' }}
-            title='Thumbs Down'
+            title={t('uic.thumbsDown')}
         >
             <IconThumbDown
                 style={{ width: '20px', height: '20px' }}

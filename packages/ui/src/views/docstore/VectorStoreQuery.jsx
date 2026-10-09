@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import ReactJson from 'flowise-react-json-view'
@@ -33,6 +34,7 @@ import useNotifier from '@/utils/useNotifier'
 import { baseURL } from '@/store/constant'
 import { initNode, showHideInputParams } from '@/utils/genericHelper'
 import { closeSnackbar as closeSnackbarAction, enqueueSnackbar as enqueueSnackbarAction } from '@/store/actions'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
     background: theme.palette.card.main,
@@ -54,9 +56,11 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 }))
 
 const VectorStoreQuery = () => {
+    const { nodeLabel } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const navigate = useNavigate()
     const theme = useTheme()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const inputRef = useRef(null)
     const { hasAssignedWorkspace } = useAuth()
@@ -153,7 +157,7 @@ const VectorStoreQuery = () => {
             setLoading(false)
             if (updateResp.data) {
                 enqueueSnackbar({
-                    message: 'Vector Store Config Successfully Updated',
+                    message: t('evals.vectorstore.configUpdated'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -261,8 +265,8 @@ const VectorStoreQuery = () => {
                     <ViewHeader
                         isBackButton={true}
                         search={false}
-                        title={documentStore?.name || 'Document Store'}
-                        description='Retrieval Playground - Test your vector store retrieval settings'
+                        title={documentStore?.name || t('nouns.documentStore')}
+                        description={t('evals.vectorstore.retrievalPlaygroundDescription')}
                         onBack={() => navigate(-1)}
                     >
                         <PermissionButton
@@ -273,7 +277,7 @@ const VectorStoreQuery = () => {
                             startIcon={<IconDeviceFloppy />}
                             onClick={saveConfig}
                         >
-                            Save Config
+                            {t('rem.saveConfig')}
                         </PermissionButton>
                     </ViewHeader>
                     <div style={{ width: '100%' }}></div>
@@ -283,7 +287,8 @@ const VectorStoreQuery = () => {
                                 <Box>
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                                         <Typography variant='overline'>
-                                            Enter your Query<span style={{ color: 'red' }}>&nbsp;*</span>
+                                            {t('rem.enterYourQuery')}
+                                            <span style={{ color: 'red' }}>&nbsp;*</span>
                                         </Typography>
 
                                         <div style={{ flexGrow: 1 }}></div>
@@ -357,7 +362,7 @@ const VectorStoreQuery = () => {
                                                             )}
                                                         </div>
                                                         <Typography sx={{ ml: 2 }} variant='h3'>
-                                                            {selectedVectorStoreProvider.label}
+                                                            {nodeLabel(selectedVectorStoreProvider)}
                                                         </Typography>
                                                         <div style={{ flex: 1 }}></div>
                                                     </Box>
@@ -413,10 +418,10 @@ const VectorStoreQuery = () => {
                                             />
                                         </div>
                                         <Typography sx={{ ml: 2 }} variant='h3'>
-                                            Retrieved Documents
+                                            {t('rem.retrievedDocuments')}
                                             {timeTaken > -1 && (
                                                 <Typography variant='body2' sx={{ color: 'gray' }}>
-                                                    Count: {documentChunks.length}. Time taken: {timeTaken} millis.
+                                                    {t('rem.retrievalStats', { chunkCount: documentChunks.length, time: timeTaken })}
                                                 </Typography>
                                             )}
                                             {retrievalError && (
@@ -443,7 +448,7 @@ const VectorStoreQuery = () => {
                                                     alt='chunks_emptySVG'
                                                 />
                                             </Box>
-                                            <div>No Documents Retrieved</div>
+                                            <div>{t('evals.vectorstore.noDocumentsRetrieved')}</div>
                                         </div>
                                     )}
                                     <Grid container spacing={2}>

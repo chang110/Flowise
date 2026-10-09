@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useSelector } from 'react-redux'
 import { Box, Dialog, DialogContent, DialogTitle, Typography, IconButton } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
 import {
     IconX,
     IconShieldLock,
@@ -39,100 +40,100 @@ import McpServer from '@/ui-component/extended/McpServer'
 
 const CONFIGURATION_GROUPS = [
     {
-        label: 'General',
+        labelKey: 'dlg.config.general',
         sections: [
             {
-                label: 'Rate Limit',
+                labelKey: 'dlg.config.rateLimitLabel',
                 id: 'rateLimit',
                 icon: IconShieldLock,
-                description: 'Limit API requests per time window'
+                descriptionKey: 'dlg.config.rateLimitDesc'
             },
             {
-                label: 'Allowed Domains',
+                labelKey: 'dlg.allowedDomains',
                 id: 'allowedDomains',
                 icon: IconWorldWww,
-                description: 'Restrict chatbot to specific domains'
+                descriptionKey: 'dlg.config.allowedDomainsDesc'
             },
             {
-                label: 'Leads',
+                labelKey: 'dlg.config.leadsLabel',
                 id: 'leads',
                 icon: IconUserPlus,
-                description: 'Capture visitor contact information'
+                descriptionKey: 'dlg.config.leadsDesc'
             }
         ]
     },
     {
-        label: 'Chat',
+        labelKey: 'dlg.config.chat',
         sections: [
             {
-                label: 'Starter Prompts',
+                labelKey: 'dlg.config.starterPromptsLabel',
                 id: 'conversationStarters',
                 icon: IconMessageChatbot,
-                description: 'Suggested prompts for new conversations'
+                descriptionKey: 'dlg.config.starterPromptsDesc'
             },
             {
-                label: 'Follow-up Prompts',
+                labelKey: 'dlg.config.followUpPromptsLabel',
                 id: 'followUpPrompts',
                 icon: IconArrowForwardUp,
-                description: 'Auto-generate follow-up questions'
+                descriptionKey: 'dlg.config.followUpPromptsDesc'
             },
             {
-                label: 'Chat Feedback',
+                labelKey: 'dlg.config.chatFeedbackLabel',
                 id: 'chatFeedback',
                 icon: IconThumbUp,
-                description: 'Allow users to rate responses'
+                descriptionKey: 'dlg.config.chatFeedbackDesc'
             }
         ]
     },
     {
-        label: 'Media & Files',
+        labelKey: 'dlg.config.mediaFiles',
         sections: [
             {
-                label: 'Speech to Text',
+                labelKey: 'dlg.config.speechToTextLabel',
                 id: 'speechToText',
                 icon: IconMicrophone,
-                description: 'Voice input transcription'
+                descriptionKey: 'dlg.config.speechToTextDesc'
             },
             {
-                label: 'Text to Speech',
+                labelKey: 'dlg.config.textToSpeechLabel',
                 id: 'textToSpeech',
                 icon: IconVolume,
-                description: 'Audio response playback'
+                descriptionKey: 'dlg.config.textToSpeechDesc'
             },
             {
-                label: 'File Upload',
+                labelKey: 'dlg.config.fileUploadLabel',
                 id: 'fileUpload',
                 icon: IconUpload,
-                description: 'Allow file uploads in chat'
+                descriptionKey: 'dlg.config.fileUploadDesc'
             }
         ]
     },
     {
-        label: 'Advanced',
+        labelKey: 'dlg.config.advanced',
         sections: [
             {
-                label: 'Analytics',
+                labelKey: 'dlg.config.analyticsLabel',
                 id: 'analyseChatflow',
                 icon: IconChartBar,
-                description: 'Connect analytics providers'
+                descriptionKey: 'dlg.config.analyticsDesc'
             },
             {
-                label: 'Post Processing',
+                labelKey: 'dlg.config.postProcessingLabel',
                 id: 'postProcessing',
                 icon: IconCode,
-                description: 'Custom JavaScript post-processing'
+                descriptionKey: 'dlg.config.postProcessingDesc'
             },
             {
-                label: 'MCP Server',
+                labelKey: 'dlg.config.mcpServerLabel',
                 id: 'mcpServer',
                 icon: IconServer,
-                description: 'Model Context Protocol server'
+                descriptionKey: 'dlg.config.mcpServerDesc'
             },
             {
-                label: 'Override Config',
+                labelKey: 'dlg.config.overrideConfigLabel',
                 id: 'overrideConfig',
                 icon: IconAdjustments,
-                description: 'Override flow configuration via API'
+                descriptionKey: 'dlg.config.overrideConfigDesc'
             }
         ]
     }
@@ -220,6 +221,7 @@ const ALL_SECTIONS = CONFIGURATION_GROUPS.flatMap((g) => g.sections)
 const SIDEBAR_WIDTH = 220
 
 const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCancel }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const theme = useTheme()
     const chatflow = useSelector((state) => state.canvas.chatflow)
@@ -345,7 +347,7 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                     <PerfectScrollbar style={{ height: '100%', overflowX: 'hidden' }}>
                         <Box sx={{ py: 2, px: 1 }}>
                             {filteredGroups.map((group, groupIndex) => (
-                                <Box key={group.label} sx={{ mb: 0.5 }}>
+                                <Box key={group.labelKey} sx={{ mb: 0.5 }}>
                                     {/* Group label */}
                                     <Typography
                                         sx={{
@@ -359,7 +361,7 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                                             pb: 0.75
                                         }}
                                     >
-                                        {group.label}
+                                        {t(group.labelKey)}
                                     </Typography>
 
                                     {/* Section items */}
@@ -423,7 +425,7 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                                                         textOverflow: 'ellipsis'
                                                     }}
                                                 >
-                                                    {section.label}
+                                                    {t(section.labelKey)}
                                                 </Typography>
 
                                                 {/* Status badge - only show when enabled */}
@@ -442,7 +444,7 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                                                             color: isDark ? '#4ade80' : '#16a34a'
                                                         }}
                                                     >
-                                                        ON
+                                                        {t('dlg.on')}
                                                     </Box>
                                                 )}
                                             </Box>
@@ -476,9 +478,9 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                                         mb: 0.25
                                     }}
                                 >
-                                    {currentSectionData?.label || ''}
+                                    {currentSectionData?.labelKey ? t(currentSectionData.labelKey) : ''}
                                 </Typography>
-                                {currentSectionData?.description && (
+                                {currentSectionData?.descriptionKey && (
                                     <Typography
                                         sx={{
                                             fontSize: '0.8rem',
@@ -487,7 +489,7 @@ const ChatflowConfigurationDialog = ({ show, isAgentCanvas, dialogProps, onCance
                                             opacity: isDark ? 0.8 : 1
                                         }}
                                     >
-                                        {currentSectionData.description}
+                                        {t(currentSectionData.descriptionKey)}
                                     </Typography>
                                 )}
                             </Box>

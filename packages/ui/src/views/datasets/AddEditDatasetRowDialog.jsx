@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
 
@@ -24,9 +25,11 @@ import useNotifier from '@/utils/useNotifier'
 
 // const
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
 
     const dispatch = useDispatch()
 
@@ -83,7 +86,7 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
             const createResp = await datasetApi.createDatasetRow(obj)
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New Row added for the given Dataset',
+                    message: t('evals.datasets.rowAdded'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -98,9 +101,9 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to add new row in the Dataset: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('evals.datasets.rowAddFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -126,7 +129,7 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
             const saveResp = await datasetApi.updateDatasetRow(row.id, saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Dataset Row saved',
+                    message: t('evals.datasets.rowSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -141,9 +144,9 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Dataset Row: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('evals.datasets.rowSaveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -171,14 +174,17 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconDatabase style={{ marginRight: '10px' }} />
-                    {dialogProps.type === 'ADD' ? `Add Item to ${datasetName} Dataset` : `Edit Item in ${datasetName} Dataset`}
+                    {dialogProps.type === 'ADD'
+                        ? t('evals.datasets.addRowTitle', { name: datasetName })
+                        : t('evals.datasets.editRowTitle', { name: datasetName })}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Input<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('evals.result.input')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
 
                         <div style={{ flexGrow: 1 }}></div>
@@ -198,7 +204,8 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Anticipated Output<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('evals.datasets.anticipatedOutput')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
 
                         <div style={{ flexGrow: 1 }}></div>
@@ -217,14 +224,14 @@ const AddEditDatasetRowDialog = ({ show, dialogProps, onCancel, onConfirm }) => 
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onCancel()}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={() => onCancel()}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledPermissionButton
                     permissionId={'datasets:create,datasets:update'}
                     disabled={!input || !output}
                     variant='contained'
                     onClick={() => (dialogType === 'ADD' ? addNewDatasetRow() : saveDatasetRow())}
                 >
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledPermissionButton>
             </DialogActions>
             <ConfirmDialog />

@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 
 // MUI
@@ -16,10 +17,12 @@ import NodeInputHandler from '@/views/canvas/NodeInputHandler'
 
 // Store
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const ConditionDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
     const portalElement = document.getElementById('portal')
 
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     const [inputParam, setInputParam] = useState(null)
@@ -76,9 +79,9 @@ const ConditionDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 </>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={onCancel}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton disabled={dialogProps.disabled} variant='contained' onClick={() => onConfirm(data, inputParam, tabValue)}>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
         </Dialog>

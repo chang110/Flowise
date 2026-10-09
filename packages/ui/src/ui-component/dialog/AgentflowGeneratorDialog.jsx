@@ -4,6 +4,7 @@ import { useState, useEffect, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 import { Box, Typography, OutlinedInput, DialogActions, Button, Dialog, DialogContent, DialogTitle, LinearProgress } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import chatflowsApi from '@/api/chatflows'
 import { closeSnackbar as closeSnackbarAction, enqueueSnackbar as enqueueSnackbarAction } from '@/store/actions'
 import { IconX, IconSparkles, IconArrowLeft } from '@tabler/icons-react'
@@ -21,20 +22,21 @@ import useApi from '@/hooks/useApi'
 
 const defaultInstructions = [
     {
-        text: 'An agent that can autonomously search the web and generate report'
+        textKey: 'dlg.instrSearchWebReport'
     },
     {
-        text: 'Summarize a document'
+        textKey: 'dlg.instrSummarizeDocument'
     },
     {
-        text: 'Generate response to user queries and send it to Slack'
+        textKey: 'dlg.instrSlackResponse'
     },
     {
-        text: 'A team of agents that can handle all customer queries'
+        textKey: 'dlg.instrTeamCustomerQueries'
     }
 ]
 
 const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const [customAssistantInstruction, setCustomAssistantInstruction] = useState('')
     const [generatedInstruction, setGeneratedInstruction] = useState('')
@@ -109,7 +111,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                     // Check for credential in both possible locations
                     const credential = selectedChatModel.credential || selectedChatModel.inputs?.[FLOWISE_CREDENTIAL_ID]
                     if (!credential) {
-                        missingFields.push(inputParam.label || 'Credential')
+                        missingFields.push(inputParam.label || t('nouns.credential'))
                     }
                 } else if (isMissingRequiredValue(selectedChatModel.inputs?.[inputParam.name])) {
                     missingFields.push(inputParam.label || inputParam.name)
@@ -118,11 +120,11 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
         }
 
         return { isValid: missingFields.length === 0, missingFields }
-    }, [selectedChatModel])
+    }, [selectedChatModel, t])
 
     const displayWarning = (message) => {
         enqueueSnackbar({
-            message: message || 'Please fill in all mandatory fields.',
+            message: message || t('dlg.fillMandatoryFields'),
             options: {
                 key: new Date().getTime() + Math.random(),
                 variant: 'warning',
@@ -189,8 +191,8 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
         if (!isValid) {
             const message =
                 missingFields.length > 0
-                    ? `Please fill in the following required fields: ${missingFields.join(', ')}`
-                    : 'Please fill in all mandatory fields for the selected model.'
+                    ? t('dlg.fillRequiredFields', { fields: missingFields.join(', ') })
+                    : t('dlg.fillMandatoryFieldsForModel')
             displayWarning(message)
             return
         }
@@ -209,7 +211,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                 onConfirm()
             } else {
                 enqueueSnackbar({
-                    message: response.error || 'Failed to generate agentflow',
+                    message: response.error || t('dlg.failedToGenerateAgentflow'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -224,7 +226,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
             }
         } catch (error) {
             enqueueSnackbar({
-                message: error.response?.data?.message || 'Failed to generate agentflow',
+                message: error.response?.data?.message || t('dlg.failedToGenerateAgentflow'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -272,7 +274,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                             <img src={generatorGIF} alt='Generating Agentflow' style={{ maxWidth: '100%', height: 'auto' }} />
                             <Typography variant='h5' sx={{ mt: 2 }}>
-                                Generating your Agentflow...
+                                {t('dlg.generatingAgentflow')}
                             </Typography>
                             <Box sx={{ width: '100%', mt: 2 }}>
                                 <LinearProgress
@@ -326,11 +328,11 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                                             variant='contained'
                                             color='inherit'
                                             onClick={() => {
-                                                setCustomAssistantInstruction(instruction.text)
+                                                setCustomAssistantInstruction(t(instruction.textKey))
                                                 setGeneratedInstruction('')
                                             }}
                                         >
-                                            {instruction.text}
+                                            {t(instruction.textKey)}
                                         </Button>
                                     )
                                 })}
@@ -343,7 +345,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                                     rows={12}
                                     disabled={loading}
                                     value={customAssistantInstruction}
-                                    placeholder={'Describe your agent here'}
+                                    placeholder={t('dlg.describeAgentPlaceholder')}
                                     onChange={(event) => setCustomAssistantInstruction(event.target.value)}
                                 />
                             )}
@@ -360,7 +362,8 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                             <Box sx={{ mt: 2 }}>
                                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                                     <Typography>
-                                        Select model to generate agentflow<span style={{ color: 'red' }}>&nbsp;*</span>
+                                        {t('dlg.selectModelToGenerate')}
+                                        <span style={{ color: 'red' }}>&nbsp;*</span>
                                     </Typography>
                                 </div>
                                 <Dropdown
@@ -380,7 +383,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                                             }
                                         }
                                     }}
-                                    value={selectedChatModel ? selectedChatModel?.name : 'choose an option'}
+                                    value={selectedChatModel ? selectedChatModel?.name : t('canvas.chooseAnOption')}
                                 />
                             </Box>
                             {selectedChatModel && Object.keys(selectedChatModel).length > 0 && (
@@ -432,7 +435,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                                         !checkMandatoryFields().isValid
                                     }
                                 >
-                                    Generate
+                                    {t('dlg.generate')}
                                 </LoadingButton>
                             )}
                             {generatedInstruction && (
@@ -443,7 +446,7 @@ const AgentflowGeneratorDialog = ({ show, dialogProps, onCancel, onConfirm }) =>
                                         setGeneratedInstruction('')
                                     }}
                                 >
-                                    Back
+                                    {t('common.back')}
                                 </Button>
                             )}
                         </>

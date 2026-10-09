@@ -7,6 +7,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 // MUI
 import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
 
 // Project Import
 import { StyledButton } from '@/ui-component/button/StyledButton'
@@ -21,8 +22,10 @@ import nodesApi from '@/api/nodes'
 import useApi from '@/hooks/useApi'
 
 import './ExpandTextDialog.css'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const ExpandTextDialog = ({ show, dialogProps, onCancel, onInputHintDialogClicked, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
 
     const theme = useTheme()
@@ -169,7 +172,7 @@ const ExpandTextDialog = ({ show, dialogProps, onCancel, onInputHintDialogClicke
                             executeCustomFunctionNodeApi.request({ javascriptFunction: inputValue })
                         }}
                     >
-                        Execute
+                        {t('dlg.execute')}
                     </PermissionLoadingButton>
                 )}
                 {codeExecutedResult && (
@@ -188,9 +191,9 @@ const ExpandTextDialog = ({ show, dialogProps, onCancel, onInputHintDialogClicke
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={onCancel}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton disabled={dialogProps.disabled} variant='contained' onClick={() => onConfirm(inputValue, inputParam.name)}>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
         </Dialog>

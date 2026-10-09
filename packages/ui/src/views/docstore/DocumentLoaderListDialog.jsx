@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { List, ListItemButton, Dialog, DialogContent, DialogTitle, Box, OutlinedInput, InputAdornment, Typography } from '@mui/material'
@@ -13,11 +14,14 @@ import documentStoreApi from '@/api/documentstore'
 import { baseURL } from '@/store/constant'
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import useApi from '@/hooks/useApi'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const DocumentLoaderListDialog = ({ show, dialogProps, onCancel, onDocLoaderSelected }) => {
+    const { nodeLabel } = useNodeLocale()
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
     const theme = useTheme()
+    const { t } = useTranslation()
     const [searchValue, setSearchValue] = useState('')
     const [documentLoaders, setDocumentLoaders] = useState([])
 
@@ -83,7 +87,7 @@ const DocumentLoaderListDialog = ({ show, dialogProps, onCancel, onDocLoaderSele
                         id='input-search-credential'
                         value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder='Search'
+                        placeholder={t('common.search')}
                         startAdornment={
                             <InputAdornment position='start'>
                                 <IconSearch stroke={1.5} size='1rem' color={theme.palette.grey[500]} />
@@ -99,7 +103,7 @@ const DocumentLoaderListDialog = ({ show, dialogProps, onCancel, onDocLoaderSele
                                         color: theme.palette.grey[900]
                                     }
                                 }}
-                                title='Clear Search'
+                                title={t('canvas.clearSearch')}
                             >
                                 <IconX
                                     stroke={1.5}
@@ -172,7 +176,7 @@ const DocumentLoaderListDialog = ({ show, dialogProps, onCancel, onDocLoaderSele
                                     src={`${baseURL}/api/v1/node-icon/${documentLoader.name}`}
                                 />
                             </div>
-                            <Typography>{documentLoader.label}</Typography>
+                            <Typography>{nodeLabel(documentLoader)}</Typography>
                         </ListItemButton>
                     ))}
                 </List>

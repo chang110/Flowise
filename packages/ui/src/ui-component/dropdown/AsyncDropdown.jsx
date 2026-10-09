@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, Fragment } from 'react'
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 
 // Material
@@ -76,7 +77,7 @@ export const AsyncDropdown = ({
 }) => {
     const customization = useSelector((state) => state.customization)
     const theme = useTheme()
-
+    const { t } = useTranslation()
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState([])
     const [loading, setLoading] = useState(false)
@@ -93,7 +94,7 @@ export const AsyncDropdown = ({
         return options.find((option) => option.name === value)
     }
     const getDefaultOptionValue = () => (multiple ? [] : '')
-    const addNewOption = [{ label: '- Create New -', name: '-create-' }]
+    const addNewOption = [{ label: t('uic.asyncDropdown.createNew'), name: '-create-' }]
     let [internalValue, setInternalValue] = useState(value ?? 'choose an option')
     const { reactFlowInstance } = useContext(flowContext)
 

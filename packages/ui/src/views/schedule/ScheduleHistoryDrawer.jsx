@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import moment from 'moment'
 
 // MUI
@@ -188,6 +189,7 @@ const cronHumanize = (cron, timezone) => {
 
 const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     // ─── Drag-to-resize ──────────────────────────────────────────────────────
@@ -376,9 +378,15 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
             const resp = await chatflowsApi.deleteScheduleTriggerLogs(chatflowid, selectedIds)
             const data = resp?.data ?? {}
             enqueueSnackbar({
-                message: `Deleted ${data.deletedLogs ?? selectedIds.length} log${
-                    (data.deletedLogs ?? selectedIds.length) === 1 ? '' : 's'
-                }${data.deletedExecutions ? ` and ${data.deletedExecutions} execution${data.deletedExecutions === 1 ? '' : 's'}` : ''}`,
+                message: `${t(data.deletedLogs === 1 ? 'rem.deletedLogs_one' : 'rem.deletedLogs_other', {
+                    count: data.deletedLogs ?? selectedIds.length
+                })}${
+                    data.deletedExecutions
+                        ? ` ${t(data.deletedExecutions === 1 ? 'rem.andExecutions_one' : 'rem.andExecutions_other', {
+                              count: data.deletedExecutions
+                          })}`
+                        : ''
+                }`,
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -394,7 +402,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
             fetchAll()
         } catch (e) {
             enqueueSnackbar({
-                message: e?.response?.data?.message || e?.message || 'Failed to delete logs',
+                message: e?.response?.data?.message || e?.message || t('rem.failedToDeleteLogs'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -487,7 +495,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                         <Stack direction='row' alignItems='center' spacing={1.5}>
                             <IconCalendar size={20} />
                             <Typography variant='h4' sx={{ m: 0 }}>
-                                Schedule History
+                                {t('rem.scheduleHistory')}
                             </Typography>
                         </Stack>
                         <IconButton onClick={onClose} size='small' aria-label='close'>
@@ -497,7 +505,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
 
                     <Stack direction='row' alignItems='center' spacing={1.5} sx={{ mt: 2 }}>
                         <Chip
-                            label={enabled ? 'Active' : 'Disabled'}
+                            label={enabled ? t('rem.active') : t('rem.disabled')}
                             size='small'
                             sx={{
                                 bgcolor: enabled
@@ -525,7 +533,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                     <Stack direction='row' spacing={3} sx={{ mt: 1 }}>
                         <Box>
                             <Typography variant='caption' color='text.secondary'>
-                                Last run
+                                {t('rem.lastRun')}
                             </Typography>
                             <Tooltip title={lastLog ? fmtDate(lastLog.scheduledAt) : ''}>
                                 <Typography variant='body2'>{lastLog ? relTime(lastLog.scheduledAt) : '—'}</Typography>
@@ -533,7 +541,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                         </Box>
                         <Box>
                             <Typography variant='caption' color='text.secondary'>
-                                Next run
+                                {t('rem.nextRun')}
                             </Typography>
                             {(() => {
                                 if (!enabled || !nextRunAt) {
@@ -547,8 +555,8 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                                     <Tooltip
                                         title={
                                             overdue
-                                                ? `Expected: ${exactInTz} (${tz}) — scheduler may be lagging or the next fire is imminent`
-                                                : `Local time: ${exactLocal}`
+                                                ? t('rem.expectedTime', { time: exactInTz, tz })
+                                                : t('rem.localTime', { time: exactLocal })
                                         }
                                     >
                                         <Box>
@@ -569,7 +577,7 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                     </Stack>
 
                     <Stack direction='row' alignItems='center' spacing={1} sx={{ mt: 2 }}>
-                        <Tooltip title='Refresh'>
+                        <Tooltip title={t('common.refresh')}>
                             <IconButton size='small' onClick={fetchAll} disabled={logsApi.loading}>
                                 <IconRefresh size={16} color={customization?.isDarkMode ? 'white' : undefined} />
                             </IconButton>
@@ -577,10 +585,16 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                         <FormControlLabel
                             sx={{ m: 0 }}
                             control={<Switch size='small' checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />}
-                            label={<Typography variant='caption'>Auto-refresh</Typography>}
+                            label={<Typography variant='caption'>{t('rem.autoRefresh')}</Typography>}
                         />
                         <Box sx={{ flex: 1 }} />
-                        <Tooltip title={selectedIds.length === 0 ? 'Select rows to delete' : `Delete ${selectedIds.length} selected`}>
+                        <Tooltip
+                            title={
+                                selectedIds.length === 0
+                                    ? t('rem.selectRowsToDelete')
+                                    : t('rem.deleteSelected', { count: selectedIds.length })
+                            }
+                        >
                             {/* span wrapper so Tooltip works on a disabled button */}
                             <span>
                                 <IconButton
@@ -628,8 +642,8 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                         <Box sx={{ p: 6, textAlign: 'center', color: 'text.secondary' }}>
                             <IconClock size={40} style={{ opacity: 0.4 }} />
                             <Typography variant='body2' sx={{ mt: 2 }}>
-                                No runs yet.
-                                {enabled && nextRunAt ? ` Next fire ${relTime(nextRunAt)}.` : ''}
+                                {t('rem.noRunsYet')}
+                                {enabled && nextRunAt ? ` ${t('rem.nextFire', { time: relTime(nextRunAt) })}` : ''}
                             </Typography>
                         </Box>
                     ) : (
@@ -643,13 +657,13 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
                                                 indeterminate={!allOnPageSelected && someOnPageSelected}
                                                 checked={allOnPageSelected}
                                                 onChange={toggleSelectAllOnPage}
-                                                inputProps={{ 'aria-label': 'Select all rows on page' }}
+                                                inputProps={{ 'aria-label': t('rem.selectAllRowsOnPage') }}
                                             />
                                         </StyledTableCell>
-                                        <StyledTableCell>Status</StyledTableCell>
-                                        <StyledTableCell>Scheduled At</StyledTableCell>
-                                        <StyledTableCell>Duration</StyledTableCell>
-                                        <StyledTableCell>Error</StyledTableCell>
+                                        <StyledTableCell>{t('table.status')}</StyledTableCell>
+                                        <StyledTableCell>{t('rem.scheduledAt')}</StyledTableCell>
+                                        <StyledTableCell>{t('rem.duration')}</StyledTableCell>
+                                        <StyledTableCell>{t('rem.error')}</StyledTableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -732,22 +746,16 @@ const ScheduleHistoryDrawer = ({ open, chatflowid, onClose }) => {
 
             {/* Bulk-delete confirmation */}
             <Dialog open={deleteDialogOpen} onClose={() => !deleting && setDeleteDialogOpen(false)} maxWidth='sm' fullWidth>
-                <DialogTitle>
-                    Delete {selectedIds.length} log{selectedIds.length === 1 ? '' : 's'}?
-                </DialogTitle>
+                <DialogTitle>{t('rem.deleteLogsTitle', { count: selectedIds.length })}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        This will also permanently delete the linked execution traces. Schedule trigger logs that never produced an
-                        execution (skipped or pre-execution failures) are deleted but have no associated execution to remove. This action
-                        cannot be undone.
-                    </DialogContentText>
+                    <DialogContentText>{t('rem.deleteLogsWarning')}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
-                        Cancel
+                        {t('common.cancel')}
                     </Button>
                     <Button onClick={handleConfirmDelete} color='error' disabled={deleting} variant='contained'>
-                        {deleting ? 'Deleting…' : 'Delete'}
+                        {deleting ? t('rem.deleting') : t('common.delete')}
                     </Button>
                 </DialogActions>
             </Dialog>

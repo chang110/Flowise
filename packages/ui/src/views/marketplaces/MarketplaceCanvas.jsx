@@ -5,6 +5,7 @@ import '@/views/canvas/index.css'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Toolbar, Box, AppBar } from '@mui/material'
@@ -25,6 +26,7 @@ const edgeTypes = { buttonedge: '' }
 
 const MarketplaceCanvas = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const customization = useSelector((state) => state.customization)
 
@@ -110,7 +112,7 @@ const MarketplaceCanvas = () => {
                                         onClick={() => {
                                             setIsSnappingEnabled(!isSnappingEnabled)
                                         }}
-                                        title='toggle snapping'
+                                        title={t('dv.toggleSnapping')}
                                         aria-label='toggle snapping'
                                     >
                                         {isSnappingEnabled ? <IconMagnetFilled /> : <IconMagnetOff />}
@@ -120,7 +122,7 @@ const MarketplaceCanvas = () => {
                                         onClick={() => {
                                             setIsBackgroundEnabled(!isBackgroundEnabled)
                                         }}
-                                        title='toggle background'
+                                        title={t('dv.toggleBackground')}
                                         aria-label='toggle background'
                                     >
                                         {isBackgroundEnabled ? <IconArtboard /> : <IconArtboardOff />}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { FormControl, OutlinedInput, InputBase, Popover, InputAdornment, IconButton } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { IconEye, IconEyeOff } from '@tabler/icons-react'
@@ -8,6 +9,7 @@ import { getAvailableNodesForVariable } from '@/utils/genericHelper'
 
 export const Input = ({ inputParam, value, nodes, edges, nodeId, onChange, onBlur, disabled = false }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const [myValue, setMyValue] = useState(value ?? '')
     const [anchorEl, setAnchorEl] = useState(null)
     const [availableNodesForVariable, setAvailableNodesForVariable] = useState([])
@@ -153,7 +155,7 @@ export const Input = ({ inputParam, value, nodes, edges, nodeId, onChange, onBlu
                                         edge='end'
                                         onClick={handleTogglePasswordVisibility}
                                         onMouseDown={(e) => e.preventDefault()}
-                                        aria-label={isPasswordVisible ? 'Hide' : 'Show'}
+                                        aria-label={isPasswordVisible ? t('auth.hide') : t('auth.show')}
                                     >
                                         {isPasswordVisible ? <IconEyeOff size={18} /> : <IconEye size={18} />}
                                     </IconButton>

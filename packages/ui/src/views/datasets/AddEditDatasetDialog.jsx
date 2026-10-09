@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
 
@@ -27,8 +28,8 @@ import useNotifier from '@/utils/useNotifier'
 
 // const
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
-const CSVFORMAT = `Only the first 2 columns will be considered:
-----------------------------
+import { translateLabel } from '@/i18n/translateLabel'
+const CSVTABLE = `----------------------------
 | Input      | Output      |
 ----------------------------
 | test input | test output |
@@ -37,6 +38,7 @@ const CSVFORMAT = `Only the first 2 columns will be considered:
 
 const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
 
     const dispatch = useDispatch()
 
@@ -94,7 +96,7 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             const createResp = await datasetApi.createDataset(obj)
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New Dataset added',
+                    message: t('evals.datasets.added'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -109,9 +111,9 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to add new Dataset: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('evals.datasets.addFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -137,7 +139,7 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             const saveResp = await datasetApi.updateDataset(dataset.id, saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Dataset saved',
+                    message: t('evals.datasets.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -152,9 +154,9 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Dataset: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('evals.datasets.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -182,14 +184,15 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconDatabase style={{ marginRight: '10px' }} />
-                    {dialogProps.type === 'ADD' ? 'Add Dataset' : 'Edit Dataset'}
+                    {dialogProps.type === 'ADD' ? t('evals.datasets.addTitle') : t('evals.datasets.editTitle')}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Name<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('common.name')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -205,7 +208,7 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 </Box>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Typography>Description</Typography>
+                        <Typography>{t('common.description')}</Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
                     <OutlinedInput
@@ -224,8 +227,11 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                     <Box sx={{ p: 2 }}>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <Typography>
-                                Upload CSV
-                                <TooltipWithParser style={{ mb: 1, mt: 2 }} title={`<pre>${CSVFORMAT}</pre>`} />
+                                {t('evals.datasets.uploadCsv')}
+                                <TooltipWithParser
+                                    style={{ mb: 1, mt: 2 }}
+                                    title={`<pre>${t('evals.datasets.csvNote')}\n${CSVTABLE}</pre>`}
+                                />
                             </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                         </div>
@@ -233,24 +239,24 @@ const AddEditDatasetDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                             disabled={false}
                             fileType='.csv'
                             onChange={(newValue) => setSelectedFile(newValue)}
-                            value={selectedFile ?? 'Choose a file to upload'}
+                            value={selectedFile ?? t('canvas.chooseFileToUpload')}
                         />
                         <SwitchInput
                             value={firstRowHeaders}
                             onChange={setFirstRowHeaders}
-                            label={'Treat First Row as headers in the upload file?'}
+                            label={t('evals.datasets.treatFirstRowAsHeaders')}
                         />
                     </Box>
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onCancel()}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={() => onCancel()}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton
                     disabled={!datasetName}
                     variant='contained'
                     onClick={() => (dialogType === 'ADD' ? addNewDataset() : saveDataset())}
                 >
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

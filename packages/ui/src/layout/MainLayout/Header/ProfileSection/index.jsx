@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { closeSnackbar as closeSnackbarAction, enqueueSnackbar as enqueueSnackbarAction, REMOVE_DIRTY } from '@/store/actions'
 import { exportData, stringify } from '@/utils/exportImport'
@@ -55,25 +56,26 @@ import useApi from '@/hooks/useApi'
 import { getErrorMessage } from '@/utils/errorHandler'
 
 const dataToExport = [
-    'Agentflows',
-    'Agentflows V2',
-    'Assistants Custom',
-    'Assistants OpenAI',
-    'Assistants Azure',
-    'Chatflows',
-    'Chat Messages',
-    'Chat Feedbacks',
-    'Custom Templates',
-    'Document Stores',
-    'Executions',
-    'Tools',
-    'Variables'
+    { id: 'Agentflows', labelKey: 'exportDialog.agentflows' },
+    { id: 'Agentflows V2', labelKey: 'exportDialog.agentflowsV2' },
+    { id: 'Assistants Custom', labelKey: 'exportDialog.assistantsCustom' },
+    { id: 'Assistants OpenAI', labelKey: 'exportDialog.assistantsOpenai' },
+    { id: 'Assistants Azure', labelKey: 'exportDialog.assistantsAzure' },
+    { id: 'Chatflows', labelKey: 'exportDialog.chatflows' },
+    { id: 'Chat Messages', labelKey: 'exportDialog.chatMessages' },
+    { id: 'Chat Feedbacks', labelKey: 'exportDialog.chatFeedbacks' },
+    { id: 'Custom Templates', labelKey: 'exportDialog.customTemplates' },
+    { id: 'Document Stores', labelKey: 'exportDialog.documentStores' },
+    { id: 'Executions', labelKey: 'exportDialog.executions' },
+    { id: 'Tools', labelKey: 'exportDialog.tools' },
+    { id: 'Variables', labelKey: 'exportDialog.variables' }
 ]
 
 const ExportDialog = ({ show, onCancel, onExport }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
 
-    const [selectedData, setSelectedData] = useState(dataToExport)
+    const [selectedData, setSelectedData] = useState(dataToExport.map((item) => item.id))
     const [isExporting, setIsExporting] = useState(false)
 
     useEffect(() => {
@@ -96,7 +98,7 @@ const ExportDialog = ({ show, onCancel, onExport }) => {
             aria-describedby='export-dialog-description'
         >
             <DialogTitle sx={{ fontSize: '1rem' }} id='export-dialog-title'>
-                {!isExporting ? 'Select Data to Export' : 'Exporting..'}
+                {!isExporting ? t('exportDialog.selectData') : t('exportDialog.exporting')}
             </DialogTitle>
             <DialogContent>
                 {!isExporting && (
@@ -115,17 +117,17 @@ const ExportDialog = ({ show, onCancel, onExport }) => {
                                 control={
                                     <Checkbox
                                         color='success'
-                                        checked={selectedData.includes(data)}
+                                        checked={selectedData.includes(data.id)}
                                         onChange={(event) => {
                                             setSelectedData(
                                                 event.target.checked
-                                                    ? [...selectedData, data]
-                                                    : selectedData.filter((item) => item !== data)
+                                                    ? [...selectedData, data.id]
+                                                    : selectedData.filter((item) => item !== data.id)
                                             )
                                         }}
                                     />
                                 }
-                                label={data}
+                                label={t(data.labelKey)}
                             />
                         ))}
                     </Stack>
@@ -142,14 +144,14 @@ const ExportDialog = ({ show, onCancel, onExport }) => {
                                 src={ExportingGIF}
                                 alt='ExportingGIF'
                             />
-                            <span>Exporting data might takes a while</span>
+                            <span>{t('rem.exportingData')}</span>
                         </div>
                     </Box>
                 )}
             </DialogContent>
             {!isExporting && (
                 <DialogActions>
-                    <Button onClick={onCancel}>Cancel</Button>
+                    <Button onClick={onCancel}>{t('common.cancel')}</Button>
                     <Button
                         disabled={selectedData.length === 0}
                         variant='contained'
@@ -158,7 +160,7 @@ const ExportDialog = ({ show, onCancel, onExport }) => {
                             onExport(selectedData)
                         }}
                     >
-                        Export
+                        {t('common.export')}
                     </Button>
                 </DialogActions>
             )}
@@ -176,11 +178,12 @@ ExportDialog.propTypes = {
 
 const ImportDialog = ({ show }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
 
     const component = show ? (
         <Dialog open={show} fullWidth maxWidth='sm' aria-labelledby='import-dialog-title' aria-describedby='import-dialog-description'>
             <DialogTitle sx={{ fontSize: '1rem' }} id='import-dialog-title'>
-                Importing...
+                {t('rem.importing')}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ height: 'auto', display: 'flex', justifyContent: 'center', mb: 3 }}>
@@ -194,7 +197,7 @@ const ImportDialog = ({ show }) => {
                             src={ExportingGIF}
                             alt='ImportingGIF'
                         />
-                        <span>Importing data might takes a while</span>
+                        <span>{t('rem.importingData')}</span>
                     </div>
                 </Box>
             </DialogContent>
@@ -212,6 +215,7 @@ ImportDialog.propTypes = {
 
 const ProfileSection = ({ handleLogout }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
 
     const customization = useSelector((state) => state.customization)
 
@@ -438,7 +442,7 @@ const ProfileSection = ({ handleLogout }) => {
                                     ) : (
                                         <Box sx={{ p: 2 }}>
                                             <Typography component='span' variant='h4'>
-                                                User
+                                                {t('admin.user')}
                                             </Typography>
                                         </Box>
                                     )}
@@ -471,7 +475,7 @@ const ProfileSection = ({ handleLogout }) => {
                                                     <ListItemIcon>
                                                         <IconFileExport stroke={1.5} size='1.3rem' />
                                                     </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Export</Typography>} />
+                                                    <ListItemText primary={<Typography variant='body2'>{t('common.export')}</Typography>} />
                                                 </PermissionListItemButton>
                                                 <PermissionListItemButton
                                                     permissionId='workspace:import'
@@ -483,7 +487,7 @@ const ProfileSection = ({ handleLogout }) => {
                                                     <ListItemIcon>
                                                         <IconFileUpload stroke={1.5} size='1.3rem' />
                                                     </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Import</Typography>} />
+                                                    <ListItemText primary={<Typography variant='body2'>{t('common.import')}</Typography>} />
                                                 </PermissionListItemButton>
                                                 <input ref={inputRef} type='file' hidden onChange={fileChange} accept='.json' />
                                                 <ListItemButton
@@ -496,7 +500,9 @@ const ProfileSection = ({ handleLogout }) => {
                                                     <ListItemIcon>
                                                         <IconInfoCircle stroke={1.5} size='1.3rem' />
                                                     </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Version</Typography>} />
+                                                    <ListItemText
+                                                        primary={<Typography variant='body2'>{t('profile.version')}</Typography>}
+                                                    />
                                                 </ListItemButton>
                                                 {isAuthenticated && !currentUser.isSSO && (
                                                     <ListItemButton
@@ -509,7 +515,11 @@ const ProfileSection = ({ handleLogout }) => {
                                                         <ListItemIcon>
                                                             <IconUserEdit stroke={1.5} size='1.3rem' />
                                                         </ListItemIcon>
-                                                        <ListItemText primary={<Typography variant='body2'>Account Settings</Typography>} />
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography variant='body2'>{t('profile.accountSettings')}</Typography>
+                                                            }
+                                                        />
                                                     </ListItemButton>
                                                 )}
                                                 <ListItemButton
@@ -519,7 +529,9 @@ const ProfileSection = ({ handleLogout }) => {
                                                     <ListItemIcon>
                                                         <IconLogout stroke={1.5} size='1.3rem' />
                                                     </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant='body2'>Logout</Typography>} />
+                                                    <ListItemText
+                                                        primary={<Typography variant='body2'>{t('profile.logout')}</Typography>}
+                                                    />
                                                 </ListItemButton>
                                             </List>
                                         </Box>

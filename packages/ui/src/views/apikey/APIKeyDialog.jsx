@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import { StyledButton } from '@/ui-component/button/StyledButton'
 import ConfirmDialog from '@/ui-component/dialog/ConfirmDialog'
@@ -39,12 +40,14 @@ import useNotifier from '@/utils/useNotifier'
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 
 import './APIKeyDialog.css'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
     const portalElement = document.getElementById('portal')
 
     const theme = useTheme()
     const dispatch = useDispatch()
+    const { t } = useTranslation()
     const { isOpenSource, isEnterpriseLicensed, isCloud } = useConfig()
 
     // ==============================|| Snackbar ||============================== //
@@ -225,7 +228,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
             })
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New API key added',
+                    message: t('dv.apiKeyAdded'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -241,9 +244,9 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
         } catch (error) {
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `Failed to add new API key: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToAddApiKey', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -278,7 +281,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'API Key saved',
+                    message: t('dv.apiKeySaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -294,9 +297,9 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
         } catch (error) {
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `Failed to save API key: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToSaveApiKey', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -354,7 +357,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
             <DialogContent sx={{ backgroundColor: 'transparent' }}>
                 {dialogProps.type === 'EDIT' && (
                     <Box sx={{ p: 2 }}>
-                        <Typography variant='overline'>API Key</Typography>
+                        <Typography variant='overline'>{t('nouns.apiKey')}</Typography>
                         <Stack direction='row' sx={{ mb: 1 }}>
                             <Typography
                                 sx={{
@@ -369,7 +372,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                                 {dialogProps.key.apiKey}
                             </Typography>
                             <IconButton
-                                title='Copy API Key'
+                                title={t('dv.copyApiKey')}
                                 color='success'
                                 onClick={(event) => {
                                     navigator.clipboard.writeText(dialogProps.key.apiKey)
@@ -395,7 +398,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                                 }}
                             >
                                 <Typography variant='h6' sx={{ pl: 1, pr: 1, color: 'white', background: theme.palette.success.dark }}>
-                                    Copied!
+                                    {t('dv.copiedExclamation')}
                                 </Typography>
                             </Popover>
                         </Stack>
@@ -405,14 +408,15 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                 <div className='apikey-editor'>
                     <Box>
                         <Typography sx={{ mb: 1 }} variant='h5'>
-                            <span style={{ color: 'red' }}>*&nbsp;&nbsp;</span>Key Name
+                            <span style={{ color: 'red' }}>*&nbsp;&nbsp;</span>
+                            {t('dv.keyName')}
                         </Typography>
                         <OutlinedInput
                             id='keyName'
                             type='string'
                             size='small'
                             fullWidth
-                            placeholder='My New Key'
+                            placeholder={t('dv.myNewKey')}
                             value={keyName}
                             name='keyName'
                             onChange={(e) => setKeyName(e.target.value)}
@@ -420,7 +424,8 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                     </Box>
                     <div className='permissions-container'>
                         <p>
-                            <span style={{ color: 'red' }}>*&nbsp;&nbsp;</span>Permissions
+                            <span style={{ color: 'red' }}>*&nbsp;&nbsp;</span>
+                            {t('dv.permissions')}
                         </p>
                         <div className='permissions-list-wrapper'>
                             {permissions &&
@@ -434,7 +439,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                                                     .toUpperCase()}
                                             </h3>
                                             <button type='button' onClick={() => handleSelectAll(category)}>
-                                                Select All
+                                                {t('dv.selectAll')}
                                             </button>
                                         </div>
                                         <div className='permissions-list'>
@@ -463,7 +468,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={onCancel}>
-                    Cancel
+                    {t('common.cancel')}
                 </Button>
                 <StyledButton
                     disabled={checkDisabled()}
@@ -471,7 +476,7 @@ const APIKeyDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
                     onClick={() => (dialogProps.type === 'ADD' ? addNewKey() : saveKey())}
                     id={dialogProps.customBtnId}
                 >
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

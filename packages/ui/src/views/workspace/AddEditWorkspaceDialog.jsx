@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // Material
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, Typography, OutlinedInput } from '@mui/material'
@@ -30,10 +31,12 @@ import {
     HIDE_CANVAS_DIALOG,
     SHOW_CANVAS_DIALOG
 } from '@/store/actions'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
     const portalElement = document.getElementById('portal')
 
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     // ==============================|| Snackbar ||============================== //
@@ -79,7 +82,7 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
     const addNewWorkspace = async () => {
         if (workspaceName === 'Default Workspace' || workspaceName === 'Personal Workspace') {
             enqueueSnackbar({
-                message: 'Workspace name cannot be Default Workspace or Personal Workspace - this is a reserved name',
+                message: t('admin.workspaceReservedName'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -104,7 +107,7 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             const createResp = await workspaceApi.createWorkspace(obj)
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New Workspace added',
+                    message: t('admin.newWorkspaceAdded'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -118,10 +121,9 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 onConfirm(createResp.data.id)
             }
         } catch (error) {
+            const errorMessage = typeof error.response.data === 'object' ? error.response.data.message : error.response.data
             enqueueSnackbar({
-                message: `Failed to add new Workspace: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('admin.failedToAddWorkspace', { error: errorMessage }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -150,7 +152,7 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             if (saveResp.data) {
                 store.dispatch(workspaceNameUpdated(saveResp.data))
                 enqueueSnackbar({
-                    message: 'Workspace saved',
+                    message: t('admin.workspaceSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -164,10 +166,9 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 onConfirm()
             }
         } catch (error) {
+            const errorMessage = typeof error.response.data === 'object' ? error.response.data.message : error.response.data
             enqueueSnackbar({
-                message: `Failed to save Workspace: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('admin.failedToSaveWorkspace', { error: errorMessage }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -195,14 +196,15 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconUsersGroup style={{ marginRight: '10px' }} />
-                    {dialogProps.type === 'ADD' ? 'Add Workspace' : 'Edit Workspace'}
+                    {dialogProps.type === 'ADD' ? t('admin.addWorkspace') : t('admin.editWorkspace')}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Name<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('common.name')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -218,7 +220,7 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 </Box>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Typography>Description</Typography>
+                        <Typography>{t('common.description')}</Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
                     <OutlinedInput
@@ -235,13 +237,13 @@ const AddEditWorkspaceDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onCancel()}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={() => onCancel()}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton
                     disabled={!workspaceName}
                     variant='contained'
                     onClick={() => (dialogType === 'ADD' ? addNewWorkspace() : saveWorkspace())}
                 >
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

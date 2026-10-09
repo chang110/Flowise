@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { cloneDeep } from 'lodash'
@@ -42,12 +43,15 @@ import DynamicFeed from '@mui/icons-material/Filter1'
 // utils
 import { initNode, showHideInputParams, getFileName } from '@/utils/genericHelper'
 import useNotifier from '@/utils/useNotifier'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 // const
-const steps = ['Embeddings', 'Vector Store', 'Record Manager']
+const steps = ['evals.vectorstore.stepEmbeddings', 'evals.vectorstore.stepVectorStore', 'evals.vectorstore.stepRecordManager']
 
 const VectorStoreConfigure = () => {
+    const { nodeLabel } = useNodeLocale()
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const { hasAssignedWorkspace } = useAuth()
     useNotifier()
@@ -129,7 +133,7 @@ const VectorStoreConfigure = () => {
 
     const showEmbeddingsList = () => {
         const dialogProp = {
-            title: 'Select Embeddings Provider'
+            title: t('evals.docstore.selectEmbeddingsProvider')
         }
         setDialogProps(dialogProp)
         setShowEmbeddingsListDialog(true)
@@ -153,7 +157,7 @@ const VectorStoreConfigure = () => {
 
     const showVectorStoreList = () => {
         const dialogProp = {
-            title: 'Select a Vector Store Provider'
+            title: t('evals.docstore.selectVectorStoreProvider')
         }
         setDialogProps(dialogProp)
         setShowVectorStoreListDialog(true)
@@ -171,7 +175,7 @@ const VectorStoreConfigure = () => {
 
     const showRecordManagerList = () => {
         const dialogProp = {
-            title: 'Select a Record Manager'
+            title: t('evals.docstore.selectRecordManager')
         }
         setDialogProps(dialogProp)
         setShowRecordManagerListDialog(true)
@@ -228,7 +232,7 @@ const VectorStoreConfigure = () => {
 
         if (!canSubmit) {
             enqueueSnackbar({
-                message: 'Please fill in all mandatory fields.',
+                message: t('evals.docstore.fillMandatoryFields'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'warning',
@@ -339,7 +343,7 @@ const VectorStoreConfigure = () => {
                 <Stepper activeStep={getActiveStep()} alternativeLabel>
                     {steps.map((label) => (
                         <Step key={label}>
-                            <StepLabel>{label}</StepLabel>
+                            <StepLabel>{t(label)}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>
@@ -392,7 +396,7 @@ const VectorStoreConfigure = () => {
         if (saveVectorStoreConfigApi.data) {
             setLoading(false)
             enqueueSnackbar({
-                message: 'Configuration saved successfully',
+                message: t('evals.docstore.configurationSaved'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -518,7 +522,7 @@ const VectorStoreConfigure = () => {
                                     isBackButton={true}
                                     search={false}
                                     title={getViewHeaderTitle()}
-                                    description='Configure Embeddings, Vector Store and Record Manager'
+                                    description={t('evals.docstore.configureDescription')}
                                     onBack={() => navigate(-1)}
                                 >
                                     {(Object.keys(selectedEmbeddingsProvider).length > 0 ||
@@ -533,7 +537,7 @@ const VectorStoreConfigure = () => {
                                             startIcon={<IconRefresh />}
                                             onClick={() => resetVectorStoreConfig()}
                                         >
-                                            Reset
+                                            {t('common.reset')}
                                         </Button>
                                     )}
                                     {(Object.keys(selectedEmbeddingsProvider).length > 0 ||
@@ -548,7 +552,7 @@ const VectorStoreConfigure = () => {
                                             startIcon={<IconDeviceFloppy />}
                                             onClick={() => saveVectorStoreConfig()}
                                         >
-                                            Save Config
+                                            {t('rem.saveConfig')}
                                         </Button>
                                     )}
                                     {Object.keys(selectedEmbeddingsProvider).length > 0 &&
@@ -566,10 +570,15 @@ const VectorStoreConfigure = () => {
                                                 startIcon={<IconRowInsertTop />}
                                                 onClick={() => tryAndInsertIntoStore()}
                                             >
-                                                Upsert
+                                                {t('rem.upsert')}
                                             </Button>
                                         )}
-                                    <IconButton onClick={showUpsertHistoryDrawer} size='small' color='inherit' title='Upsert History'>
+                                    <IconButton
+                                        onClick={showUpsertHistoryDrawer}
+                                        size='small'
+                                        color='inherit'
+                                        title={t('menu.upsertHistory')}
+                                    >
                                         <IconClock />
                                     </IconButton>
                                 </ViewHeader>
@@ -596,7 +605,7 @@ const VectorStoreConfigure = () => {
                                                     }
                                                 }}
                                             >
-                                                Select Embeddings
+                                                {t('rem.selectEmbeddings')}
                                             </Button>
                                         ) : (
                                             <Box>
@@ -644,7 +653,7 @@ const VectorStoreConfigure = () => {
                                                                     )}
                                                                 </div>
                                                                 <Typography sx={{ ml: 2 }} variant='h3'>
-                                                                    {selectedEmbeddingsProvider.label}
+                                                                    {nodeLabel(selectedEmbeddingsProvider)}
                                                                 </Typography>
                                                                 <div style={{ flex: 1 }}></div>
                                                                 <div
@@ -712,7 +721,7 @@ const VectorStoreConfigure = () => {
                                                 }}
                                                 disabled={isVectorStoreDisabled()}
                                             >
-                                                Select Vector Store
+                                                {t('rem.selectVectorStore')}
                                             </Button>
                                         ) : (
                                             <Box>
@@ -762,7 +771,7 @@ const VectorStoreConfigure = () => {
                                                                     )}
                                                                 </div>
                                                                 <Typography sx={{ ml: 2 }} variant='h3'>
-                                                                    {selectedVectorStoreProvider.label}
+                                                                    {nodeLabel(selectedVectorStoreProvider)}
                                                                 </Typography>
                                                                 <div style={{ flex: 1 }}></div>
                                                                 <div
@@ -837,8 +846,8 @@ const VectorStoreConfigure = () => {
                                                 disabled={isRecordManagerDisabled()}
                                             >
                                                 {isRecordManagerUnavailable
-                                                    ? 'Record Manager is not applicable for selected Vector Store'
-                                                    : 'Select Record Manager'}
+                                                    ? t('evals.docstore.recordManagerNotApplicable')
+                                                    : t('evals.docstore.selectRecordManagerButton')}
                                             </Button>
                                         ) : (
                                             <Box>
@@ -888,7 +897,7 @@ const VectorStoreConfigure = () => {
                                                                     )}
                                                                 </div>
                                                                 <Typography sx={{ ml: 2 }} variant='h3'>
-                                                                    {selectedRecordManagerProvider.label}
+                                                                    {nodeLabel(selectedRecordManagerProvider)}
                                                                 </Typography>
                                                                 <div style={{ flex: 1 }}></div>
                                                                 <div

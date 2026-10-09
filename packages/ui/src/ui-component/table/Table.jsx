@@ -1,14 +1,31 @@
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { TableContainer, Table, TableHead, TableCell, TableRow, TableBody, Paper, Chip, Stack, Typography } from '@mui/material'
 import { TooltipWithParser } from '@/ui-component/tooltip/TooltipWithParser'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 export const TableViewOnly = ({ columns, rows, sx }) => {
+    const { t } = useTranslation()
+    const { paramLabel } = useNodeLocale()
+
+    // Column keys coming from node/credential configs are shown as headers.
+    const COLUMN_LABEL_KEYS = {
+        label: 'table.label',
+        name: 'table.name',
+        type: 'table.type',
+        default: 'table.default',
+        description: 'table.description',
+        required: 'table.required'
+    }
+
     // Helper function to safely render cell content
     const renderCellContent = (key, row) => {
         if (row[key] === null || row[key] === undefined) {
             return ''
         } else if (key === 'enabled') {
-            return row[key] ? <Chip label='Enabled' color='primary' /> : <Chip label='Disabled' />
+            return row[key] ? <Chip label={t('rem.enabled')} color='primary' /> : <Chip label={t('rem.disabled')} />
+        } else if (key === 'label') {
+            return paramLabel(row[key])
         } else if (key === 'type' && row.schema) {
             // If there's schema information, add a tooltip
             let schemaContent
@@ -33,13 +50,13 @@ export const TableViewOnly = ({ columns, rows, sx }) => {
                 // Handle object format: { "field": "string", "field2": "number", ... }
                 schemaContent = JSON.stringify(row.schema, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')
             } else {
-                schemaContent = 'No schema available'
+                schemaContent = t('rem.noSchemaAvailable')
             }
 
             return (
                 <Stack direction='row' alignItems='center' spacing={1}>
                     <Typography>{row[key]}</Typography>
-                    <TooltipWithParser title={`<div>Schema:<br/>${schemaContent}</div>`} />
+                    <TooltipWithParser title={`<div>${t('rem.schema')}<br/>${schemaContent}</div>`} />
                 </Stack>
             )
         } else if (typeof row[key] === 'object') {
@@ -60,14 +77,11 @@ export const TableViewOnly = ({ columns, rows, sx }) => {
                                 <TableCell key={index}>
                                     {col === 'enabled' ? (
                                         <>
-                                            Override
-                                            <TooltipWithParser
-                                                style={{ mb: 1, mt: 2, marginLeft: 10 }}
-                                                title={
-                                                    'If enabled, this variable can be overridden in API calls and embeds. If disabled, any overrides will be ignored. To change this, go to Security settings in Chatflow Configuration.'
-                                                }
-                                            />
+                                            {t('rem.override')}
+                                            <TooltipWithParser style={{ mb: 1, mt: 2, marginLeft: 10 }} title={t('rem.overrideHint')} />
                                         </>
+                                    ) : COLUMN_LABEL_KEYS[col] ? (
+                                        t(COLUMN_LABEL_KEYS[col])
                                     ) : (
                                         col.charAt(0).toUpperCase() + col.slice(1)
                                     )}

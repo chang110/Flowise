@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Button, Box, OutlinedInput, Typography } from '@mui/material'
@@ -17,14 +18,9 @@ import useNotifier from '@/utils/useNotifier'
 // API
 import chatflowsApi from '@/api/chatflows'
 
-const formTitle = `Hey 👋 thanks for your interest!
-Let us know where we can reach you`
-
-const endTitle = `Thank you!
-What can I do for you?`
-
 const Leads = ({ dialogProps }) => {
     const dispatch = useDispatch()
+    const { t } = useTranslation()
 
     useNotifier()
 
@@ -52,7 +48,7 @@ const Leads = ({ dialogProps }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Leads configuration Saved',
+                    message: t('uic.leads.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -68,7 +64,7 @@ const Leads = ({ dialogProps }) => {
         } catch (error) {
             const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
             enqueueSnackbar({
-                message: `Failed to save Leads configuration: ${errorData}`,
+                message: t('uic.leads.saveFailed', { error: errorData }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -108,11 +104,11 @@ const Leads = ({ dialogProps }) => {
                     mb: 2
                 }}
             >
-                <SwitchInput label='Enable Lead Capture' onChange={(value) => handleChange('status', value)} value={leadsConfig.status} />
+                <SwitchInput label={t('uic.leads.enable')} onChange={(value) => handleChange('status', value)} value={leadsConfig.status} />
                 {leadsConfig && leadsConfig['status'] && (
                     <>
                         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
-                            <Typography>Form Title</Typography>
+                            <Typography>{t('uic.leads.formTitle')}</Typography>
                             <OutlinedInput
                                 id='form-title'
                                 type='text'
@@ -120,7 +116,7 @@ const Leads = ({ dialogProps }) => {
                                 multiline={true}
                                 minRows={4}
                                 value={leadsConfig.title}
-                                placeholder={formTitle}
+                                placeholder={t('uic.leads.formTitlePlaceholder')}
                                 name='form-title'
                                 size='small'
                                 onChange={(e) => {
@@ -129,7 +125,7 @@ const Leads = ({ dialogProps }) => {
                             />
                         </Box>
                         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
-                            <Typography>Message after lead captured</Typography>
+                            <Typography>{t('uic.leads.successMessage')}</Typography>
                             <OutlinedInput
                                 id='success-message'
                                 type='text'
@@ -137,7 +133,7 @@ const Leads = ({ dialogProps }) => {
                                 multiline={true}
                                 minRows={4}
                                 value={leadsConfig.successMessage}
-                                placeholder={endTitle}
+                                placeholder={t('uic.leads.successMessagePlaceholder')}
                                 name='form-title'
                                 size='small'
                                 onChange={(e) => {
@@ -145,16 +141,24 @@ const Leads = ({ dialogProps }) => {
                                 }}
                             />
                         </Box>
-                        <Typography variant='h4'>Form fields</Typography>
+                        <Typography variant='h4'>{t('uic.leads.formFields')}</Typography>
                         <Box sx={{ width: '100%' }}>
                             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
-                                <SwitchInput label='Name' onChange={(value) => handleChange('name', value)} value={leadsConfig.name} />
                                 <SwitchInput
-                                    label='Email Address'
+                                    label={t('common.name')}
+                                    onChange={(value) => handleChange('name', value)}
+                                    value={leadsConfig.name}
+                                />
+                                <SwitchInput
+                                    label={t('pages.account.emailAddress')}
                                     onChange={(value) => handleChange('email', value)}
                                     value={leadsConfig.email}
                                 />
-                                <SwitchInput label='Phone' onChange={(value) => handleChange('phone', value)} value={leadsConfig.phone} />
+                                <SwitchInput
+                                    label={t('uic.leads.phone')}
+                                    onChange={(value) => handleChange('phone', value)}
+                                    value={leadsConfig.phone}
+                                />
                             </Box>
                         </Box>
                     </>
@@ -167,7 +171,7 @@ const Leads = ({ dialogProps }) => {
                     onClick={onSave}
                     sx={{ minWidth: 100 }}
                 >
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </>

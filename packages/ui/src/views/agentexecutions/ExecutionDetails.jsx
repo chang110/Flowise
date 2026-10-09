@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { useSelector, useDispatch } from 'react-redux'
@@ -302,6 +303,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
     const [copied, setCopied] = useState(false)
     const [localMetadata, setLocalMetadata] = useState({})
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const updateExecutionApi = useApi(executionsApi.updateExecution)
 
@@ -321,7 +323,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
         // Show success message
         dispatch(
             enqueueSnackbarAction({
-                message: 'ID copied to clipboard',
+                message: t('evals.executions.idCopied'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -645,7 +647,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
             // Show success message
             dispatch(
                 enqueueSnackbarAction({
-                    message: newIsPublic ? 'Execution shared publicly' : 'Execution is no longer public',
+                    message: newIsPublic ? t('evals.executions.sharedPublicly') : t('evals.executions.noLongerPublic'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -747,7 +749,9 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                                 sx={{ pl: 1 }}
                                 icon={<IconExternalLink size={15} />}
                                 variant='outlined'
-                                label={localMetadata?.agentflow?.name || localMetadata?.agentflow?.id || 'Go to AgentFlow'}
+                                label={
+                                    localMetadata?.agentflow?.name || localMetadata?.agentflow?.id || t('evals.executions.goToAgentFlow')
+                                }
                                 className={'button'}
                                 onClick={() => window.open(`/v2/agentcanvas/${localMetadata?.agentflow?.id}`, '_blank')}
                             />
@@ -755,7 +759,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
 
                         {!isPublic && (
                             <Tooltip
-                                title={`Execution ID: ${localMetadata?.id || ''}`}
+                                title={t('evals.executions.executionIdTooltip', { id: localMetadata?.id || '' })}
                                 placement='top'
                                 disableHoverListener={!localMetadata?.id}
                             >
@@ -763,7 +767,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                                     sx={{ ml: 1, pl: 1 }}
                                     icon={<IconCopy size={15} />}
                                     variant='outlined'
-                                    label={copied ? 'Copied!' : 'Copy ID'}
+                                    label={copied ? t('common.copied') : t('evals.executions.copyId')}
                                     className={'button'}
                                     onClick={copyToClipboard}
                                 />
@@ -782,7 +786,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                                         )
                                     }
                                     variant='outlined'
-                                    label={updateExecutionApi.loading ? 'Updating...' : 'Share'}
+                                    label={updateExecutionApi.loading ? t('evals.executions.updating') : t('common.share')}
                                     className={'button'}
                                     onClick={() => onSharePublicly()}
                                     disabled={updateExecutionApi.loading}
@@ -801,7 +805,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                                     )
                                 }
                                 variant='outlined'
-                                label={updateExecutionApi.loading ? 'Updating...' : 'Public'}
+                                label={updateExecutionApi.loading ? t('evals.executions.updating') : t('evals.executions.public')}
                                 className={'button'}
                                 onClick={() => setShowShareDialog(true)}
                                 disabled={updateExecutionApi.loading}
@@ -810,7 +814,9 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignContent: 'center' }}>
                             <Typography sx={{ flex: 1, mt: 1 }} color='text.primary'>
-                                {metadata?.updatedDate ? moment(metadata.updatedDate).format('MMM D, YYYY h:mm A') : 'N/A'}
+                                {metadata?.updatedDate
+                                    ? moment(metadata.updatedDate).format('MMM D, YYYY h:mm A')
+                                    : t('evals.notAvailable')}
                             </Typography>
                             <IconButton
                                 onClick={() => onRefresh(localMetadata?.id)}
@@ -821,7 +827,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                                         backgroundColor: (theme) => theme.palette.primary.main + '20'
                                     }
                                 }}
-                                title='Refresh execution data'
+                                title={t('evals.executions.refreshExecutionData')}
                             >
                                 <IconRefresh size={20} />
                             </IconButton>
@@ -856,7 +862,7 @@ export const ExecutionDetails = ({ open, isPublic, execution, metadata, onClose,
                         onProceedSuccess={onProceedSuccess}
                     />
                 ) : (
-                    <Typography color='text.secondary'>No data available for this item</Typography>
+                    <Typography color='text.secondary'>{t('chat.noDataAvailable')}</Typography>
                 )}
             </Box>
         </Box>

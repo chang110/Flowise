@@ -3,9 +3,12 @@ import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 import { Button, Dialog, DialogActions, DialogContent, OutlinedInput, DialogTitle } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import { StyledButton } from '@/ui-component/button/StyledButton'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const SaveChatflowDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
 
     const [chatflowName, setChatflowName] = useState('')
@@ -37,7 +40,7 @@ const SaveChatflowDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                     id='chatflow-name'
                     type='text'
                     fullWidth
-                    placeholder='My New Chatflow'
+                    placeholder={t('dlg.myNewChatflow')}
                     value={chatflowName}
                     onChange={(e) => setChatflowName(e.target.value)}
                     onKeyDown={(e) => {
@@ -46,9 +49,9 @@ const SaveChatflowDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={onCancel}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton disabled={!isReadyToSave} variant='contained' onClick={() => onConfirm(chatflowName)}>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
         </Dialog>

@@ -1,0 +1,326 @@
+{
+    "uic": {
+        "none": "无",
+        "providers": "提供商",
+        "connectCredential": "连接凭据",
+        "prompt": "提示词",
+        "temperature": "温度",
+        "baseUrl": "基础 URL",
+        "language": "语言",
+        "modelName": "模型名称",
+        "model": "模型",
+        "voice": "声音",
+        "copyToClipboard": "复制到剪贴板",
+        "thumbsUp": "点赞",
+        "thumbsDown": "点踩",
+        "moreItems": "+ {{number}} 项",
+        "scheduleStatus": {
+            "checking": "正在检查调度状态…",
+            "activeNextRun": "调度已启用 — 下次运行 {{date}}",
+            "active": "调度已启用",
+            "off": "已配置调度，但当前已关闭",
+            "loading": "加载中…",
+            "scheduled": "已调度",
+            "paused": "已暂停"
+        },
+        "chatFeedback": {
+            "saved": "聊天反馈设置已保存",
+            "saveFailed": "保存聊天反馈设置失败：{{error}}",
+            "enable": "启用聊天反馈"
+        },
+        "rateLimit": {
+            "fillAllFields": "需要填写所有速率限制输入字段",
+            "saved": "速率限制配置已保存",
+            "saveFailed": "保存速率限制配置失败：{{error}}",
+            "title": "速率限制",
+            "tooltip": "请访问 <a target=\"_blank\" href=\"https://docs.flowiseai.com/configuration/rate-limit\">速率限制设置指南</a>，在您的托管环境中正确设置速率限制。",
+            "enable": "启用速率限制",
+            "messageLimit": "每时间段消息上限",
+            "duration": "持续时间（秒）",
+            "limitMessage": "超限提示信息",
+            "limitMessagePlaceholder": "您已达到配额上限"
+        },
+        "allowedDomains": {
+            "saved": "允许的来源已保存",
+            "saveFailed": "保存允许的来源失败：{{error}}",
+            "title": "允许的域名",
+            "tooltip": "您的聊天机器人仅在以下域名中使用时才会正常工作。",
+            "domains": "域名",
+            "errorMessage": "错误信息",
+            "errorMessageTooltip": "当域名未授权时显示的自定义错误信息",
+            "errorMessagePlaceholder": "未授权的域名！"
+        },
+        "starterPrompts": {
+            "saved": "对话开场提示已保存",
+            "saveFailed": "保存对话开场提示失败：{{error}}",
+            "info": "仅当聊天中没有任何消息时才会显示开场提示"
+        },
+        "leads": {
+            "saved": "线索配置已保存",
+            "saveFailed": "保存线索配置失败：{{error}}",
+            "enable": "启用线索收集",
+            "formTitle": "表单标题",
+            "formTitlePlaceholder": "你好 👋 感谢你的关注！\n请留下你的联系方式",
+            "successMessage": "线索收集后显示的消息",
+            "successMessagePlaceholder": "谢谢！\n有什么可以帮您的？",
+            "formFields": "表单字段",
+            "phone": "电话"
+        },
+        "fileUpload": {
+            "message": "上传文件的全部内容将被转换为文本并发送给 Agent。\n<br />\n更多详情请参阅<a href='https://docs.flowiseai.com/using-flowise/uploads#files' target='_blank' style='color: #2196f3'>文档</a>。",
+            "saved": "文件上传配置已保存",
+            "saveFailed": "保存文件上传配置失败：{{error}}",
+            "enable": "启用完整文件上传",
+            "allowUploadsOfType": "允许上传的文件类型",
+            "advancedSettings": "高级设置",
+            "pdfProcessing": "PDF 处理",
+            "perPage": "每页一个文档",
+            "perFile": "每个文件一个文档"
+        },
+        "postProcessing": {
+            "functionLabel": "后处理函数",
+            "saved": "后处理设置已保存",
+            "saveFailed": "保存后处理设置失败：{{error}}",
+            "enable": "启用后处理",
+            "jsFunction": "JS 函数",
+            "availableVariables": "可用变量",
+            "variable": "变量",
+            "type": "类型",
+            "rawOutputDesc": "流程的原始输出响应",
+            "inputDesc": "用户输入的消息",
+            "chatHistoryDesc": "对话中历史消息的数组",
+            "chatflowIdDesc": "聊天流的唯一标识符",
+            "sessionIdDesc": "当前会话标识符",
+            "chatIdDesc": "当前聊天标识符",
+            "sourceDocumentsDesc": "检索中使用的源文档（如适用）",
+            "usedToolsDesc": "执行过程中使用的工具列表",
+            "artifactsDesc": "执行过程中生成的产物列表",
+            "fileAnnotationsDesc": "与响应关联的文件注释"
+        },
+        "mcpServer": {
+            "toolNameRequired": "工具名称为必填项",
+            "toolNameTooLong": "工具名称不能超过 64 个字符",
+            "toolNameInvalid": "仅允许字母、数字、下划线和连字符",
+            "saved": "MCP 服务器设置已保存",
+            "disabled": "MCP 服务器已禁用",
+            "saveFailed": "保存 MCP 服务器设置失败：{{error}}",
+            "urlCopied": "URL 已复制到剪贴板",
+            "rotateTokenTitle": "轮换令牌",
+            "rotateTokenDescription": "这将使现有令牌失效。所有使用旧令牌的客户端都需要更新为新令牌。确定要继续吗？",
+            "rotate": "轮换",
+            "tokenRotated": "令牌轮换成功",
+            "rotateFailed": "轮换令牌失败：{{error}}",
+            "loadFailed": "加载 MCP 服务器配置失败：{{error}}",
+            "loading": "正在加载 MCP 服务器配置...",
+            "expose": "作为 MCP 服务器公开",
+            "toolName": "工具名称",
+            "toolNamePlaceholder": "例如 product_qa",
+            "toolNameHint": "用作 LLM 客户端识别的 MCP 工具标识符。",
+            "descriptionPlaceholder": "例如：回答产品目录相关问题",
+            "descriptionHint": "帮助 LLM 判断何时将查询路由到此工具。清晰的描述可提高工具选择的准确性。",
+            "endpoint": "可流式 HTTP 端点",
+            "copyUrl": "复制 URL 到剪贴板",
+            "endpointHint": "适用于支持可流式 HTTP 传输的客户端",
+            "token": "令牌（Bearer Token）",
+            "tokenCopied": "令牌已复制到剪贴板",
+            "copyToken": "复制令牌",
+            "rotateToken": "轮换令牌",
+            "authHint": "将上方的 URL 用作 MCP 端点，并在 Authorization 请求头中以 Bearer 令牌的方式传递令牌。请按以下方式配置您的 MCP 客户端：",
+            "saving": "保存中..."
+        },
+        "analyseFlow": {
+            "defaultPlaceholder": "默认",
+            "projectName": "项目名称",
+            "onOff": "开/关",
+            "release": "发布版本",
+            "releaseDescription": "应用的发布版本号/哈希，用于按发布版本分组分析数据",
+            "projectNameHint": "如果未提供，将使用默认值",
+            "projectNameHintPeriod": "如果未提供，将使用默认值。",
+            "opikProjectNameDescription": "您的 Opik 项目名称",
+            "on": "开启",
+            "saved": "分析配置已保存",
+            "saveFailed": "保存分析配置失败：{{error}}"
+        },
+        "overrideConfig": {
+            "noSchema": "暂无可用 Schema",
+            "schema": "Schema：",
+            "label": "标签",
+            "type": "类型",
+            "on": "开",
+            "title": "覆盖配置",
+            "tooltip": "启用或禁用流程配置中可被覆盖的属性。更多信息请参阅<a href=\"https://docs.flowiseai.com/using-flowise/prediction#configuration-override\" target=\"_blank\">文档</a>。",
+            "enable": "启用覆盖配置",
+            "nodes": "节点",
+            "variables": "变量",
+            "saved": "覆盖配置已保存",
+            "saveFailed": "保存覆盖配置失败：{{error}}"
+        },
+        "followUpPrompts": {
+            "promptDescription": "根据对话历史生成问题的提示词。您可以使用变量 {history} 引用对话历史。",
+            "baseUrlDescription": "您的 Ollama 实例的基础 URL",
+            "modelNameDescription": "要使用的 Ollama 模型名称",
+            "saved": "追问提示配置已保存",
+            "saveFailed": "保存追问提示配置失败：{{error}}",
+            "enable": "启用追问提示"
+        },
+        "speechToText": {
+            "saved": "语音转文字配置已保存",
+            "saveFailed": "保存语音转文字配置失败：{{error}}",
+            "languageDescription": "输入音频的语言。使用 ISO-639-1 格式提供输入语言可提高准确率和降低延迟。",
+            "promptDescription": "用于引导模型风格或延续之前音频片段的可选文本。提示词应与音频语言一致。",
+            "temperatureDescription": "采样温度，介于 0 到 1 之间。较高的值（如 0.8）会使输出更随机，较低的值（如 0.2）会使输出更集中、更具确定性。",
+            "baseUrlDescription": "本地 AI 服务器的基础 URL",
+            "modelDescription": "要加载的 STT 模型。留空则默认为 whisper-1。",
+            "groqModelDescription": "要加载的 STT 模型。留空则默认为 whisper-large-v3。",
+            "azureLanguageDescription": "识别语言（例如 \"en-US\"、\"es-ES\"）",
+            "profanityFilterMode": "脏话过滤模式",
+            "profanityDescription": "如何处理转录中的脏话",
+            "masked": "遮盖",
+            "removed": "移除",
+            "audioChannels": "音频声道",
+            "audioChannelsDescription": "要处理的音频声道列表，以逗号分隔（例如 \"0,1\"）"
+        },
+        "textToSpeech": {
+            "saved": "文字转语音配置已保存",
+            "saveFailed": "保存文字转语音配置失败：{{error}}",
+            "openAiVoiceDescription": "生成音频时使用的声音",
+            "elevenLabsVoiceDescription": "用于文字转语音的声音",
+            "selectProviderFirst": "请先选择提供商并配置凭据",
+            "testText": "测试文本：\"{{text}}\"",
+            "autoPlay": "自动播放音频",
+            "autoPlayTooltip": "启用后，机器人回复将自动转换为语音并播放",
+            "testVoice": "测试声音",
+            "loadingVoices": "正在加载声音...",
+            "chooseVoice": "选择声音",
+            "noAudioData": "未收到音频数据",
+            "testFailed": "TTS 测试失败：{{error}}",
+            "httpError": "HTTP 错误！状态码：{{status}}"
+        },
+        "file": {
+            "upload": "上传文件"
+        },
+        "sensitiveInput": {
+            "revealHint": "编辑前请先点击眼睛图标显示该值。"
+        },
+        "suggestionList": {
+            "other": "其他"
+        },
+        "suggestions": {
+            "question": "用户在聊天框中的提问",
+            "chatHistory": "用户与 AI 之间的历史对话记录",
+            "currentDateTime": "当前日期和时间",
+            "runtimeMessagesLength": "LLM 与 Agent 之间的消息总数",
+            "loopCount": "当前循环次数",
+            "fileAttachment": "从聊天中上传的文件",
+            "sessionId": "当前会话 ID",
+            "chatId": "当前聊天 ID",
+            "chatflowId": "当前聊天流 ID",
+            "iteration": "迭代项。对于 JSON，请使用点号表示法：$iteration.name",
+            "output": "当前节点的输出",
+            "variable": "变量：{{value}}（{{type}}）",
+            "formInput": "表单输入：{{label}}",
+            "webhookQuery": "Webhook 查询参数：{{name}}",
+            "webhookBody": "Webhook 请求体：{{name}}",
+            "webhookHeader": "Webhook 请求头：{{name}}",
+            "outputFrom": "来自 {{node}} 的{{output}}",
+            "outputAnchor": "输出"
+        },
+        "suggestionCategories": {
+            "chatContext": "聊天上下文",
+            "flowVariables": "流程变量",
+            "flowState": "流程状态",
+            "iteration": "迭代",
+            "nodeOutputs": "节点输出",
+            "customVariables": "自定义变量",
+            "formInputs": "表单输入",
+            "webhookInputs": "Webhook 输入"
+        },
+        "selectVariable": {
+            "title": "选择变量",
+            "allMessages": "从对话开始至今的所有消息",
+            "stateVariableValue": "指定键的状态变量当前值",
+            "firstMessageContent": "第一条消息内容",
+            "lastMessageContent": "最后一条消息内容",
+            "fileAttachment": "启用配置中的完整文件上传后，从聊天中上传的文件",
+            "outputFrom": "来自 {{node}} 的{{output}}",
+            "outputLabel": "输出"
+        },
+        "asyncDropdown": {
+            "createNew": "- 新建 -"
+        },
+        "dataGrid": {
+            "addItem": "添加项"
+        },
+        "monthDaysPicker": {
+            "lastDay": "最后一天",
+            "lastDayTooltip": "始终在每月最后一天运行 — 自动对应 28、29、30 或 31 号（可正确处理短月和闰年）。与选择 31 号不同，此选项每月都会触发。"
+        },
+        "weekDays": {
+            "mon": "周一",
+            "tue": "周二",
+            "wed": "周三",
+            "thu": "周四",
+            "fri": "周五",
+            "sat": "周六",
+            "sun": "周日"
+        },
+        "documentStoreCard": {
+            "flowSingular": "个工作流",
+            "flowPlural": "个工作流",
+            "chars": "字符",
+            "chunks": "分块"
+        },
+        "mcpItemCard": {
+            "toolSingular": "个工具",
+            "toolPlural": "个工具"
+        },
+        "flowListMenu": {
+            "agents": "Agents",
+            "options": "选项",
+            "rename": "重命名",
+            "renameTitle": "重命名{{type}}",
+            "deleteConfirm": "确定删除{{type}} {{name}}？",
+            "starterPrompts": "开场提示",
+            "chatFeedback": "聊天反馈",
+            "speechToText": "语音转文字",
+            "updateCategory": "更新分类",
+            "starterPromptsTitle": "开场提示 - {{name}}",
+            "chatFeedbackTitle": "聊天反馈 - {{name}}",
+            "allowedDomainsTitle": "允许的域名 - {{name}}",
+            "speechToTextTitle": "语音转文字 - {{name}}"
+        },
+        "codeBlock": {
+            "download": "下载"
+        },
+        "pagination": {
+            "itemsPerPage": "每页条数：",
+            "itemsRange": "第 {{from}} - {{to}} 条，共 {{total}} 条"
+        },
+        "pricing": {
+            "contactUs": "联系我们",
+            "currentPlan": "当前方案",
+            "getStarted": "立即开始",
+            "updated": "订阅更新成功！",
+            "updateFailed": "订阅更新失败",
+            "verifyFailed": "验证订阅失败",
+            "title": "定价方案",
+            "mostPopular": "最受欢迎",
+            "firstMonthFree": "首月免费",
+            "confirmTitle": "确认变更方案",
+            "seatsWarning": "更改方案前，您必须移除额外的席位和用户。",
+            "workspacesWarning": "更改方案前，您必须移除除默认工作区以外的所有工作区。",
+            "apiKeysWarning": "更改方案前，您必须移除所有具有共享权限的 API 密钥。",
+            "expires": "到期",
+            "noPaymentMethod": "未找到支付方式",
+            "addPaymentMethod": "在账单门户中添加支付方式",
+            "openingPortal": "正在打开账单门户...",
+            "eligibleFirstMonthFree": "您符合首月免费资格！",
+            "planSuffix": "{{title}} 方案",
+            "firstMonthDiscount": "首月折扣",
+            "appliedBalance": "已抵扣的账户余额",
+            "creditNotice": "您的可用余额将自动用于下一张账单。",
+            "confirmChange": "确认变更",
+            "updatingPlan": "正在更新方案..."
+        }
+    }
+}

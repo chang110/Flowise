@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { OutlinedInput, DialogActions, Button, Dialog, DialogContent, DialogTitle } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import { StyledButton } from '@/ui-component/button/StyledButton'
 import assistantsApi from '@/api/assistants'
 import { closeSnackbar as closeSnackbarAction, enqueueSnackbar as enqueueSnackbarAction } from '@/store/actions'
@@ -12,32 +13,33 @@ import { LoadingButton } from '@mui/lab'
 
 const defaultInstructions = [
     {
-        text: 'Summarize a document',
+        textKey: 'dlg.instrSummarizeDocument',
         img: <IconNotebook />
     },
     {
-        text: 'Translate the language',
+        textKey: 'dlg.instrTranslateLanguage',
         img: <IconLanguage />
     },
     {
-        text: 'Write me an email',
+        textKey: 'dlg.instrWriteEmail',
         img: <IconMail />
     },
     {
-        text: 'Convert the code to another language',
+        textKey: 'dlg.instrConvertCode',
         img: <IconCode />
     },
     {
-        text: 'Research and generate a report',
+        textKey: 'dlg.instrResearchReport',
         img: <IconReport />
     },
     {
-        text: 'Plan a trip',
+        textKey: 'dlg.instrPlanTrip',
         img: <IconWorld />
     }
 ]
 
 const AssistantPromptGenerator = ({ show, dialogProps, onCancel, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const [customAssistantInstruction, setCustomAssistantInstruction] = useState('')
     const [generatedInstruction, setGeneratedInstruction] = useState('')
@@ -125,12 +127,12 @@ const AssistantPromptGenerator = ({ show, dialogProps, onCancel, onConfirm }) =>
                                     variant='outlined'
                                     color='inherit'
                                     onClick={() => {
-                                        setCustomAssistantInstruction(instruction.text)
+                                        setCustomAssistantInstruction(t(instruction.textKey))
                                         setGeneratedInstruction('')
                                     }}
                                     startIcon={instruction.img}
                                 >
-                                    {instruction.text}
+                                    {t(instruction.textKey)}
                                 </Button>
                             )
                         })}
@@ -143,7 +145,7 @@ const AssistantPromptGenerator = ({ show, dialogProps, onCancel, onConfirm }) =>
                             rows={12}
                             disabled={loading}
                             value={customAssistantInstruction}
-                            placeholder={'Describe your task here'}
+                            placeholder={t('dlg.describeTaskPlaceholder')}
                             onChange={(event) => setCustomAssistantInstruction(event.target.value)}
                         />
                     )}
@@ -168,7 +170,7 @@ const AssistantPromptGenerator = ({ show, dialogProps, onCancel, onConfirm }) =>
                             }}
                             startIcon={<IconWand size={20} />}
                         >
-                            Generate
+                            {t('dlg.generate')}
                         </LoadingButton>
                     )}
                     {generatedInstruction && (
@@ -179,12 +181,12 @@ const AssistantPromptGenerator = ({ show, dialogProps, onCancel, onConfirm }) =>
                                 setGeneratedInstruction('')
                             }}
                         >
-                            Back
+                            {t('common.back')}
                         </Button>
                     )}
                     {generatedInstruction && (
                         <StyledButton variant='contained' onClick={() => onConfirm(generatedInstruction)}>
-                            Apply
+                            {t('dlg.apply')}
                         </StyledButton>
                     )}
                 </DialogActions>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 import { Typography, Box, ClickAwayListener, Paper, Popper, Button } from '@mui/material'
 import { useTheme, alpha, lighten, darken } from '@mui/material/styles'
@@ -26,6 +27,7 @@ import { AGENTFLOW_ICONS } from '@/store/constant'
 
 const ValidationPopUp = ({ chatflowid, hidden }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
 
@@ -146,7 +148,7 @@ const ValidationPopUp = ({ chatflowid, hidden }) => {
                     size='small'
                     color='teal'
                     aria-label='validation'
-                    title='Validate Nodes'
+                    title={t('chat.validateNodes')}
                     onClick={handleToggle}
                 >
                     {open ? <IconX /> : <IconChecklist />}

@@ -2,6 +2,7 @@ import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
 import SuggestionList from './SuggestionList'
 import variablesApi from '@/api/variables'
+import i18n from '@/i18n'
 
 /**
  * Workaround for the current typing incompatibility between Tippy.js and Tiptap
@@ -52,54 +53,74 @@ export const suggestionOptions = (
     char: '{{',
     items: async ({ query }) => {
         const defaultItems = [
-            { id: 'question', mentionLabel: 'question', description: "User's question from chatbox", category: 'Chat Context' },
+            {
+                id: 'question',
+                mentionLabel: 'question',
+                description: i18n.t('uic.suggestions.question'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
+            },
             {
                 id: 'chat_history',
                 mentionLabel: 'chat_history',
-                description: 'Past conversation history between user and AI',
-                category: 'Chat Context'
+                description: i18n.t('uic.suggestions.chatHistory'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
             },
             {
                 id: 'current_date_time',
                 mentionLabel: 'current_date_time',
-                description: 'Current date and time',
-                category: 'Chat Context'
+                description: i18n.t('uic.suggestions.currentDateTime'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
             },
             {
                 id: 'runtime_messages_length',
                 mentionLabel: 'runtime_messages_length',
-                description: 'Total messages between LLM and Agent',
-                category: 'Chat Context'
+                description: i18n.t('uic.suggestions.runtimeMessagesLength'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
             },
             {
                 id: 'loop_count',
                 mentionLabel: 'loop_count',
-                description: 'Current loop count',
-                category: 'Chat Context'
+                description: i18n.t('uic.suggestions.loopCount'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
             },
             {
                 id: 'file_attachment',
                 mentionLabel: 'file_attachment',
-                description: 'Files uploaded from the chat',
-                category: 'Chat Context'
+                description: i18n.t('uic.suggestions.fileAttachment'),
+                category: i18n.t('uic.suggestionCategories.chatContext')
             },
-            { id: '$flow.sessionId', mentionLabel: '$flow.sessionId', description: 'Current session ID', category: 'Flow Variables' },
-            { id: '$flow.chatId', mentionLabel: '$flow.chatId', description: 'Current chat ID', category: 'Flow Variables' },
-            { id: '$flow.chatflowId', mentionLabel: '$flow.chatflowId', description: 'Current chatflow ID', category: 'Flow Variables' }
+            {
+                id: '$flow.sessionId',
+                mentionLabel: '$flow.sessionId',
+                description: i18n.t('uic.suggestions.sessionId'),
+                category: i18n.t('uic.suggestionCategories.flowVariables')
+            },
+            {
+                id: '$flow.chatId',
+                mentionLabel: '$flow.chatId',
+                description: i18n.t('uic.suggestions.chatId'),
+                category: i18n.t('uic.suggestionCategories.flowVariables')
+            },
+            {
+                id: '$flow.chatflowId',
+                mentionLabel: '$flow.chatflowId',
+                description: i18n.t('uic.suggestions.chatflowId'),
+                category: i18n.t('uic.suggestionCategories.flowVariables')
+            }
         ]
 
         const stateItems = (availableState || []).map((state) => ({
             id: `$flow.state.${state.key}`,
             mentionLabel: `$flow.state.${state.key}`,
-            category: 'Flow State'
+            category: i18n.t('uic.suggestionCategories.flowState')
         }))
 
         if (isNodeInsideInteration) {
             defaultItems.unshift({
                 id: '$iteration',
                 mentionLabel: '$iteration',
-                description: 'Iteration item. For JSON, use dot notation: $iteration.name',
-                category: 'Iteration'
+                description: i18n.t('uic.suggestions.iteration'),
+                category: i18n.t('uic.suggestionCategories.iteration')
             })
         }
 
@@ -108,8 +129,8 @@ export const suggestionOptions = (
             defaultItems.unshift({
                 id: 'output',
                 mentionLabel: 'output',
-                description: 'Output from the current node',
-                category: 'Node Outputs'
+                description: i18n.t('uic.suggestions.output'),
+                category: i18n.t('uic.suggestionCategories.nodeOutputs')
             })
 
             const structuredOutputs = nodeData?.inputs?.llmStructuredOutput ?? nodeData?.inputs?.agentStructuredOutput ?? []
@@ -119,7 +140,7 @@ export const suggestionOptions = (
                         id: `output.${item.key}`,
                         mentionLabel: `output.${item.key}`,
                         description: `${item.description}`,
-                        category: 'Node Outputs'
+                        category: i18n.t('uic.suggestionCategories.nodeOutputs')
                     })
                 })
             }
@@ -133,8 +154,8 @@ export const suggestionOptions = (
         const variableItems = cachedVariables.map((variable) => ({
             id: `$vars.${variable.name}`,
             mentionLabel: `$vars.${variable.name}`,
-            description: `Variable: ${variable.value} (${variable.type})`,
-            category: 'Custom Variables'
+            description: i18n.t('uic.suggestions.variable', { value: variable.value, type: variable.type }),
+            category: i18n.t('uic.suggestionCategories.customVariables')
         }))
 
         const startAgentflowNode = nodes.find((node) => node.data.name === 'startAgentflow')
@@ -151,8 +172,8 @@ export const suggestionOptions = (
             formItems = (activeFormInputTypes || []).map((input) => ({
                 id: `$form.${input.name}`,
                 mentionLabel: `$form.${input.name}`,
-                description: `Form Input: ${input.label}`,
-                category: 'Form Inputs'
+                description: i18n.t('uic.suggestions.formInput', { label: input.label }),
+                category: i18n.t('uic.suggestionCategories.formInputs')
             }))
         }
 
@@ -161,8 +182,8 @@ export const suggestionOptions = (
             webhookQueryItems = webhookQueryParams.map((input) => ({
                 id: `$webhook.query.${input.name}`,
                 mentionLabel: `$webhook.query.${input.name}`,
-                description: `Webhook Query: ${input.name}`,
-                category: 'Webhook Inputs'
+                description: i18n.t('uic.suggestions.webhookQuery', { name: input.name }),
+                category: i18n.t('uic.suggestionCategories.webhookInputs')
             }))
         }
 
@@ -171,8 +192,8 @@ export const suggestionOptions = (
             webhookItems = webhookBodyParams.map((input) => ({
                 id: `$webhook.body.${input.name}`,
                 mentionLabel: `$webhook.body.${input.name}`,
-                description: `Webhook Body: ${input.name}`,
-                category: 'Webhook Inputs'
+                description: i18n.t('uic.suggestions.webhookBody', { name: input.name }),
+                category: i18n.t('uic.suggestionCategories.webhookInputs')
             }))
         }
 
@@ -181,8 +202,8 @@ export const suggestionOptions = (
             webhookHeaderItems = webhookHeaderParams.map((input) => ({
                 id: `$webhook.headers.${input.name}`,
                 mentionLabel: `$webhook.headers.${input.name}`,
-                description: `Webhook Header: ${input.name}`,
-                category: 'Webhook Inputs'
+                description: i18n.t('uic.suggestions.webhookHeader', { name: input.name }),
+                category: i18n.t('uic.suggestionCategories.webhookInputs')
             }))
         }
 
@@ -195,8 +216,11 @@ export const suggestionOptions = (
                 description:
                     node.data.name === 'ifElseFunction'
                         ? node.data.description
-                        : `${selectedOutputAnchor?.label ?? 'Output'} from ${node.data.label}`,
-                category: 'Node Outputs'
+                        : i18n.t('uic.suggestions.outputFrom', {
+                              output: selectedOutputAnchor?.label ?? i18n.t('uic.suggestions.outputAnchor'),
+                              node: node.data.label
+                          }),
+                category: i18n.t('uic.suggestionCategories.nodeOutputs')
             }
         })
 

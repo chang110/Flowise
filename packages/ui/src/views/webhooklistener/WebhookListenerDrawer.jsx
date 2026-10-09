@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { keyframes } from '@mui/system'
 
@@ -50,13 +51,13 @@ const spin = keyframes`
 
 // ─── Status palette ───────────────────────────────────────────────────────────
 const STATUS_META = {
-    connecting: { label: 'CONNECTING', tone: 'info' },
-    idle: { label: 'IDLE', tone: 'default' },
-    listening: { label: 'LISTENING', tone: 'success' },
-    running: { label: 'RUNNING', tone: 'warning' },
-    done: { label: 'COMPLETED', tone: 'success' },
-    stopped: { label: 'STOPPED', tone: 'info' },
-    error: { label: 'ERROR', tone: 'error' }
+    connecting: { labelKey: 'admin.statusConnecting', tone: 'info' },
+    idle: { labelKey: 'admin.statusIdle', tone: 'default' },
+    listening: { labelKey: 'admin.statusListening', tone: 'success' },
+    running: { labelKey: 'admin.statusRunning', tone: 'warning' },
+    done: { labelKey: 'admin.statusCompleted', tone: 'success' },
+    stopped: { labelKey: 'admin.statusStopped', tone: 'info' },
+    error: { labelKey: 'admin.statusError', tone: 'error' }
 }
 
 const TONE_COLOR = (theme, tone) => {
@@ -87,6 +88,7 @@ Caption.propTypes = { children: PropTypes.node }
 
 const StatusPill = ({ status }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const meta = STATUS_META[status] ?? STATUS_META.idle
     const color = TONE_COLOR(theme, meta.tone)
     const animated = status === 'listening' || status === 'running'
@@ -114,7 +116,9 @@ const StatusPill = ({ status }) => {
                     animation: animated ? `${subtleBlink} 1.4s ease-in-out infinite` : 'none'
                 }}
             />
-            <Typography sx={{ fontFamily: MONO_STACK, fontSize: 10.5, letterSpacing: '0.12em', fontWeight: 600 }}>{meta.label}</Typography>
+            <Typography sx={{ fontFamily: MONO_STACK, fontSize: 10.5, letterSpacing: '0.12em', fontWeight: 600 }}>
+                {t(meta.labelKey)}
+            </Typography>
         </Stack>
     )
 }
@@ -171,6 +175,7 @@ const SonarIdle = () => {
 
 const EndpointBlock = ({ method, url, isDark, onCopy }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const [showCurl, setShowCurl] = useState(false)
     const [copied, setCopied] = useState(false)
     const [copiedCurl, setCopiedCurl] = useState(false)
@@ -232,7 +237,7 @@ const EndpointBlock = ({ method, url, isDark, onCopy }) => {
                 >
                     {url}
                 </Box>
-                <Tooltip title={copied ? 'Copied' : 'Copy URL'}>
+                <Tooltip title={copied ? t('common.copied') : t('canvas.copyUrl')}>
                     <IconButton size='small' onClick={() => copy(url, setCopied)} sx={{ p: 0.5, color: iconColor }}>
                         {copied ? <IconCircleCheck size={14} color={theme.palette.success.main} /> : <IconCopy size={14} />}
                     </IconButton>
@@ -257,7 +262,7 @@ const EndpointBlock = ({ method, url, isDark, onCopy }) => {
                         '&:hover': { bgcolor: 'transparent', color: isDark ? 'common.white' : 'text.primary' }
                     }}
                 >
-                    cURL example
+                    {t('admin.curlExample')}
                 </Button>
                 <Collapse in={showCurl} timeout='auto' unmountOnExit>
                     <Box
@@ -278,7 +283,7 @@ const EndpointBlock = ({ method, url, isDark, onCopy }) => {
                         }}
                     >
                         {curl}
-                        <Tooltip title={copiedCurl ? 'Copied' : 'Copy cURL'}>
+                        <Tooltip title={copiedCurl ? t('common.copied') : t('admin.copyCurl')}>
                             <IconButton
                                 size='small'
                                 onClick={() => copy(curl, setCopiedCurl)}
@@ -304,6 +309,7 @@ EndpointBlock.propTypes = {
 
 const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const isDark = customization?.isDarkMode
     const { onAgentflowNodeStatusUpdate, clearAgentflowNodeStatus } = useContext(flowContext)
@@ -431,7 +437,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                                 if (typeof payload.data === 'string') setFinalMessage((m) => m + payload.data)
                                 break
                             case 'error':
-                                setErrorMessage(typeof payload.data === 'string' ? payload.data : 'Execution error')
+                                setErrorMessage(typeof payload.data === 'string' ? payload.data : t('admin.executionError'))
                                 setStatus('error')
                                 break
                             case 'executionEnd':
@@ -454,12 +460,12 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                 })
             } catch (err) {
                 if (!ctrl.signal.aborted) {
-                    setErrorMessage(err?.message || 'Listener disconnected')
+                    setErrorMessage(err?.message || t('admin.listenerDisconnected'))
                     setStatus('error')
                 }
             }
         },
-        [chatflowid, applyNodeStatus, resetRun, finishedAt]
+        [chatflowid, applyNodeStatus, resetRun, finishedAt, t]
     )
 
     // ── Lifecycle: register listener on open, tear down on close
@@ -477,7 +483,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                 openStream(id)
             } catch (err) {
                 if (cancelled) return
-                setErrorMessage(err?.response?.data?.message || err?.message || 'Failed to register listener')
+                setErrorMessage(err?.response?.data?.message || err?.message || t('admin.failedToRegisterListener'))
                 setStatus('error')
             }
         })()
@@ -623,11 +629,13 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                                 lineHeight: 1
                             }}
                         >
-                            Webhook Listener
+                            {t('admin.webhookListener')}
                         </Typography>
-                        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 0.25, color: 'text.primary' }}>Live observatory</Typography>
+                        <Typography sx={{ fontSize: 14, fontWeight: 600, mt: 0.25, color: 'text.primary' }}>
+                            {t('admin.liveObservatory')}
+                        </Typography>
                     </Box>
-                    <Tooltip title={maximized ? 'Restore width' : 'Expand'}>
+                    <Tooltip title={maximized ? t('admin.restoreWidth') : t('canvas.expand')}>
                         <IconButton
                             size='small'
                             onClick={() => setMaximized((v) => !v)}
@@ -668,7 +676,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
             <Box sx={{ flex: 1, overflow: 'auto', px: 2.5, py: 2 }}>
                 {/* Endpoint */}
                 <Box sx={{ mb: 3 }}>
-                    <Caption>Endpoint</Caption>
+                    <Caption>{t('admin.endpoint')}</Caption>
                     <EndpointBlock method={method} url={webhookUrl} isDark={isDark} />
                 </Box>
 
@@ -677,9 +685,11 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                 {/* Process flow — same expandable tree the chat panel uses, with per-node JSON drilldown */}
                 <Box sx={{ mb: 3 }}>
                     <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ mb: 1 }}>
-                        <Caption>Process flow</Caption>
+                        <Caption>{t('admin.processFlow')}</Caption>
                         {status === 'running' && (
-                            <Typography sx={{ fontFamily: MONO_STACK, fontSize: 10, color: 'warning.main' }}>streaming…</Typography>
+                            <Typography sx={{ fontFamily: MONO_STACK, fontSize: 10, color: 'warning.main' }}>
+                                {t('admin.streaming')}
+                            </Typography>
                         )}
                     </Stack>
 
@@ -693,22 +703,20 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                     ) : status === 'listening' ? (
                         <Box sx={{ textAlign: 'center' }}>
                             <SonarIdle />
-                            <Typography sx={{ fontSize: 12, color: 'text.secondary', mt: 1 }}>
-                                Waiting for an incoming webhook request…
-                            </Typography>
+                            <Typography sx={{ fontSize: 12, color: 'text.secondary', mt: 1 }}>{t('admin.waitingForWebhook')}</Typography>
                             <Typography sx={{ fontFamily: MONO_STACK, fontSize: 10.5, color: 'text.disabled', mt: 0.5 }}>
-                                Send a {method} to the endpoint above to trigger the flow.
+                                {t('admin.sendMethodToEndpoint', { method })}
                             </Typography>
                         </Box>
                     ) : status === 'connecting' ? (
                         <Stack direction='row' alignItems='center' spacing={1} sx={{ color: 'text.secondary' }}>
                             <IconLoader2 size={14} style={{ animation: `${spin} 0.9s linear infinite` }} />
-                            <Typography sx={{ fontSize: 12 }}>Opening event stream…</Typography>
+                            <Typography sx={{ fontSize: 12 }}>{t('admin.openingEventStream')}</Typography>
                         </Stack>
                     ) : status === 'running' ? (
                         <Stack direction='row' alignItems='center' spacing={1} sx={{ color: 'text.secondary' }}>
                             <IconLoader2 size={14} style={{ animation: `${spin} 0.9s linear infinite` }} />
-                            <Typography sx={{ fontSize: 12 }}>Flow started — first node executing…</Typography>
+                            <Typography sx={{ fontSize: 12 }}>{t('admin.flowStarted')}</Typography>
                         </Stack>
                     ) : status === 'error' ? (
                         <Box
@@ -723,7 +731,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                                 fontFamily: MONO_STACK
                             }}
                         >
-                            {errorMessage || 'Listener error'}
+                            {errorMessage || t('admin.listenerError')}
                         </Box>
                     ) : (
                         <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>
@@ -735,7 +743,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                     <>
                         <Divider sx={{ my: 2.5, opacity: 0.6 }} />
                         <Box>
-                            <Caption>Response</Caption>
+                            <Caption>{t('admin.response')}</Caption>
                             <Box
                                 sx={{
                                     border: `1px solid ${theme.palette.divider}`,
@@ -762,7 +770,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                                     <MemoizedReactMarkdown chatflowid={chatflowid}>{finalMessage}</MemoizedReactMarkdown>
                                 ) : (
                                     <Typography sx={{ fontFamily: MONO_STACK, fontSize: 12, color: 'text.secondary' }}>
-                                        Flow completed without a text response.
+                                        {t('admin.flowCompletedNoResponse')}
                                     </Typography>
                                 )}
                             </Box>
@@ -775,7 +783,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                     <>
                         <Divider sx={{ my: 2.5, opacity: 0.6 }} />
                         <Box>
-                            <Caption>Error</Caption>
+                            <Caption>{t('admin.error')}</Caption>
                             <Box
                                 sx={{
                                     border: `1px solid ${alpha(theme.palette.error.main, 0.4)}`,
@@ -819,7 +827,7 @@ const WebhookListenerDrawer = ({ open, chatflowid, onClose, onStatusChange }) =>
                         '&:hover': { color: isDark ? 'common.white' : 'text.primary', bgcolor: 'transparent' }
                     }}
                 >
-                    Reset trace
+                    {t('admin.resetTrace')}
                 </Button>
             </Box>
         </Drawer>

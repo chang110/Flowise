@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import * as PropTypes from 'prop-types'
 import moment from 'moment/moment'
 import { useNavigate } from 'react-router-dom'
@@ -63,6 +64,7 @@ import empty_evalSVG from '@/assets/images/empty_evals.svg'
 
 const EvalsEvaluation = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const { confirm } = useConfirm()
     const dispatch = useDispatch()
@@ -139,10 +141,8 @@ const EvalsEvaluation = () => {
 
     const deleteEvaluationsAllVersions = async () => {
         const confirmPayload = {
-            title: `Delete`,
-            description: `Delete ${selected.length} ${
-                selected.length > 1 ? 'evaluations' : 'evaluation'
-            }? This will delete all versions of the evaluation.`,
+            title: t('common.delete'),
+            description: t('evals.evaluations.deleteAllVersions', { count: selected.length }),
             confirmButtonName: 'Delete',
             cancelButtonName: 'Cancel'
         }
@@ -154,7 +154,7 @@ const EvalsEvaluation = () => {
                 const deleteResp = await evaluationApi.deleteEvaluations(selected, isDeleteAllVersion)
                 if (deleteResp.data) {
                     enqueueSnackbar({
-                        message: `${selected.length} ${selected.length > 1 ? 'evaluations' : 'evaluation'} deleted`,
+                        message: t('evals.evaluations.deletedCount', { count: selected.length }),
                         options: {
                             key: new Date().getTime() + Math.random(),
                             variant: 'success',
@@ -169,9 +169,10 @@ const EvalsEvaluation = () => {
                 }
             } catch (error) {
                 enqueueSnackbar({
-                    message: `Failed to delete ${selected.length > 1 ? 'evaluations' : 'evaluation'}: ${
-                        typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                    }`,
+                    message: t('evals.evaluations.deleteFailed', {
+                        count: selected.length,
+                        error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                    }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -241,11 +242,12 @@ const EvalsEvaluation = () => {
         if (createNewEvaluation.error) {
             // Change to Notifstack
             enqueueSnackbar({
-                message: `Failed to create new evaluation: ${
-                    typeof createNewEvaluation.error.response?.data === 'object'
-                        ? createNewEvaluation.error.response.data.message
-                        : createNewEvaluation.error.response?.data || createNewEvaluation.error.message || 'Unknown error'
-                }`,
+                message: t('evals.evaluations.createFailed', {
+                    error:
+                        typeof createNewEvaluation.error.response?.data === 'object'
+                            ? createNewEvaluation.error.response.data.message
+                            : createNewEvaluation.error.response?.data || createNewEvaluation.error.message || t('evals.unknownError')
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -298,7 +300,13 @@ const EvalsEvaluation = () => {
                     <ErrorBoundary error={error} />
                 ) : (
                     <Stack flexDirection='column' sx={{ gap: 3 }}>
-                        <ViewHeader isBackButton={false} isEditButton={false} search={false} title={'Evaluations'} description=''>
+                        <ViewHeader
+                            isBackButton={false}
+                            isEditButton={false}
+                            search={false}
+                            title={t('pages.evaluations.title')}
+                            description=''
+                        >
                             <ToggleButton
                                 value='auto-refresh'
                                 selected={autoRefresh}
@@ -326,7 +334,7 @@ const EvalsEvaluation = () => {
                                         }
                                     }
                                 }}
-                                title={autoRefresh ? 'Disable auto-refresh' : 'Enable auto-refresh (every 5s)'}
+                                title={autoRefresh ? t('evals.evaluations.disableAutoRefresh') : t('evals.evaluations.enableAutoRefresh')}
                             >
                                 {autoRefresh ? <IconPlayerPause /> : <IconPlayerPlay />}
                             </ToggleButton>
@@ -341,7 +349,7 @@ const EvalsEvaluation = () => {
                                     }
                                 }}
                                 onClick={onRefresh}
-                                title='Refresh'
+                                title={t('common.refresh')}
                             >
                                 <IconRefresh />
                             </IconButton>
@@ -351,7 +359,7 @@ const EvalsEvaluation = () => {
                                 onClick={createEvaluation}
                                 startIcon={<IconPlus />}
                             >
-                                New Evaluation
+                                {t('evals.evaluations.newEvaluation')}
                             </StyledPermissionButton>
                         </ViewHeader>
                         {selected.length > 0 && (
@@ -363,7 +371,7 @@ const EvalsEvaluation = () => {
                                 color='error'
                                 startIcon={<IconTrash />}
                             >
-                                Delete {selected.length} {selected.length === 1 ? 'evaluation' : 'evaluations'}
+                                {t('evals.evaluations.deleteCount', { count: selected.length })}
                             </StyledPermissionButton>
                         )}
                         {!isTableLoading && rows.length <= 0 ? (
@@ -375,7 +383,7 @@ const EvalsEvaluation = () => {
                                         alt='empty_evalSVG'
                                     />
                                 </Box>
-                                <div>No Evaluations Yet</div>
+                                <div>{t('pages.evaluations.noItems')}</div>
                             </Stack>
                         ) : (
                             <>
@@ -404,12 +412,12 @@ const EvalsEvaluation = () => {
                                                     />
                                                 </TableCell>
                                                 <TableCell width={10}> </TableCell>
-                                                <TableCell>Name</TableCell>
-                                                <TableCell>Latest Version</TableCell>
-                                                <TableCell>Average Metrics</TableCell>
-                                                <TableCell>Last Evaluated</TableCell>
-                                                <TableCell>Flow(s)</TableCell>
-                                                <TableCell>Dataset</TableCell>
+                                                <TableCell>{t('table.name')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.latestVersion')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.averageMetrics')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.lastEvaluated')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.flows')}</TableCell>
+                                                <TableCell>{t('nouns.dataset')}</TableCell>
                                                 <TableCell> </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -506,6 +514,7 @@ const EvalsEvaluation = () => {
 }
 
 function EvaluationRunRow(props) {
+    const { t } = useTranslation()
     const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args))
     const closeSnackbar = (...args) => dispatch(closeSnackbarAction(...args))
 
@@ -552,8 +561,8 @@ function EvaluationRunRow(props) {
 
     const deleteChildEvaluations = async () => {
         const confirmPayload = {
-            title: `Delete`,
-            description: `Delete ${childSelected.length} ${childSelected.length > 1 ? 'evaluations' : 'evaluation'}?`,
+            title: t('common.delete'),
+            description: t('evals.evaluations.deleteChildConfirm', { count: childSelected.length }),
             confirmButtonName: 'Delete',
             cancelButtonName: 'Cancel'
         }
@@ -564,7 +573,7 @@ function EvaluationRunRow(props) {
                 const deleteResp = await evaluationApi.deleteEvaluations(childSelected)
                 if (deleteResp.data) {
                     enqueueSnackbar({
-                        message: `${childSelected.length} evaluations deleted.`,
+                        message: t('evals.evaluations.deletedChildCount', { count: childSelected.length }),
                         options: {
                             key: new Date().getTime() + Math.random(),
                             variant: 'success',
@@ -579,9 +588,9 @@ function EvaluationRunRow(props) {
                 }
             } catch (error) {
                 enqueueSnackbar({
-                    message: `Failed to delete Evaluation: ${
-                        typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                    }`,
+                    message: t('evals.evaluations.deleteChildFailed', {
+                        error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                    }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -659,8 +668,8 @@ function EvaluationRunRow(props) {
                             color='info'
                             label={
                                 props.item.average_metrics?.totalRuns
-                                    ? 'Total Runs: ' + props.item.average_metrics?.totalRuns
-                                    : 'Total Runs: N/A'
+                                    ? `${t('evals.evaluations.totalRuns')}: ${props.item.average_metrics?.totalRuns}`
+                                    : `${t('evals.evaluations.totalRuns')}: ${t('evals.notAvailable')}`
                             }
                         />
                         {props.item.average_metrics?.averageCost && (
@@ -672,8 +681,8 @@ function EvaluationRunRow(props) {
                             color='info'
                             label={
                                 props.item.average_metrics?.averageLatency
-                                    ? 'Avg Latency: ' + props.item.average_metrics?.averageLatency + 'ms'
-                                    : 'Avg Latency: N/A'
+                                    ? `${t('evals.evaluations.avgLatency')}: ${props.item.average_metrics?.averageLatency}ms`
+                                    : `${t('evals.evaluations.avgLatency')}: ${t('evals.notAvailable')}`
                             }
                         />
                         {props.item.average_metrics?.passPcnt >= 0 && (
@@ -686,8 +695,8 @@ function EvaluationRunRow(props) {
                                 }}
                                 label={
                                     props.item.average_metrics?.passPcnt
-                                        ? 'Pass Rate: ' + props.item.average_metrics.passPcnt + '%'
-                                        : 'Pass Rate: N/A'
+                                        ? `${t('evals.evaluations.passRate')}: ${props.item.average_metrics.passPcnt}%`
+                                        : `${t('evals.evaluations.passRate')}: ${t('evals.notAvailable')}`
                                 }
                             />
                         )}
@@ -726,7 +735,7 @@ function EvaluationRunRow(props) {
                 </StyledTableCell>
                 <TableCell>
                     <IconButton
-                        title='View Results'
+                        title={t('pages.evaluations.viewResults')}
                         color='primary'
                         disabled={props.item.status === 'pending'}
                         onClick={() => showResults(props.item)}
@@ -745,7 +754,7 @@ function EvaluationRunRow(props) {
                             color='error'
                             startIcon={<IconTrash />}
                         >
-                            Delete {childSelected.length} {childSelected.length === 1 ? 'evaluation' : 'evaluations'}
+                            {t('evals.evaluations.deleteCount', { count: childSelected.length })}
                         </Button>
                     </StyledTableCell>
                 </TableRow>
@@ -766,10 +775,10 @@ function EvaluationRunRow(props) {
                                                         onChange={onSelectAllChildClick}
                                                     />
                                                 </TableCell>
-                                                <TableCell>Version</TableCell>
-                                                <TableCell>Last Run</TableCell>
-                                                <TableCell>Average Metrics</TableCell>
-                                                <TableCell>Status</TableCell>
+                                                <TableCell>{t('evals.evaluations.version')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.lastRun')}</TableCell>
+                                                <TableCell>{t('evals.evaluations.averageMetrics')}</TableCell>
+                                                <TableCell>{t('table.status')}</TableCell>
                                                 <TableCell> </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -800,8 +809,12 @@ function EvaluationRunRow(props) {
                                                                         color='info'
                                                                         label={
                                                                             childItem.average_metrics?.totalRuns
-                                                                                ? 'Total Runs: ' + childItem.average_metrics?.totalRuns
-                                                                                : 'Total Runs: N/A'
+                                                                                ? `${t('evals.evaluations.totalRuns')}: ${
+                                                                                      childItem.average_metrics?.totalRuns
+                                                                                  }`
+                                                                                : `${t('evals.evaluations.totalRuns')}: ${t(
+                                                                                      'evals.notAvailable'
+                                                                                  )}`
                                                                         }
                                                                     />
                                                                     {childItem.average_metrics?.averageCost && (
@@ -818,10 +831,12 @@ function EvaluationRunRow(props) {
                                                                         color='info'
                                                                         label={
                                                                             childItem.average_metrics?.averageLatency
-                                                                                ? 'Avg Latency: ' +
-                                                                                  childItem.average_metrics?.averageLatency +
-                                                                                  'ms'
-                                                                                : 'Avg Latency: N/A'
+                                                                                ? `${t('evals.evaluations.avgLatency')}: ${
+                                                                                      childItem.average_metrics?.averageLatency
+                                                                                  }ms`
+                                                                                : `${t('evals.evaluations.avgLatency')}: ${t(
+                                                                                      'evals.notAvailable'
+                                                                                  )}`
                                                                         }
                                                                     />
                                                                     {childItem.average_metrics?.passPcnt >= 0 && (
@@ -836,10 +851,12 @@ function EvaluationRunRow(props) {
                                                                             }}
                                                                             label={
                                                                                 childItem.average_metrics?.passPcnt
-                                                                                    ? 'Pass rate: ' +
-                                                                                      childItem.average_metrics.passPcnt +
-                                                                                      '%'
-                                                                                    : 'Pass rate: N/A'
+                                                                                    ? `${t('evals.evaluations.passRateLower')}: ${
+                                                                                          childItem.average_metrics.passPcnt
+                                                                                      }%`
+                                                                                    : `${t('evals.evaluations.passRateLower')}: ${t(
+                                                                                          'evals.notAvailable'
+                                                                                      )}`
                                                                             }
                                                                         />
                                                                     )}
@@ -861,7 +878,7 @@ function EvaluationRunRow(props) {
                                                             </StyledTableCell>
                                                             <StyledTableCell>
                                                                 <IconButton
-                                                                    title='View Results'
+                                                                    title={t('pages.evaluations.viewResults')}
                                                                     color='primary'
                                                                     disabled={childItem.status === 'pending'}
                                                                     onClick={() => showResults(childItem)}

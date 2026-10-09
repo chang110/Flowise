@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import {
     Accordion,
     AccordionDetails,
@@ -41,6 +42,7 @@ import variablesApi from '@/api/variables'
 const OverrideConfigTable = ({ columns, onToggle, rows, sx }) => {
     const customization = useSelector((state) => state.customization)
     const isDark = customization?.isDarkMode
+    const { t } = useTranslation()
 
     const handleChange = (enabled, row) => {
         onToggle(row, enabled)
@@ -70,13 +72,13 @@ const OverrideConfigTable = ({ columns, onToggle, rows, sx }) => {
             } else if (typeof row.schema === 'object' && row.schema !== null) {
                 schemaContent = JSON.stringify(row.schema, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')
             } else {
-                schemaContent = 'No schema available'
+                schemaContent = t('uic.overrideConfig.noSchema')
             }
 
             return (
                 <Stack direction='row' alignItems='center' spacing={0.5}>
                     <Typography sx={{ fontSize: '0.8rem' }}>{row[key]}</Typography>
-                    <TooltipWithParser title={`<div>Schema:<br/>${schemaContent}</div>`} />
+                    <TooltipWithParser title={`<div>${t('uic.overrideConfig.schema')}<br/>${schemaContent}</div>`} />
                 </Stack>
             )
         } else {
@@ -84,7 +86,12 @@ const OverrideConfigTable = ({ columns, onToggle, rows, sx }) => {
         }
     }
 
-    const columnLabels = { label: 'Label', name: 'Name', type: 'Type', enabled: 'On' }
+    const columnLabels = {
+        label: t('uic.overrideConfig.label'),
+        name: t('common.name'),
+        type: t('uic.overrideConfig.type'),
+        enabled: t('uic.overrideConfig.on')
+    }
 
     return (
         <TableContainer
@@ -157,6 +164,7 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
     const chatflow = useSelector((state) => state.canvas.chatflow)
+    const { t } = useTranslation()
     const chatflowid = chatflow.id
     const apiConfig = chatflow.apiConfig ? JSON.parse(chatflow.apiConfig) : {}
 
@@ -338,7 +346,7 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Override Configuration Saved',
+                    message: t('uic.overrideConfig.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -353,9 +361,9 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Override Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.overrideConfig.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -398,17 +406,12 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
         <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
             {!hideTitle && (
                 <Typography variant='h3'>
-                    Override Configuration
-                    <TooltipWithParser
-                        style={{ mb: 1, mt: 2, marginLeft: 10 }}
-                        title={
-                            'Enable or disable which properties of the flow configuration can be overridden. Refer to the <a href="https://docs.flowiseai.com/using-flowise/prediction#configuration-override" target="_blank">documentation</a> for more information.'
-                        }
-                    />
+                    {t('uic.overrideConfig.title')}
+                    <TooltipWithParser style={{ mb: 1, mt: 2, marginLeft: 10 }} title={t('uic.overrideConfig.tooltip')} />
                 </Typography>
             )}
             <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
-                <SwitchInput label='Enable Override Configuration' onChange={setOverrideConfigStatus} value={overrideConfigStatus} />
+                <SwitchInput label={t('uic.overrideConfig.enable')} onChange={setOverrideConfigStatus} value={overrideConfigStatus} />
                 {overrideConfigStatus && (
                     <>
                         {nodeOverrides && nodeConfig && (
@@ -423,7 +426,7 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
                             >
                                 <Stack sx={{ mt: 1, mb: 2, ml: 1, alignItems: 'center' }} direction='row' spacing={2}>
                                     <IconBox />
-                                    <Typography variant='h4'>Nodes</Typography>
+                                    <Typography variant='h4'>{t('uic.overrideConfig.nodes')}</Typography>
                                 </Stack>
                                 <Stack direction='column'>
                                     {Object.keys(nodeOverrides)
@@ -506,7 +509,7 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
                             >
                                 <Stack sx={{ mt: 1, mb: 2, ml: 1, alignItems: 'center' }} direction='row' spacing={2}>
                                     <IconVariable />
-                                    <Typography variant='h4'>Variables</Typography>
+                                    <Typography variant='h4'>{t('uic.overrideConfig.variables')}</Typography>
                                 </Stack>
                                 <OverrideConfigTable
                                     rows={variableOverrides}
@@ -520,7 +523,7 @@ const OverrideConfig = ({ dialogProps, hideTitle = false }) => {
             </Stack>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
                 <StyledButton variant='contained' onClick={onOverrideConfigSave} sx={{ minWidth: 100 }}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </Stack>

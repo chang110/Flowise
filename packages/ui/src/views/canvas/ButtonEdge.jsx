@@ -5,6 +5,7 @@ import { useContext, memo } from 'react'
 import { SET_DIRTY } from '@/store/actions'
 import { flowContext } from '@/store/context/ReactFlowContext'
 import { IconX } from '@tabler/icons-react'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 import './index.css'
 
@@ -23,6 +24,7 @@ const ButtonEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
     const { deleteEdge } = useContext(flowContext)
 
     const dispatch = useDispatch()
+    const { paramLabel } = useNodeLocale()
 
     const onEdgeClick = (evt, id) => {
         evt.stopPropagation()
@@ -37,7 +39,7 @@ const ButtonEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
                 <EdgeText
                     x={sourceX + 10}
                     y={sourceY + 10}
-                    label={data.label}
+                    label={paramLabel(data.label)}
                     labelStyle={{ fill: 'black' }}
                     labelBgStyle={{ fill: 'transparent' }}
                     labelBgPadding={[2, 4]}

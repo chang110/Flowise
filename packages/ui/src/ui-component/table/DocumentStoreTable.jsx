@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { styled } from '@mui/material/styles'
 import {
     Box,
@@ -42,6 +43,7 @@ const StyledTableRow = styled(TableRow)(() => ({
 
 export const DocumentStoreTable = ({ data, isLoading, onRowClick, images, showActions, onActionMenuClick, actionButtonSx }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const localStorageKeyOrder = 'doc_store_order'
@@ -85,11 +87,11 @@ export const DocumentStoreTable = ({ data, isLoading, onRowClick, images, showAc
                                     Name
                                 </TableSortLabel>
                             </StyledTableCell>
-                            <StyledTableCell>Description</StyledTableCell>
-                            <StyledTableCell>Connected flows</StyledTableCell>
-                            <StyledTableCell>Total characters</StyledTableCell>
-                            <StyledTableCell>Total chunks</StyledTableCell>
-                            <StyledTableCell>Loader Types</StyledTableCell>
+                            <StyledTableCell>{t('table.description')}</StyledTableCell>
+                            <StyledTableCell>{t('table.connectedFlows')}</StyledTableCell>
+                            <StyledTableCell>{t('table.totalCharacters')}</StyledTableCell>
+                            <StyledTableCell>{t('table.totalChunks')}</StyledTableCell>
+                            <StyledTableCell>{t('table.loaderTypes')}</StyledTableCell>
                             {showActions && (
                                 <StyledTableCell align='right' sx={{ width: 44, pr: 1 }}>
                                     &nbsp;

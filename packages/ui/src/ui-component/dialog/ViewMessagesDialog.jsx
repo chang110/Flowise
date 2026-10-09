@@ -32,6 +32,7 @@ import {
     IconButton
 } from '@mui/material'
 import { useTheme, styled, alpha } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
 import DatePicker from 'react-datepicker'
 
 import robotPNG from '@/assets/images/robot.png'
@@ -71,6 +72,7 @@ import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackba
 
 import '@/views/chatmessage/ChatMessage.css'
 import 'react-datepicker/dist/react-datepicker.css'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const StyledMenu = styled((props) => (
     <Menu
@@ -128,6 +130,7 @@ const messageImageStyle = {
 }
 
 const ConfirmDeleteMessageDialog = ({ show, dialogProps, onCancel, onConfirm }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const [hardDelete, setHardDelete] = useState(false)
 
@@ -152,14 +155,14 @@ const ConfirmDeleteMessageDialog = ({ show, dialogProps, onCancel, onConfirm }) 
                 {dialogProps.isChatflow && (
                     <FormControlLabel
                         control={<Checkbox checked={hardDelete} onChange={(event) => setHardDelete(event.target.checked)} />}
-                        label='Remove messages from 3rd party Memory Node'
+                        label={t('dlg.removeFromMemoryNode')}
                     />
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={onCancel}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton variant='contained' onClick={onSubmit}>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
         </Dialog>
@@ -176,6 +179,7 @@ ConfirmDeleteMessageDialog.propTypes = {
 }
 
 const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
     const theme = useTheme()
@@ -275,8 +279,8 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
 
     const onDeleteMessages = () => {
         setHardDeleteDialogProps({
-            title: 'Delete Messages',
-            description: 'Are you sure you want to delete messages? This action cannot be undone.',
+            title: t('dlg.deleteMessages'),
+            description: t('dlg.deleteMessagesConfirm'),
             confirmButtonName: 'Delete',
             cancelButtonName: 'Cancel',
             isChatflow: dialogProps.isChatflow
@@ -312,7 +316,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
 
             await chatmessageApi.deleteChatmessage(chatflowid, obj)
             enqueueSnackbar({
-                message: 'Successfully deleted messages',
+                message: t('dlg.messagesDeleted'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -346,15 +350,15 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
         if (chatType === 'INTERNAL') {
             return 'UI'
         } else if (chatType === 'EVALUATION') {
-            return 'Evaluation'
+            return t('dlg.chatTypeEvaluation')
         } else if (chatType === 'MCP') {
             return 'MCP'
         } else if (chatType === 'SCHEDULED') {
-            return 'Scheduled'
+            return t('dlg.chatTypeScheduled')
         } else if (chatType === 'WEBHOOK') {
             return 'Webhook'
         }
-        return 'API/Embed'
+        return t('dlg.chatTypeApiEmbed')
     }
 
     const exportMessages = async () => {
@@ -380,7 +384,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
             linkElement.click()
 
             enqueueSnackbar({
-                message: 'Messages exported successfully',
+                message: t('dlg.messagesExported'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -394,7 +398,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
         } catch (error) {
             console.error('Error exporting messages:', error)
             enqueueSnackbar({
-                message: 'Failed to export messages',
+                message: t('dlg.failedToExportMessages'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -412,10 +416,10 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
     const clearChat = async (chatmsg) => {
         const description =
             chatmsg.sessionId && chatmsg.memoryType
-                ? `Are you sure you want to clear session id: ${chatmsg.sessionId} from ${chatmsg.memoryType}?`
-                : `Are you sure you want to clear messages?`
+                ? t('dlg.clearSessionConfirm', { sessionId: chatmsg.sessionId, memoryType: chatmsg.memoryType })
+                : t('dlg.clearMessagesConfirm')
         const confirmPayload = {
-            title: `Clear Session`,
+            title: t('dlg.clearSession'),
             description,
             confirmButtonName: 'Clear',
             cancelButtonName: 'Cancel'
@@ -434,8 +438,8 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                 await chatmessageApi.deleteChatmessage(chatflowid, obj)
                 const description =
                     chatmsg.sessionId && chatmsg.memoryType
-                        ? `Successfully cleared session id: ${chatmsg.sessionId} from ${chatmsg.memoryType}`
-                        : `Successfully cleared messages`
+                        ? t('dlg.sessionCleared', { sessionId: chatmsg.sessionId, memoryType: chatmsg.memoryType })
+                        : t('dlg.messagesCleared')
                 enqueueSnackbar({
                     message: description,
                     options: {
@@ -676,7 +680,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
             return (
                 /* eslint-disable jsx-a11y/media-has-caption */
                 <audio controls='controls'>
-                    Your browser does not support the &lt;audio&gt; tag.
+                    {t('dlg.audioNotSupported')}
                     <source src={item.data} type={item.mime} />
                 </audio>
             )
@@ -867,7 +871,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                         }}
                     >
                         <div style={{ marginRight: 10 }}>
-                            <b style={{ marginRight: 10 }}>From Date</b>
+                            <b style={{ marginRight: 10 }}>{t('dlg.fromDate')}</b>
                             <DatePicker
                                 selected={startDate}
                                 onChange={(date) => onStartDateSelected(date)}
@@ -878,7 +882,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                             />
                         </div>
                         <div style={{ marginRight: 10 }}>
-                            <b style={{ marginRight: 10 }}>To Date</b>
+                            <b style={{ marginRight: 10 }}>{t('dlg.toDate')}</b>
                             <DatePicker
                                 selected={endDate}
                                 onChange={(date) => onEndDateSelected(date)}
@@ -899,7 +903,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                 marginRight: 10
                             }}
                         >
-                            <b style={{ marginRight: 10 }}>Source</b>
+                            <b style={{ marginRight: 10 }}>{t('dlg.source')}</b>
                             <MultiDropdown
                                 key={JSON.stringify(chatTypeFilter)}
                                 name='chatType'
@@ -909,7 +913,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         name: 'INTERNAL'
                                     },
                                     {
-                                        label: 'API/Embed',
+                                        label: t('dlg.chatTypeApiEmbed'),
                                         name: 'EXTERNAL'
                                     },
                                     {
@@ -917,7 +921,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         name: 'MCP'
                                     },
                                     {
-                                        label: 'Scheduled',
+                                        label: t('dlg.chatTypeScheduled'),
                                         name: 'SCHEDULED'
                                     },
                                     {
@@ -925,7 +929,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         name: 'WEBHOOK'
                                     },
                                     {
-                                        label: 'Evaluations',
+                                        label: t('dlg.chatTypeEvaluations'),
                                         name: 'EVALUATION'
                                     }
                                 ]}
@@ -943,17 +947,17 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                 marginRight: 10
                             }}
                         >
-                            <b style={{ marginRight: 10 }}>Feedback</b>
+                            <b style={{ marginRight: 10 }}>{t('chat.feedback')}</b>
                             <MultiDropdown
                                 key={JSON.stringify(feedbackTypeFilter)}
                                 name='feedbackType'
                                 options={[
                                     {
-                                        label: 'Positive',
+                                        label: t('dlg.positive'),
                                         name: 'THUMBS_UP'
                                     },
                                     {
-                                        label: 'Negative',
+                                        label: t('dlg.negative'),
                                         name: 'THUMBS_DOWN'
                                     }
                                 ]}
@@ -982,7 +986,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                 <KeyboardArrowDownIcon style={{ backgroundColor: customization.isDarkMode ? 'transparent' : 'inherit' }} />
                             }
                         >
-                            More Actions
+                            {t('dlg.moreActions')}
                         </Button>
                         <StyledMenu
                             id='messages-dialog-action-menu'
@@ -1001,7 +1005,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                 disableRipple
                             >
                                 <IconFileExport style={{ marginRight: 8 }} />
-                                Export to JSON
+                                {t('dlg.exportToJson')}
                             </MenuItem>
                             {(stats.totalMessages ?? 0) > 0 && (
                                 <MenuItem
@@ -1012,7 +1016,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                     disableRipple
                                 >
                                     <IconEraser style={{ marginRight: 8 }} />
-                                    Delete All
+                                    {t('dlg.deleteAll')}
                                 </MenuItem>
                             )}
                         </StyledMenu>
@@ -1028,11 +1032,11 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                             marginTop: 20
                         }}
                     >
-                        <StatsCard title='Total Sessions' stat={`${stats.totalSessions ?? 0}`} />
-                        <StatsCard title='Total Messages' stat={`${stats.totalMessages ?? 0}`} />
-                        <StatsCard title='Total Feedback Received' stat={`${stats.totalFeedback ?? 0}`} />
+                        <StatsCard title={t('dlg.totalSessions')} stat={`${stats.totalSessions ?? 0}`} />
+                        <StatsCard title={t('dlg.totalMessages')} stat={`${stats.totalMessages ?? 0}`} />
+                        <StatsCard title={t('dlg.totalFeedbackReceived')} stat={`${stats.totalFeedback ?? 0}`} />
                         <StatsCard
-                            title='Positive Feedback'
+                            title={t('dlg.positiveFeedback')}
                             stat={`${(((stats.positiveFeedback ?? 0) / (stats.totalFeedback ?? 1)) * 100 || 0).toFixed(2)}%`}
                         />
                     </div>
@@ -1046,7 +1050,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         alt='msgEmptySVG'
                                     />
                                 </Box>
-                                <div>No Messages</div>
+                                <div>{t('dlg.noMessages')}</div>
                             </Stack>
                         )}
                         {chatlogs && chatlogs.length > 0 && (
@@ -1071,8 +1075,11 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         }}
                                     >
                                         <Typography variant='h5'>
-                                            Sessions {pageLimit * (currentPage - 1) + 1} - {Math.min(pageLimit * currentPage, total)} of{' '}
-                                            {total}
+                                            {t('dlg.sessionsRange', {
+                                                from: pageLimit * (currentPage - 1) + 1,
+                                                to: Math.min(pageLimit * currentPage, total),
+                                                total
+                                            })}
                                         </Typography>
                                         <Pagination
                                             style={{ justifyItems: 'right', justifyContent: 'center' }}
@@ -1130,22 +1137,22 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                         <div style={{ flex: 1, marginLeft: '20px', marginBottom: '15px', marginTop: '10px' }}>
                                             {chatMessages[1].sessionId && (
                                                 <div>
-                                                    Session Id:&nbsp;<b>{chatMessages[1].sessionId}</b>
+                                                    {t('dlg.sessionIdLabel')}&nbsp;<b>{chatMessages[1].sessionId}</b>
                                                 </div>
                                             )}
                                             {chatMessages[1].chatType && (
                                                 <div>
-                                                    Source:&nbsp;<b>{getChatType(chatMessages[1].chatType)}</b>
+                                                    {t('dlg.sourceLabel')}&nbsp;<b>{getChatType(chatMessages[1].chatType)}</b>
                                                 </div>
                                             )}
                                             {chatMessages[1].memoryType && (
                                                 <div>
-                                                    Memory:&nbsp;<b>{chatMessages[1].memoryType}</b>
+                                                    {t('dlg.memoryLabel')}&nbsp;<b>{chatMessages[1].memoryType}</b>
                                                 </div>
                                             )}
                                             {leadEmail && (
                                                 <div>
-                                                    Email:&nbsp;<b>{leadEmail}</b>
+                                                    {t('dlg.emailLabel')}&nbsp;<b>{leadEmail}</b>
                                                 </div>
                                             )}
                                         </div>
@@ -1157,18 +1164,13 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                 alignItems: 'end'
                                             }}
                                         >
-                                            <Tooltip title='Clear Message'>
+                                            <Tooltip title={t('dlg.clearMessage')}>
                                                 <IconButton color='error' onClick={() => clearChat(chatMessages[1])}>
                                                     <IconEraser />
                                                 </IconButton>
                                             </Tooltip>
                                             {chatMessages[1].sessionId && (
-                                                <Tooltip
-                                                    title={
-                                                        'On the left 👈, you’ll see the Memory node used in this conversation. To delete the session conversations stored on that Memory node, you must have a matching Memory node with identical parameters in the canvas.'
-                                                    }
-                                                    placement='bottom'
-                                                >
+                                                <Tooltip title={t('dlg.memoryNodeTooltip')} placement='bottom'>
                                                     <IconButton color='primary'>
                                                         <IconBulb />
                                                     </IconButton>
@@ -1337,7 +1339,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                                                                             onClick={() =>
                                                                                                                 onSourceDialogClick(
                                                                                                                     tool,
-                                                                                                                    'Used Tools'
+                                                                                                                    t('dlg.usedTools')
                                                                                                                 )
                                                                                                             }
                                                                                                         />
@@ -1356,7 +1358,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                                                                 >
                                                                                                     <Chip
                                                                                                         size='small'
-                                                                                                        label={'State'}
+                                                                                                        label={t('dlg.state')}
                                                                                                         component='a'
                                                                                                         sx={{ mr: 1, mt: 1 }}
                                                                                                         variant='outlined'
@@ -1367,7 +1369,7 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                                                                         onClick={() =>
                                                                                                             onSourceDialogClick(
                                                                                                                 agent.state,
-                                                                                                                'State'
+                                                                                                                t('dlg.state')
                                                                                                             )
                                                                                                         }
                                                                                                     />
@@ -1409,7 +1411,9 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                                                         )}
                                                                                         {agent.instructions && <p>{agent.instructions}</p>}
                                                                                         {agent.messages.length === 0 &&
-                                                                                            !agent.instructions && <p>Finished</p>}
+                                                                                            !agent.instructions && (
+                                                                                                <p>{t('chat.finished')}</p>
+                                                                                            )}
                                                                                         {agent.sourceDocuments &&
                                                                                             agent.sourceDocuments.length > 0 && (
                                                                                                 <div
@@ -1504,7 +1508,9 @@ const ViewMessagesDialog = ({ show, dialogProps, onCancel }) => {
                                                                                             }
                                                                                         />
                                                                                     }
-                                                                                    onClick={() => onSourceDialogClick(tool, 'Used Tools')}
+                                                                                    onClick={() =>
+                                                                                        onSourceDialogClick(tool, t('dlg.usedTools'))
+                                                                                    }
                                                                                 />
                                                                             )
                                                                         })}

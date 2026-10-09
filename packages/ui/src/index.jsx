@@ -6,6 +6,9 @@ import { createRoot } from 'react-dom/client'
 // style + assets
 import '@/assets/scss/style.scss'
 
+// i18n (must be imported before App renders)
+import '@/i18n'
+
 // third party
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'

@@ -3,6 +3,7 @@ import { Handle, Position, useUpdateNodeInternals } from 'reactflow'
 import { useEffect, useRef, useState, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { cloneDeep } from 'lodash'
 import showdown from 'showdown'
 import parser from 'html-react-parser'
@@ -97,6 +98,7 @@ import useNotifier from '@/utils/useNotifier'
 // const
 import { baseURL, FLOWISE_CREDENTIAL_ID } from '@/store/constant'
 import { closeSnackbar as closeSnackbarAction, enqueueSnackbar as enqueueSnackbarAction, SET_CHATFLOW } from '@/store/actions'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const EDITABLE_OPTIONS = ['selectedTool', 'selectedAssistant']
 
@@ -144,6 +146,8 @@ const NodeInputHandler = ({
     const chatflowId = chatflowIdFromParams || canvasChatflow?.id
 
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { paramLabel, paramDescription } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const ref = useRef(null)
     const { reactFlowInstance, deleteEdge, onNodeDataChange } = useContext(flowContext)
@@ -864,9 +868,11 @@ const NodeInputHandler = ({
                     </CustomWidthTooltip>
                     <Box sx={{ p: 2 }}>
                         <Typography>
-                            {inputAnchor.label}
+                            {paramLabel(inputAnchor.label)}
                             {!inputAnchor.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
-                            {inputAnchor.description && <TooltipWithParser style={{ marginLeft: 10 }} title={inputAnchor.description} />}
+                            {inputAnchor.description && (
+                                <TooltipWithParser style={{ marginLeft: 10 }} title={paramDescription(inputAnchor.description)} />
+                            )}
                         </Typography>
                     </Box>
                 </>
@@ -907,7 +913,7 @@ const NodeInputHandler = ({
                                         onClick={() => onShowPromptHubButtonClicked()}
                                         endIcon={<IconAutoFixHigh />}
                                     >
-                                        Langchain Hub
+                                        {t('rem.langchainHub')}
                                     </Button>
                                     <PromptLangsmithHubDialog
                                         promptType={inputParam.name}
@@ -929,15 +935,17 @@ const NodeInputHandler = ({
                                     variant='outlined'
                                     onClick={() => setIsNvidiaNIMDialogOpen(true)}
                                 >
-                                    Setup NIM Locally
+                                    {t('rem.setupNimLocally')}
                                 </Button>
                             </>
                         )}
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                             <Typography>
-                                {inputParam.label}
+                                {paramLabel(inputParam.label)}
                                 {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
-                                {inputParam.description && <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />}
+                                {inputParam.description && (
+                                    <TooltipWithParser style={{ marginLeft: 10 }} title={paramDescription(inputParam.description)} />
+                                )}
                             </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                             {inputParam.hint && !isAdditionalParams && (
@@ -968,13 +976,13 @@ const NodeInputHandler = ({
                                 </Button>
                             )}
                             {inputParam.acceptVariable && inputParam.type === 'string' && (
-                                <Tooltip title='Type {{ to select variables'>
+                                <Tooltip title={t('canvas.typeToSelectVariables')}>
                                     <IconVariable size={20} style={{ color: 'teal' }} />
                                 </Tooltip>
                             )}
                             {inputParam.generateDocStoreDescription && (
                                 <IconButton
-                                    title='Generate knowledge base description'
+                                    title={t('canvas.generateKbDescription')}
                                     sx={{
                                         height: 25,
                                         width: 25
@@ -988,7 +996,7 @@ const NodeInputHandler = ({
                             )}
                             {inputParam.generateInstruction && (
                                 <IconButton
-                                    title='Generate instructions'
+                                    title={t('canvas.generateInstructions')}
                                     sx={{
                                         height: 25,
                                         width: 25,
@@ -1009,7 +1017,7 @@ const NodeInputHandler = ({
                                         width: 25,
                                         ml: 0.5
                                     }}
-                                    title='Expand'
+                                    title={t('canvas.expand')}
                                     color='primary'
                                     onClick={() =>
                                         onExpandDialogClicked(data.inputs[inputParam.name] ?? inputParam.default ?? '', inputParam)
@@ -1061,7 +1069,7 @@ const NodeInputHandler = ({
                                 >
                                     <TabsList>
                                         {inputParam.tabs.map((inputChildParam, index) => (
-                                            <Tab key={index}>{inputChildParam.label}</Tab>
+                                            <Tab key={index}>{paramLabel(inputChildParam.label)}</Tab>
                                         ))}
                                     </TabsList>
                                 </Tabs>
@@ -1115,7 +1123,7 @@ const NodeInputHandler = ({
                                                 setReloadTimestamp(Date.now().toString())
                                             }}
                                         >
-                                            See Example
+                                            {t('canvas.seeExample')}
                                         </Button>
                                     )}
                                 </div>
@@ -1154,14 +1162,14 @@ const NodeInputHandler = ({
                                     readOnly: true,
                                     endAdornment: chatflowId ? (
                                         <InputAdornment position='end'>
-                                            <Tooltip title='Copy URL'>
+                                            <Tooltip title={t('canvas.copyUrl')}>
                                                 <IconButton
                                                     size='small'
                                                     onClick={() => {
                                                         navigator.clipboard.writeText(webhookUrlBase).then(
                                                             () =>
                                                                 enqueueSnackbar({
-                                                                    message: 'URL copied!',
+                                                                    message: t('canvas.urlCopied'),
                                                                     options: {
                                                                         key: new Date().getTime() + Math.random(),
                                                                         variant: 'success'
@@ -1169,7 +1177,7 @@ const NodeInputHandler = ({
                                                                 }),
                                                             () =>
                                                                 enqueueSnackbar({
-                                                                    message: 'Failed to copy URL.',
+                                                                    message: t('canvas.failedToCopyUrl'),
                                                                     options: { key: new Date().getTime() + Math.random(), variant: 'error' }
                                                                 })
                                                         )
@@ -1206,15 +1214,15 @@ const NodeInputHandler = ({
                                                 }
                                             }}
                                         >
-                                            Generate a secret below — without one, every incoming webhook request will be rejected.
+                                            {t('canvas.secretWarning')}
                                         </Alert>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Typography variant='body2' sx={{ color: 'text.secondary', flexGrow: 1 }}>
-                                                No secret configured
+                                                {t('canvas.noSecretConfigured')}
                                             </Typography>
                                             {chatflowId && (
                                                 <Button size='small' variant='outlined' onClick={handleSetWebhookSecret}>
-                                                    Generate Secret
+                                                    {t('canvas.generateSecret')}
                                                 </Button>
                                             )}
                                         </Box>
@@ -1232,14 +1240,14 @@ const NodeInputHandler = ({
                                             endAdornment: (
                                                 <InputAdornment position='end' sx={{ gap: 0.5 }}>
                                                     {webhookSecretPlaintext && (
-                                                        <Tooltip title='Copy secret'>
+                                                        <Tooltip title={t('canvas.copySecret')}>
                                                             <IconButton
                                                                 size='small'
                                                                 onClick={() => {
                                                                     navigator.clipboard.writeText(webhookSecretPlaintext).then(
                                                                         () =>
                                                                             enqueueSnackbar({
-                                                                                message: 'Secret copied!',
+                                                                                message: t('canvas.secretCopied'),
                                                                                 options: {
                                                                                     key: new Date().getTime() + Math.random(),
                                                                                     variant: 'success'
@@ -1247,7 +1255,7 @@ const NodeInputHandler = ({
                                                                             }),
                                                                         () =>
                                                                             enqueueSnackbar({
-                                                                                message: 'Failed to copy secret.',
+                                                                                message: t('canvas.failedToCopySecret'),
                                                                                 options: {
                                                                                     key: new Date().getTime() + Math.random(),
                                                                                     variant: 'error'
@@ -1260,12 +1268,12 @@ const NodeInputHandler = ({
                                                             </IconButton>
                                                         </Tooltip>
                                                     )}
-                                                    <Tooltip title='Regenerate secret'>
+                                                    <Tooltip title={t('canvas.regenerateSecret')}>
                                                         <IconButton size='small' onClick={handleSetWebhookSecret}>
                                                             <IconRefresh size={16} />
                                                         </IconButton>
                                                     </Tooltip>
-                                                    <Tooltip title='Remove secret'>
+                                                    <Tooltip title={t('canvas.removeSecret')}>
                                                         <IconButton size='small' onClick={handleClearWebhookSecret}>
                                                             <IconX size={16} />
                                                         </IconButton>
@@ -1336,7 +1344,7 @@ const NodeInputHandler = ({
                                             disabled={disabled}
                                             onClick={() => onEditJSONClicked(data.inputs[inputParam.name] ?? '', inputParam)}
                                         >
-                                            {inputParam.label}
+                                            {paramLabel(inputParam.label)}
                                         </Button>
                                         <FormatPromptValuesDialog
                                             show={showFormatPromptValuesDialog}
@@ -1394,7 +1402,7 @@ const NodeInputHandler = ({
                                     />
                                     {EDITABLE_OPTIONS.includes(inputParam.name) && data.inputs[inputParam.name] && (
                                         <IconButton
-                                            title='Edit'
+                                            title={t('common.edit')}
                                             color='primary'
                                             size='small'
                                             onClick={() => editAsyncOption(inputParam.name, data.inputs[inputParam.name])}
@@ -1404,7 +1412,7 @@ const NodeInputHandler = ({
                                     )}
                                     {inputParam.refresh && (
                                         <IconButton
-                                            title='Refresh'
+                                            title={t('common.refresh')}
                                             color='primary'
                                             size='small'
                                             onClick={() => setReloadTimestamp(Date.now().toString())}
@@ -1460,7 +1468,7 @@ const NodeInputHandler = ({
                                     variant='outlined'
                                     onClick={() => onConditionDialogClicked(inputParam)}
                                 >
-                                    {inputParam.label}
+                                    {paramLabel(inputParam.label)}
                                 </Button>
                             </>
                         )}
@@ -1487,7 +1495,7 @@ const NodeInputHandler = ({
                                             )
                                         }
                                     >
-                                        Manage Links
+                                        {t('rem.manageLinks')}
                                     </Button>
                                     <ManageScrapedLinksDialog
                                         show={showManageScrapedLinksDialog}
@@ -1569,7 +1577,7 @@ const NodeInputHandler = ({
                 maxWidth='sm'
                 fullWidth
             >
-                <DialogTitle id='model-selection-dialog-title'>Select Model</DialogTitle>
+                <DialogTitle id='model-selection-dialog-title'>{t('canvas.selectModel')}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ mt: 2 }}>
                         <Box sx={{ px: 2 }}>
@@ -1610,7 +1618,7 @@ const NodeInputHandler = ({
                             setSelectedTempChatModel({})
                         }}
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </Button>
                     <Button
                         disabled={!selectedTempChatModel || Object.keys(selectedTempChatModel).length === 0}
@@ -1623,7 +1631,7 @@ const NodeInputHandler = ({
                         }}
                         variant='contained'
                     >
-                        Confirm
+                        {t('common.confirm')}
                     </Button>
                 </DialogActions>
             </Dialog>

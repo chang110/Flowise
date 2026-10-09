@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction, SET_CHATFLOW } from '@/store/actions'
 
 // material-ui
@@ -38,14 +39,17 @@ import useNotifier from '@/utils/useNotifier'
 // API
 import chatflowsApi from '@/api/chatflows'
 import ttsApi from '@/api/tts'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const TextToSpeechType = {
     OPENAI_TTS: 'openai',
     ELEVEN_LABS_TTS: 'elevenlabs'
 }
 
+const TEST_PHRASE = 'Today is a wonderful day to build something with Flowise!'
+
 // Weird quirk - the key must match the name property value.
-const textToSpeechProviders = {
+const getTextToSpeechProviders = (t) => ({
     [TextToSpeechType.OPENAI_TTS]: {
         label: 'OpenAI TTS',
         name: TextToSpeechType.OPENAI_TTS,
@@ -53,16 +57,16 @@ const textToSpeechProviders = {
         url: 'https://platform.openai.com/docs/guides/text-to-speech',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['openAIApi']
             },
             {
-                label: 'Voice',
+                label: t('uic.voice'),
                 name: 'voice',
                 type: 'voice_select',
-                description: 'The voice to use when generating the audio',
+                description: t('uic.textToSpeech.openAiVoiceDescription'),
                 default: 'alloy',
                 optional: true
             }
@@ -75,28 +79,31 @@ const textToSpeechProviders = {
         url: 'https://elevenlabs.io/',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['elevenLabsApi']
             },
             {
-                label: 'Voice',
+                label: t('uic.voice'),
                 name: 'voice',
                 type: 'voice_select',
-                description: 'The voice to use for text-to-speech',
+                description: t('uic.textToSpeech.elevenLabsVoiceDescription'),
                 default: '21m00Tcm4TlvDq8ikWAM',
                 optional: true
             }
         ]
     }
-}
+})
 
 const TextToSpeech = ({ dialogProps }) => {
+    const { paramDescription } = useNodeLocale()
     const dispatch = useDispatch()
 
     useNotifier()
     const theme = useTheme()
+    const { t } = useTranslation()
+    const textToSpeechProviders = getTextToSpeechProviders(t)
 
     const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args))
     const closeSnackbar = (...args) => dispatch(closeSnackbarAction(...args))
@@ -129,7 +136,7 @@ const TextToSpeech = ({ dialogProps }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Text To Speech Configuration Saved',
+                    message: t('uic.textToSpeech.saved'),
                     options: {
                         key: Date.now() + Math.random(),
                         variant: 'success',
@@ -144,9 +151,9 @@ const TextToSpeech = ({ dialogProps }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Text To Speech Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.textToSpeech.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: Date.now() + Math.random(),
                     variant: 'error',
@@ -233,7 +240,7 @@ const TextToSpeech = ({ dialogProps }) => {
     const testTTS = async () => {
         if (selectedProvider === 'none' || !textToSpeech?.[selectedProvider]?.credentialId) {
             enqueueSnackbar({
-                message: 'Please select a provider and configure credentials first',
+                message: t('uic.textToSpeech.selectProviderFirst'),
                 options: { variant: 'warning' }
             })
             return
@@ -244,7 +251,7 @@ const TextToSpeech = ({ dialogProps }) => {
         try {
             const providerConfig = textToSpeech?.[selectedProvider] || {}
             const body = {
-                text: 'Today is a wonderful day to build something with Flowise!',
+                text: TEST_PHRASE,
                 provider: selectedProvider,
                 credentialId: providerConfig.credentialId,
                 voice: providerConfig.voice,
@@ -262,7 +269,7 @@ const TextToSpeech = ({ dialogProps }) => {
             })
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
+                throw new Error(t('uic.textToSpeech.httpError', { status: response.status }))
             }
 
             const audioChunks = []
@@ -312,12 +319,12 @@ const TextToSpeech = ({ dialogProps }) => {
 
                 setTestAudioSrc(audioUrl)
             } else {
-                throw new Error('No audio data received')
+                throw new Error(t('uic.textToSpeech.noAudioData'))
             }
         } catch (error) {
             console.error('Error testing TTS:', error)
             enqueueSnackbar({
-                message: `TTS test failed: ${error.message}`,
+                message: t('uic.textToSpeech.testFailed', { error: error.message }),
                 options: { variant: 'error' }
             })
         } finally {
@@ -419,7 +426,7 @@ const TextToSpeech = ({ dialogProps }) => {
     return (
         <>
             <Box fullWidth sx={{ mb: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography>Providers</Typography>
+                <Typography>{t('uic.providers')}</Typography>
                 <FormControl fullWidth>
                     <Select
                         size='small'
@@ -431,7 +438,7 @@ const TextToSpeech = ({ dialogProps }) => {
                             }
                         }}
                     >
-                        <MenuItem value='none'>None</MenuItem>
+                        <MenuItem value='none'>{t('uic.none')}</MenuItem>
                         {Object.values(textToSpeechProviders).map((provider) => (
                             <MenuItem key={provider.name} value={provider.name}>
                                 {provider.label}
@@ -493,7 +500,7 @@ const TextToSpeech = ({ dialogProps }) => {
                                     {inputParam.label}
                                     {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
                                     {inputParam.description && (
-                                        <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />
+                                        <TooltipWithParser style={{ marginLeft: 10 }} title={paramDescription(inputParam.description)} />
                                     )}
                                 </Typography>
                             </div>
@@ -567,7 +574,9 @@ const TextToSpeech = ({ dialogProps }) => {
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
-                                            placeholder={loadingVoices ? 'Loading voices...' : 'Choose a voice'}
+                                            placeholder={
+                                                loadingVoices ? t('uic.textToSpeech.loadingVoices') : t('uic.textToSpeech.chooseVoice')
+                                            }
                                             InputProps={{
                                                 ...params.InputProps,
                                                 endAdornment: (
@@ -589,11 +598,8 @@ const TextToSpeech = ({ dialogProps }) => {
                     <Box sx={{ p: 2 }}>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                             <Typography>
-                                Automatically play audio
-                                <TooltipWithParser
-                                    style={{ marginLeft: 10 }}
-                                    title='When enabled, bot responses will be automatically converted to speech and played'
-                                />
+                                {t('uic.textToSpeech.autoPlay')}
+                                <TooltipWithParser style={{ marginLeft: 10 }} title={t('uic.textToSpeech.autoPlayTooltip')} />
                             </Typography>
                         </div>
                         <SwitchInput
@@ -606,11 +612,11 @@ const TextToSpeech = ({ dialogProps }) => {
                     <Box sx={{ p: 2 }}>
                         <Typography variant='h6' sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                             <IconVolume size={20} />
-                            Test Voice
+                            {t('uic.textToSpeech.testVoice')}
                         </Typography>
 
                         <Typography variant='body2' color='textSecondary' sx={{ mb: 2 }}>
-                            Test text: &quot;Today is a wonderful day to build something with Flowise!&quot;
+                            {t('uic.textToSpeech.testText', { text: TEST_PHRASE })}
                         </Typography>
 
                         <AudioWaveform
@@ -648,7 +654,7 @@ const TextToSpeech = ({ dialogProps }) => {
                     onClick={onSave}
                     sx={{ minWidth: 100 }}
                 >
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </>

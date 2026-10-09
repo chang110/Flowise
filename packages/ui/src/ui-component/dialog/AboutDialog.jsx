@@ -2,11 +2,13 @@ import { createPortal } from 'react-dom'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Dialog, DialogContent, DialogTitle, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import moment from 'moment'
 import axios from 'axios'
 import { baseURL } from '@/store/constant'
 
 const AboutDialog = ({ show, onCancel }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
 
     const [data, setData] = useState({})
@@ -45,7 +47,7 @@ const AboutDialog = ({ show, onCancel }) => {
             aria-describedby='alert-dialog-description'
         >
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
-                Flowise Version
+                {t('dlg.flowiseVersion')}
             </DialogTitle>
             <DialogContent>
                 {data && (
@@ -53,9 +55,9 @@ const AboutDialog = ({ show, onCancel }) => {
                         <Table aria-label='simple table'>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Current Version</TableCell>
-                                    <TableCell>Latest Version</TableCell>
-                                    <TableCell>Published At</TableCell>
+                                    <TableCell>{t('dlg.currentVersion')}</TableCell>
+                                    <TableCell>{t('dlg.latestVersion')}</TableCell>
+                                    <TableCell>{t('dlg.publishedAt')}</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

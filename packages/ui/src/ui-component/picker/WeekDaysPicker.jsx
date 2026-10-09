@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Box, Chip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 const DEFAULT_DAYS = [
-    { label: 'Mon', value: '1' },
-    { label: 'Tue', value: '2' },
-    { label: 'Wed', value: '3' },
-    { label: 'Thu', value: '4' },
-    { label: 'Fri', value: '5' },
-    { label: 'Sat', value: '6' },
-    { label: 'Sun', value: '7' }
+    { key: 'mon', value: '1' },
+    { key: 'tue', value: '2' },
+    { key: 'wed', value: '3' },
+    { key: 'thu', value: '4' },
+    { key: 'fri', value: '5' },
+    { key: 'sat', value: '6' },
+    { key: 'sun', value: '7' }
 ]
 
 export const WeekDaysPicker = ({ value, options, onChange, disabled = false }) => {
     const theme = useTheme()
-    const days = options?.length ? options.map((o) => ({ label: o.label, value: o.name })) : DEFAULT_DAYS
+    const { t } = useTranslation()
+    const days = options?.length
+        ? options.map((o) => ({ label: o.label, value: o.name }))
+        : DEFAULT_DAYS.map((d) => ({ label: t(`uic.weekDays.${d.key}`), value: d.value }))
 
     const parseValue = (val) => {
         if (!val) return []

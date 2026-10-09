@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import {
     Box,
@@ -23,9 +24,12 @@ import StatsCard from '@/ui-component/cards/StatsCard'
 
 // const
 import { baseURL } from '@/store/constant'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const UpsertHistoryDetailsDialog = ({ show, dialogProps, onCancel }) => {
+    const { nodeLabel } = useNodeLocale()
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
     const [nodeConfigExpanded, setNodeConfigExpanded] = useState({})
 
     const handleAccordionChange = (nodeLabel) => (event, isExpanded) => {
@@ -54,10 +58,10 @@ const UpsertHistoryDetailsDialog = ({ show, dialogProps, onCancel }) => {
                         marginTop: '10px'
                     }}
                 >
-                    <StatsCard title='Added' stat={dialogProps.numAdded ?? 0} />
-                    <StatsCard title='Updated' stat={dialogProps.numUpdated ?? 0} />
-                    <StatsCard title='Skipped' stat={dialogProps.numSkipped ?? 0} />
-                    <StatsCard title='Deleted' stat={dialogProps.numDeleted ?? 0} />
+                    <StatsCard title={t('evals.upsert.added')} stat={dialogProps.numAdded ?? 0} />
+                    <StatsCard title={t('evals.upsert.updated')} stat={dialogProps.numUpdated ?? 0} />
+                    <StatsCard title={t('evals.upsert.skipped')} stat={dialogProps.numSkipped ?? 0} />
+                    <StatsCard title={t('evals.upsert.deleted')} stat={dialogProps.numDeleted ?? 0} />
                 </div>
                 <div>
                     <TableContainer component={Paper}>
@@ -101,7 +105,7 @@ const UpsertHistoryDetailsDialog = ({ show, dialogProps, onCancel }) => {
                                                                         src={`${baseURL}/api/v1/node-icon/${node.name}`}
                                                                     />
                                                                 </div>
-                                                                <Typography variant='h5'>{node.label}</Typography>
+                                                                <Typography variant='h5'>{nodeLabel(node)}</Typography>
                                                                 <div
                                                                     style={{
                                                                         display: 'flex',

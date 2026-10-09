@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { forwardRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
@@ -18,6 +19,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 
 const NavItem = ({ item, level, navType, onClick, onUploadFile }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
     const matchesSM = useMediaQuery(theme.breakpoints.down('lg'))
@@ -118,7 +120,7 @@ const NavItem = ({ item, level, navType, onClick, onUploadFile }) => {
                         color='inherit'
                         sx={{ my: 0.5 }}
                     >
-                        {item.title}
+                        {t(item.title)}
                     </Typography>
                 }
                 secondary={

@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Box, Stack, ButtonGroup, Skeleton, ToggleButtonGroup, ToggleButton, Tabs, Tab } from '@mui/material'
@@ -34,6 +35,7 @@ import ToolEmptySVG from '@/assets/images/tools_empty.svg'
 
 const Tools = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const getAllToolsApi = useApi(toolsApi.getAllTools)
     const getAllCustomMcpServersApi = useApi(customMcpServersApi.getAllCustomMcpServers)
     const { error, setError } = useError()
@@ -97,7 +99,7 @@ const Tools = () => {
     const onUploadFile = (file) => {
         try {
             const dialogProp = {
-                title: 'Add New Tool',
+                title: t('dv.addNewTool'),
                 type: 'IMPORT',
                 cancelButtonName: 'Cancel',
                 confirmButtonName: 'Save',
@@ -128,7 +130,7 @@ const Tools = () => {
 
     const addNew = () => {
         const dialogProp = {
-            title: 'Add New Tool',
+            title: t('dv.addNewTool'),
             type: 'ADD',
             cancelButtonName: 'Cancel',
             confirmButtonName: 'Add'
@@ -139,7 +141,7 @@ const Tools = () => {
 
     const edit = (selectedTool) => {
         const dialogProp = {
-            title: 'Edit Tool',
+            title: t('dv.editTool'),
             type: 'EDIT',
             cancelButtonName: 'Cancel',
             confirmButtonName: 'Save',
@@ -251,7 +253,7 @@ const Tools = () => {
                 }}
                 variant='contained'
                 value='card'
-                title='Card View'
+                title={t('common.cardView')}
             >
                 <IconLayoutGrid />
             </ToggleButton>
@@ -263,7 +265,7 @@ const Tools = () => {
                 }}
                 variant='contained'
                 value='list'
-                title='List View'
+                title={t('common.listView')}
             >
                 <IconList />
             </ToggleButton>
@@ -281,7 +283,7 @@ const Tools = () => {
                     startIcon={<IconFileUpload />}
                     sx={{ borderRadius: 2, height: 40 }}
                 >
-                    Load
+                    {t('common.load')}
                 </PermissionButton>
                 <input style={{ display: 'none' }} ref={inputRef} type='file' hidden accept='.json' onChange={(e) => handleFileUpload(e)} />
             </Box>
@@ -293,7 +295,7 @@ const Tools = () => {
                     startIcon={<IconPlus />}
                     sx={{ borderRadius: 2, height: 40 }}
                 >
-                    Create
+                    {t('common.create')}
                 </StyledPermissionButton>
             </ButtonGroup>
         </Box>
@@ -310,7 +312,7 @@ const Tools = () => {
                     startIcon={<IconPlus />}
                     sx={{ borderRadius: 2, height: 40 }}
                 >
-                    Add Custom MCP Server
+                    {t('common.addItem', { item: t('nouns.customMcpServer') })}
                 </StyledPermissionButton>
             </ButtonGroup>
         </Box>
@@ -345,7 +347,7 @@ const Tools = () => {
                     <Box sx={{ p: 2, height: 'auto' }}>
                         <img style={{ objectFit: 'cover', height: '20vh', width: 'auto' }} src={ToolEmptySVG} alt='ToolEmptySVG' />
                     </Box>
-                    <div>No Tools Created Yet</div>
+                    <div>{t('pages.tools.noItems')}</div>
                 </Stack>
             )}
         </>
@@ -383,7 +385,7 @@ const Tools = () => {
                     <Box sx={{ p: 2, height: 'auto' }}>
                         <img style={{ objectFit: 'cover', height: '20vh', width: 'auto' }} src={ToolEmptySVG} alt='ToolEmptySVG' />
                     </Box>
-                    <div>No Custom MCP Servers Added Yet</div>
+                    <div>{t('pages.tools.noMcpItems')}</div>
                 </Stack>
             )}
         </>
@@ -399,9 +401,9 @@ const Tools = () => {
                         <ViewHeader
                             onSearchChange={onSearchChange}
                             search={true}
-                            searchPlaceholder={tabValue === 0 ? 'Search Tools' : 'Search Custom MCP Servers'}
-                            title='Tools'
-                            description='External functions or APIs the agent can use to take action'
+                            searchPlaceholder={tabValue === 0 ? t('pages.tools.searchPlaceholder') : t('pages.tools.searchMcpPlaceholder')}
+                            title={t('pages.tools.title')}
+                            description={t('pages.tools.description')}
                         />
                         <Box
                             sx={{
@@ -414,8 +416,8 @@ const Tools = () => {
                             }}
                         >
                             <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} aria-label='tools tabs'>
-                                <Tab label='Custom Tools' />
-                                <Tab label='Custom MCP Servers' />
+                                <Tab label={t('pages.tools.tabCustomTools')} />
+                                <Tab label={t('pages.tools.tabMcpServers')} />
                             </Tabs>
                             <Box sx={{ pb: 1 }}>{tabValue === 0 ? renderCustomToolsToolbar() : renderMcpServersToolbar()}</Box>
                         </Box>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import { List, ListItemButton, Dialog, DialogContent, DialogTitle, Box, OutlinedInput, InputAdornment, Typography } from '@mui/material'
@@ -12,12 +13,15 @@ import { IconSearch, IconX } from '@tabler/icons-react'
 import { baseURL } from '@/store/constant'
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import useApi from '@/hooks/useApi'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const ComponentsListDialog = ({ show, dialogProps, onCancel, apiCall, onSelected }) => {
+    const { nodeLabel } = useNodeLocale()
     const portalElement = document.getElementById('portal')
     const customization = useSelector((state) => state.customization)
     const dispatch = useDispatch()
     const theme = useTheme()
+    const { t } = useTranslation()
     const [searchValue, setSearchValue] = useState('')
     const [provider, setProvider] = useState([])
 
@@ -83,7 +87,7 @@ const ComponentsListDialog = ({ show, dialogProps, onCancel, apiCall, onSelected
                         id='input-search-credential'
                         value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder='Search'
+                        placeholder={t('common.search')}
                         startAdornment={
                             <InputAdornment position='start'>
                                 <IconSearch stroke={1.5} size='1rem' color={theme.palette.grey[500]} />
@@ -99,7 +103,7 @@ const ComponentsListDialog = ({ show, dialogProps, onCancel, apiCall, onSelected
                                         color: theme.palette.grey[900]
                                     }
                                 }}
-                                title='Clear Search'
+                                title={t('canvas.clearSearch')}
                             >
                                 <IconX
                                     stroke={1.5}
@@ -172,7 +176,7 @@ const ComponentsListDialog = ({ show, dialogProps, onCancel, apiCall, onSelected
                                     src={`${baseURL}/api/v1/node-icon/${loader.name}`}
                                 />
                             </div>
-                            <Typography>{loader.label}</Typography>
+                            <Typography>{nodeLabel(loader)}</Typography>
                         </ListItemButton>
                     ))}
                 </List>

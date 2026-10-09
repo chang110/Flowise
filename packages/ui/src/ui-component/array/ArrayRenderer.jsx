@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Chip, Box, Button, IconButton } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { IconTrash, IconPlus } from '@tabler/icons-react'
@@ -9,6 +10,7 @@ import DocStoreInputHandler from '@/views/docstore/DocStoreInputHandler'
 import { showHideInputs } from '@/utils/genericHelper'
 import { cloneDeep } from 'lodash'
 import { flowContext } from '@/store/context/ReactFlowContext'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 export const ArrayRenderer = ({ inputParam, data, disabled, isDocStore = false }) => {
     const [arrayItems, setArrayItems] = useState([]) // these are the actual values. Ex: [{name: 'John', age: 30}, {name: 'Jane', age: 25}]
@@ -17,6 +19,8 @@ export const ArrayRenderer = ({ inputParam, data, disabled, isDocStore = false }
     const customization = useSelector((state) => state.customization)
     const flowContextValue = useContext(flowContext)
     const { reactFlowInstance } = flowContextValue || {}
+    const { t } = useTranslation()
+    const { paramLabel } = useNodeLocale()
 
     // Handler for when input values change within array items
     const handleItemInputChange = ({ inputParam: changedParam, newValue }, itemIndex) => {
@@ -201,7 +205,7 @@ export const ArrayRenderer = ({ inputParam, data, disabled, isDocStore = false }
                         {/* Delete button for array item */}
                         {isDeleteButtonVisible && (
                             <IconButton
-                                title='Delete'
+                                title={t('common.delete')}
                                 onClick={() => handleDeleteItem(index)}
                                 sx={{
                                     position: 'absolute',
@@ -268,7 +272,7 @@ export const ArrayRenderer = ({ inputParam, data, disabled, isDocStore = false }
                 startIcon={<IconPlus />}
                 onClick={handleAddItem}
             >
-                Add {inputParam.label}
+                {t('common.addItem', { item: paramLabel(inputParam.label) })}
             </Button>
         </>
     )

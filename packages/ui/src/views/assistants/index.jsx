@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Card, CardContent, Chip, Stack } from '@mui/material'
@@ -14,16 +15,15 @@ import { IconRobotFace, IconBrandOpenai } from '@tabler/icons-react'
 
 const cards = [
     {
-        title: 'Custom Assistant',
-        description: 'Create custom assistant using your choice of LLMs',
+        title: 'dv.customAssistant',
+        description: 'dv.customAssistantDescription',
         icon: <IconRobotFace />,
-        iconText: 'Custom',
+        iconText: 'dv.custom',
         gradient: 'linear-gradient(135deg, #fff8e14e 0%, #ffcc802f 100%)'
     },
     {
-        title: 'OpenAI Assistant',
-        description:
-            'Create assistant using OpenAI Assistant API. This option is being deprecated; consider using Custom Assistant instead.',
+        title: 'dv.openaiAssistant',
+        description: 'dv.openaiAssistantDeprecationNote',
         icon: <IconBrandOpenai />,
         iconText: 'OpenAI',
         gradient: 'linear-gradient(135deg, #c9ffd85f 0%, #a0f0b567 100%)',
@@ -56,6 +56,7 @@ const FeatureIcon = styled('div')(() => ({
 const FeatureCards = () => {
     const navigate = useNavigate()
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const onCardClick = (index) => {
@@ -98,12 +99,14 @@ const FeatureCards = () => {
                         <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ mb: 1 }}>
                             <FeatureIcon>
                                 {card.icon}
-                                <span className='text-xs uppercase'>{card.iconText}</span>
+                                <span className='text-xs uppercase'>
+                                    {card.iconText.startsWith('dv.') ? t(card.iconText) : card.iconText}
+                                </span>
                             </FeatureIcon>
-                            {card.deprecating && <Chip label='Deprecating' size='small' color='warning' sx={{ fontWeight: 600 }} />}
+                            {card.deprecating && <Chip label={t('dv.deprecating')} size='small' color='warning' sx={{ fontWeight: 600 }} />}
                         </Stack>
-                        <h2 className='text-2xl font-bold mb-2'>{card.title}</h2>
-                        <p className='text-gray-600'>{card.description}</p>
+                        <h2 className='text-2xl font-bold mb-2'>{t(card.title)}</h2>
+                        <p className='text-gray-600'>{t(card.description)}</p>
                     </CardContent>
                 </StyledCard>
             ))}
@@ -114,14 +117,13 @@ const FeatureCards = () => {
 // ==============================|| ASSISTANTS ||============================== //
 
 const Assistants = () => {
+    const { t } = useTranslation()
+
     return (
         <>
             <MainCard>
                 <Stack flexDirection='column' sx={{ gap: 3 }}>
-                    <ViewHeader
-                        title='Assistants'
-                        description='Chat assistants with instructions, tools, and files to respond to user queries'
-                    />
+                    <ViewHeader title={t('pages.assistants.title')} description={t('pages.assistants.description')} />
                     <FeatureCards />
                 </Stack>
             </MainCard>

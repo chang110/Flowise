@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { Box, Button, FormControl, ListItem, ListItemAvatar, ListItemText, MenuItem, Select, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles'
 
 // Project Imports
@@ -25,9 +26,8 @@ import { AsyncDropdown } from '@/ui-component/dropdown/AsyncDropdown'
 // Icons
 import { IconX } from '@tabler/icons-react'
 import { Dropdown } from '@/ui-component/dropdown/Dropdown'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
-const promptDescription =
-    'Prompt to generate questions based on the conversation history. You can use variable {history} to refer to the conversation history.'
 const defaultPrompt =
     'Given the following conversations: {history}. Please help me predict the three most likely questions that human would ask and keeping each question short and concise.'
 
@@ -42,35 +42,35 @@ const FollowUpPromptProviders = {
     OLLAMA: 'ollama'
 }
 
-const followUpPromptsOptions = {
+const getFollowUpPromptsOptions = (t) => ({
     [FollowUpPromptProviders.ANTHROPIC]: {
         label: 'Anthropic Claude',
         name: FollowUpPromptProviders.ANTHROPIC,
         icon: anthropicIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['anthropicApi']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -85,28 +85,28 @@ const followUpPromptsOptions = {
         icon: azureOpenAiIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['azureOpenAIApi']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -121,28 +121,28 @@ const followUpPromptsOptions = {
         icon: geminiIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['googleGenerativeAI']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -157,28 +157,28 @@ const followUpPromptsOptions = {
         icon: groqIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['groqApi']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -193,28 +193,28 @@ const followUpPromptsOptions = {
         icon: mistralAiIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['mistralAIApi']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -229,28 +229,28 @@ const followUpPromptsOptions = {
         icon: openAiIcon,
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['openAIApi']
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'asyncOptions',
                 loadMethod: 'listModels'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -265,32 +265,32 @@ const followUpPromptsOptions = {
         icon: ollamaIcon,
         inputs: [
             {
-                label: 'Base URL',
+                label: t('uic.baseUrl'),
                 name: 'baseUrl',
                 type: 'string',
                 placeholder: 'http://127.0.0.1:11434',
-                description: 'Base URL of your Ollama instance',
+                description: t('uic.followUpPrompts.baseUrlDescription'),
                 default: 'http://127.0.0.1:11434'
             },
             {
-                label: 'Model Name',
+                label: t('uic.modelName'),
                 name: 'modelName',
                 type: 'string',
                 placeholder: 'llama2',
-                description: 'Name of the Ollama model to use',
+                description: t('uic.followUpPrompts.modelNameDescription'),
                 default: 'llama3.2-vision:latest'
             },
             {
-                label: 'Prompt',
+                label: t('uic.prompt'),
                 name: 'prompt',
                 type: 'string',
                 rows: 4,
-                description: promptDescription,
+                description: t('uic.followUpPrompts.promptDescription'),
                 optional: true,
                 default: defaultPrompt
             },
             {
-                label: 'Temperature',
+                label: t('uic.temperature'),
                 name: 'temperature',
                 type: 'number',
                 step: 0.1,
@@ -299,13 +299,16 @@ const followUpPromptsOptions = {
             }
         ]
     }
-}
+})
 
 const FollowUpPrompts = ({ dialogProps }) => {
+    const { paramDescription } = useNodeLocale()
     const dispatch = useDispatch()
 
     useNotifier()
     const theme = useTheme()
+    const { t } = useTranslation()
+    const followUpPromptsOptions = getFollowUpPromptsOptions(t)
 
     const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args))
     const closeSnackbar = (...args) => dispatch(closeSnackbarAction(...args))
@@ -380,7 +383,7 @@ const FollowUpPrompts = ({ dialogProps }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Follow-up Prompts configuration saved',
+                    message: t('uic.followUpPrompts.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -396,7 +399,7 @@ const FollowUpPrompts = ({ dialogProps }) => {
         } catch (error) {
             const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
             enqueueSnackbar({
-                message: `Failed to save follow-up prompts configuration: ${errorData}`,
+                message: t('uic.followUpPrompts.saveFailed', { error: errorData }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -473,13 +476,13 @@ const FollowUpPrompts = ({ dialogProps }) => {
                 }}
             >
                 <SwitchInput
-                    label='Enable Follow-up Prompts'
+                    label={t('uic.followUpPrompts.enable')}
                     onChange={(value) => handleChange('status', value)}
                     value={followUpPromptsConfig.status}
                 />
                 {followUpPromptsConfig && followUpPromptsConfig.status && (
                     <>
-                        <Typography variant='h5'>Providers</Typography>
+                        <Typography variant='h5'>{t('uic.providers')}</Typography>
                         <FormControl fullWidth>
                             <Select
                                 size='small'
@@ -538,7 +541,10 @@ const FollowUpPrompts = ({ dialogProps }) => {
                                                 {inputParam.label}
                                                 {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
                                                 {inputParam.description && (
-                                                    <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />
+                                                    <TooltipWithParser
+                                                        style={{ marginLeft: 10 }}
+                                                        title={paramDescription(inputParam.description)}
+                                                    />
                                                 )}
                                             </Typography>
                                         </div>
@@ -615,7 +621,7 @@ const FollowUpPrompts = ({ dialogProps }) => {
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
                 <StyledButton disabled={checkDisabled()} variant='contained' onClick={onSave} sx={{ minWidth: 100 }}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Box, Chip, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
@@ -8,6 +9,7 @@ const DAYS_OF_MONTH = [...Array.from({ length: 31 }, (_, i) => String(i + 1)), L
 
 export const MonthDaysPicker = ({ value, onChange, disabled = false }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
 
     const parseValue = (val) => {
         if (!val) return []
@@ -78,12 +80,7 @@ export const MonthDaysPicker = ({ value, onChange, disabled = false }) => {
         )
         if (isLastDay) {
             return (
-                <Tooltip
-                    key={valueToken}
-                    title='Always runs on the last day of every month — automatically resolves to 28, 29, 30, or 31 (handles short months and leap years). Unlike picking 31, this fires every month.'
-                    placement='top'
-                    arrow
-                >
+                <Tooltip key={valueToken} title={t('uic.monthDaysPicker.lastDayTooltip')} placement='top' arrow>
                     <span style={{ gridColumn: 'span 2', display: 'inline-flex' }}>{chip}</span>
                 </Tooltip>
             )
@@ -100,7 +97,7 @@ export const MonthDaysPicker = ({ value, onChange, disabled = false }) => {
                 gap: 0.5
             }}
         >
-            {DAYS_OF_MONTH.map((day) => renderChip(day, day === LAST_DAY_TOKEN ? 'Last Day' : day))}
+            {DAYS_OF_MONTH.map((day) => renderChip(day, day === LAST_DAY_TOKEN ? t('uic.monthDaysPicker.lastDay') : day))}
         </Box>
     )
 }

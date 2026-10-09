@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 // material-ui
 import { useTheme } from '@mui/material/styles'
 import { Divider, List, Typography } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 // project imports
 import NavItem from '../NavItem'
@@ -14,6 +15,7 @@ import { Available } from '@/ui-component/rbac/available'
 
 const NavGroup = ({ item }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const { hasPermission, hasDisplay } = useAuth()
 
     const listItems = (menu, level = 1) => {
@@ -29,7 +31,7 @@ const NavGroup = ({ item }) => {
             default:
                 return (
                     <Typography key={menu.id} variant='h6' color='error' align='center'>
-                        Menu Items Error
+                        {t('rem.menuItemsError')}
                     </Typography>
                 )
         }
@@ -74,7 +76,7 @@ const NavGroup = ({ item }) => {
                 subheader={
                     item.title && (
                         <Typography variant='caption' sx={{ ...theme.typography.menuCaption }} display='block' gutterBottom>
-                            {item.title}
+                            {t(item.title)}
                             {item.caption && (
                                 <Typography variant='caption' sx={{ ...theme.typography.subMenuCaption }} display='block' gutterBottom>
                                     {item.caption}
@@ -97,7 +99,7 @@ const NavGroup = ({ item }) => {
                             <List
                                 subheader={
                                     <Typography variant='caption' sx={{ ...theme.typography.subMenuCaption }} display='block' gutterBottom>
-                                        {group.title}
+                                        {t(group.title)}
                                     </Typography>
                                 }
                                 sx={{ p: '16px', py: 2, display: 'flex', flexDirection: 'column', gap: 1 }}

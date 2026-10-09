@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemButton, Paper, Typography, Divider } from '@mui/material'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@mui/material/styles'
 import PropTypes from 'prop-types'
 
@@ -8,6 +9,7 @@ const SuggestionList = forwardRef((props, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0)
     const customization = useSelector((state) => state.customization)
     const theme = useTheme()
+    const { t } = useTranslation()
 
     useEffect(() => {
         // Configure tippy to auto-adjust placement
@@ -94,7 +96,7 @@ const SuggestionList = forwardRef((props, ref) => {
 
     // Group items by category
     const groupedItems = props.items.reduce((acc, item) => {
-        const category = item.category || 'Other'
+        const category = item.category || t('uic.suggestionList.other')
         if (!acc[category]) {
             acc[category] = []
         }

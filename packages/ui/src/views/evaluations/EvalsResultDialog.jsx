@@ -1,5 +1,6 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 
@@ -35,6 +36,7 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
     const portalElement = document.getElementById('portal')
     const customization = useSelector((state) => state.customization)
     const theme = useTheme()
+    const { t } = useTranslation()
 
     const getColSpan = (evaluationsShown, llmEvaluations) => {
         let colSpan = 1
@@ -80,7 +82,7 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                 }}
                             >
                                 <IconVectorBezier2 style={{ marginRight: 5 }} size={17} />
-                                Flows Used:
+                                {t('evals.result.flowsUsed')}
                             </div>
                             {(dialogProps.data.evaluation.chatflowName || []).map((chatflowUsed, index) => (
                                 <Chip
@@ -100,7 +102,7 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                         </Stack>
                     )}
                     <Button variant='outlined' sx={{ width: 'max-content' }} startIcon={<IconMinimize />} onClick={() => onCancel()}>
-                        Minimize
+                        {t('evals.result.minimize')}
                     </Button>
                 </Stack>
             </DialogTitle>
@@ -124,8 +126,8 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                         >
                             <TableRow>
                                 <TableCell rowSpan='2'>&nbsp;</TableCell>
-                                <TableCell rowSpan='2'>Input</TableCell>
-                                <TableCell rowSpan='2'>Expected Output</TableCell>
+                                <TableCell rowSpan='2'>{t('evals.result.input')}</TableCell>
+                                <TableCell rowSpan='2'>{t('evals.result.expectedOutput')}</TableCell>
                                 {dialogProps.data &&
                                     dialogProps.data.evaluation.chatflowId?.map((chatflowId, index) => (
                                         <React.Fragment key={index}>
@@ -167,12 +169,14 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                             <TableCell
                                                 style={{ borderLeftStyle: 'dashed', borderLeftColor: 'lightgrey', borderLeftWidth: 1 }}
                                             >
-                                                Actual Output
+                                                {t('evals.result.actualOutput')}
                                             </TableCell>
                                             {dialogProps.data.customEvalsDefined && dialogProps.data.showCustomEvals && (
-                                                <TableCell>Evaluator</TableCell>
+                                                <TableCell>{t('nouns.evaluator')}</TableCell>
                                             )}
-                                            {dialogProps.data.evaluation?.evaluationType === 'llm' && <TableCell>LLM Evaluation</TableCell>}
+                                            {dialogProps.data.evaluation?.evaluationType === 'llm' && (
+                                                <TableCell>{t('evals.result.llmEvaluation')}</TableCell>
+                                            )}
                                         </React.Fragment>
                                     ))}
                             </TableRow>
@@ -216,8 +220,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                         size='small'
                                                                         label={
                                                                             item.metrics[index]?.totalCost
-                                                                                ? 'Total Cost: ' + item.metrics[index]?.totalCost
-                                                                                : 'Total Cost: N/A'
+                                                                                ? `${t('evals.metrics.totalCost')}: ${
+                                                                                      item.metrics[index]?.totalCost
+                                                                                  }`
+                                                                                : `${t('evals.metrics.totalCost')}: ${t(
+                                                                                      'evals.notAvailable'
+                                                                                  )}`
                                                                         }
                                                                         sx={{ mr: 1, mb: 1 }}
                                                                     />
@@ -227,8 +235,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                         icon={<TokensIcon />}
                                                                         label={
                                                                             item.metrics[index]?.totalTokens
-                                                                                ? 'Total Tokens: ' + item.metrics[index]?.totalTokens
-                                                                                : 'Total Tokens: N/A'
+                                                                                ? `${t('evals.metrics.totalTokens')}: ${
+                                                                                      item.metrics[index]?.totalTokens
+                                                                                  }`
+                                                                                : `${t('evals.metrics.totalTokens')}: ${t(
+                                                                                      'evals.notAvailable'
+                                                                                  )}`
                                                                         }
                                                                         sx={{ mr: 1, mb: 1 }}
                                                                     />
@@ -240,9 +252,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                 icon={<TokensIcon />}
                                                                                 label={
                                                                                     item.metrics[index]?.promptTokens
-                                                                                        ? 'Prompt Tokens: ' +
-                                                                                          item.metrics[index]?.promptTokens
-                                                                                        : 'Prompt Tokens: N/A'
+                                                                                        ? `${t('evals.metrics.promptTokens')}: ${
+                                                                                              item.metrics[index]?.promptTokens
+                                                                                          }`
+                                                                                        : `${t('evals.metrics.promptTokens')}: ${t(
+                                                                                              'evals.notAvailable'
+                                                                                          )}`
                                                                                 }
                                                                                 sx={{ mr: 1, mb: 1 }}
                                                                             />{' '}
@@ -252,9 +267,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                 icon={<TokensIcon />}
                                                                                 label={
                                                                                     item.metrics[index]?.completionTokens
-                                                                                        ? 'Completion Tokens: ' +
-                                                                                          item.metrics[index]?.completionTokens
-                                                                                        : 'Completion Tokens: N/A'
+                                                                                        ? `${t('evals.metrics.completionTokens')}: ${
+                                                                                              item.metrics[index]?.completionTokens
+                                                                                          }`
+                                                                                        : `${t('evals.metrics.completionTokens')}: ${t(
+                                                                                              'evals.notAvailable'
+                                                                                          )}`
                                                                                 }
                                                                                 sx={{ mr: 1, mb: 1 }}
                                                                             />{' '}
@@ -268,8 +286,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                 icon={<PaidIcon />}
                                                                                 label={
                                                                                     item.metrics[index]?.promptCost
-                                                                                        ? 'Prompt Cost: ' + item.metrics[index]?.promptCost
-                                                                                        : 'Prompt Cost: N/A'
+                                                                                        ? `${t('evals.metrics.promptCost')}: ${
+                                                                                              item.metrics[index]?.promptCost
+                                                                                          }`
+                                                                                        : `${t('evals.metrics.promptCost')}: ${t(
+                                                                                              'evals.notAvailable'
+                                                                                          )}`
                                                                                 }
                                                                                 sx={{ mr: 1, mb: 1 }}
                                                                             />{' '}
@@ -279,9 +301,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                 icon={<PaidIcon />}
                                                                                 label={
                                                                                     item.metrics[index]?.completionCost
-                                                                                        ? 'Completion Cost: ' +
-                                                                                          item.metrics[index]?.completionCost
-                                                                                        : 'Completion Cost: N/A'
+                                                                                        ? `${t('evals.metrics.completionCost')}: ${
+                                                                                              item.metrics[index]?.completionCost
+                                                                                          }`
+                                                                                        : `${t('evals.metrics.completionCost')}: ${t(
+                                                                                              'evals.notAvailable'
+                                                                                          )}`
                                                                                 }
                                                                                 sx={{ mr: 1, mb: 1 }}
                                                                             />{' '}
@@ -293,8 +318,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                         icon={<AlarmIcon />}
                                                                         label={
                                                                             item.metrics[index]?.apiLatency
-                                                                                ? 'API Latency: ' + item.metrics[index]?.apiLatency
-                                                                                : 'API Latency: N/A'
+                                                                                ? `${t('evals.metrics.apiLatency')}: ${
+                                                                                      item.metrics[index]?.apiLatency
+                                                                                  }`
+                                                                                : `${t('evals.metrics.apiLatency')}: ${t(
+                                                                                      'evals.notAvailable'
+                                                                                  )}`
                                                                         }
                                                                         sx={{ mr: 1, mb: 1 }}
                                                                     />{' '}
@@ -307,8 +336,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                     icon={<AlarmIcon />}
                                                                                     label={
                                                                                         item.metrics[index]?.chain
-                                                                                            ? 'Chain Latency: ' + item.metrics[index]?.chain
-                                                                                            : 'Chain Latency: N/A'
+                                                                                            ? `${t('evals.metrics.chainLatency')}: ${
+                                                                                                  item.metrics[index]?.chain
+                                                                                              }`
+                                                                                            : `${t('evals.metrics.chainLatency')}: ${t(
+                                                                                                  'evals.notAvailable'
+                                                                                              )}`
                                                                                     }
                                                                                     sx={{ mr: 1, mb: 1 }}
                                                                                 />
@@ -319,10 +352,9 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                     icon={<AlarmIcon />}
                                                                                     size='small'
                                                                                     sx={{ mr: 1, mb: 1 }}
-                                                                                    label={
-                                                                                        'Retriever Latency: ' +
+                                                                                    label={`${t('evals.metrics.retrieverLatency')}: ${
                                                                                         item.metrics[index]?.retriever
-                                                                                    }
+                                                                                    }`}
                                                                                 />
                                                                             )}{' '}
                                                                             {item.metrics[index]?.tool && (
@@ -331,7 +363,9 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                     icon={<AlarmIcon />}
                                                                                     size='small'
                                                                                     sx={{ mr: 1, mb: 1 }}
-                                                                                    label={'Tool Latency: ' + item.metrics[index]?.tool}
+                                                                                    label={`${t('evals.metrics.toolLatency')}: ${
+                                                                                        item.metrics[index]?.tool
+                                                                                    }`}
                                                                                 />
                                                                             )}{' '}
                                                                             <Chip
@@ -340,8 +374,12 @@ const EvalsResultDialog = ({ show, dialogProps, onCancel, openDetailsDrawer }) =
                                                                                 size='small'
                                                                                 label={
                                                                                     item.metrics[index]?.llm
-                                                                                        ? 'LLM Latency: ' + item.metrics[index]?.llm
-                                                                                        : 'LLM Latency: N/A'
+                                                                                        ? `${t('evals.metrics.llmLatency')}: ${
+                                                                                              item.metrics[index]?.llm
+                                                                                          }`
+                                                                                        : `${t('evals.metrics.llmLatency')}: ${t(
+                                                                                              'evals.notAvailable'
+                                                                                          )}`
                                                                                 }
                                                                                 sx={{ mr: 1, mb: 1 }}
                                                                             />{' '}

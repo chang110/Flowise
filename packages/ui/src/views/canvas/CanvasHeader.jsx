@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { useTheme, styled, alpha } from '@mui/material/styles'
@@ -122,6 +123,7 @@ const LockedScheduleSwitch = styled(ScheduleSwitch, { shouldForwardProp: (prop) 
 
 const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, handleDeleteFlow, handleLoadFlow }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const flowNameRef = useRef()
@@ -149,7 +151,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
 
     const [savePermission, setSavePermission] = useState(isAgentCanvas ? 'agentflows:create' : 'chatflows:create')
 
-    const title = isAgentCanvas ? 'Agents' : 'Chatflow'
+    const title = isAgentCanvas ? t('nouns.agentflow') : t('nouns.chatflow')
 
     const updateChatflowApi = useApi(chatflowsApi.updateChatflow)
     const getScheduleStatusApi = useApi(chatflowsApi.getScheduleStatus)
@@ -180,21 +182,21 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
             handleDeleteFlow()
         } else if (setting === 'viewMessages') {
             setViewMessagesDialogProps({
-                title: 'View Messages',
+                title: t('menu.viewMessages'),
                 chatflow: chatflow,
                 isChatflow: isAgentflowV2 ? false : true
             })
             setViewMessagesDialogOpen(true)
         } else if (setting === 'viewLeads') {
             setViewLeadsDialogProps({
-                title: 'View Leads',
+                title: t('menu.viewLeads'),
                 chatflow: chatflow
             })
             setViewLeadsDialogOpen(true)
         } else if (setting === 'saveAsTemplate') {
             if (canvas.isDirty) {
                 enqueueSnackbar({
-                    message: 'Please save the flow before exporting as template',
+                    message: t('canvas.saveBeforeTemplate'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -401,7 +403,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
             <Stack flexDirection='row' justifyContent='space-between' sx={{ width: '100%' }}>
                 <Stack flexDirection='row' sx={{ width: '100%', maxWidth: '50%' }}>
                     <Box>
-                        <ButtonBase title='Back' sx={{ borderRadius: '50%' }}>
+                        <ButtonBase title={t('common.back')} sx={{ borderRadius: '50%' }}>
                             <Avatar
                                 variant='rounded'
                                 sx={{
@@ -445,7 +447,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                                 </Typography>
                                 {chatflow?.id && (
                                     <Available permission={savePermission}>
-                                        <ButtonBase title='Edit Name' sx={{ borderRadius: '50%' }}>
+                                        <ButtonBase title={t('canvas.editName')} sx={{ borderRadius: '50%' }}>
                                             <Avatar
                                                 variant='rounded'
                                                 sx={{
@@ -489,7 +491,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                                         }
                                     }}
                                 />
-                                <ButtonBase title='Save Name' sx={{ borderRadius: '50%' }}>
+                                <ButtonBase title={t('canvas.saveName')} sx={{ borderRadius: '50%' }}>
                                     <Avatar
                                         variant='rounded'
                                         sx={{
@@ -510,7 +512,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                                         <IconCheck stroke={1.5} size='1.3rem' />
                                     </Avatar>
                                 </ButtonBase>
-                                <ButtonBase title='Cancel' sx={{ borderRadius: '50%' }}>
+                                <ButtonBase title={t('common.cancel')} sx={{ borderRadius: '50%' }}>
                                     <Avatar
                                         variant='rounded'
                                         sx={{
@@ -571,7 +573,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                         </Tooltip>
                     )}
                     {chatflow?.id && (
-                        <ButtonBase title='API Endpoint' sx={{ borderRadius: '50%', mr: 2 }}>
+                        <ButtonBase title={t('canvas.apiEndpoint')} sx={{ borderRadius: '50%', mr: 2 }}>
                             <Avatar
                                 variant='rounded'
                                 sx={{
@@ -593,7 +595,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                         </ButtonBase>
                     )}
                     <Available permission={savePermission}>
-                        <ButtonBase title={`Save ${title}`} sx={{ borderRadius: '50%', mr: 2 }}>
+                        <ButtonBase title={t('canvas.saveItem', { item: title })} sx={{ borderRadius: '50%', mr: 2 }}>
                             <Avatar
                                 variant='rounded'
                                 sx={{
@@ -614,7 +616,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
                             </Avatar>
                         </ButtonBase>
                     </Available>
-                    <ButtonBase ref={settingsRef} title='Settings' sx={{ borderRadius: '50%' }}>
+                    <ButtonBase ref={settingsRef} title={t('common.settings')} sx={{ borderRadius: '50%' }}>
                         <Avatar
                             variant='rounded'
                             sx={{
@@ -647,7 +649,7 @@ const CanvasHeader = ({ chatflow, isAgentCanvas, isAgentflowV2, handleSaveFlow, 
             <SaveChatflowDialog
                 show={flowDialogOpen}
                 dialogProps={{
-                    title: `Save New ${title}`,
+                    title: t('canvas.saveNewItem', { item: title }),
                     confirmButtonName: 'Save',
                     cancelButtonName: 'Cancel'
                 }}

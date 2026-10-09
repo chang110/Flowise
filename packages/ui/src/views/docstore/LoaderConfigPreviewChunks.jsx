@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -37,6 +38,7 @@ import { useError } from '@/store/context/ErrorContext'
 // Utils
 import { initNode, showHideInputParams } from '@/utils/genericHelper'
 import useNotifier from '@/utils/useNotifier'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
     background: theme.palette.card.main,
@@ -60,11 +62,13 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 // ===========================|| DOCUMENT LOADER CHUNKS ||=========================== //
 
 const LoaderConfigPreviewChunks = () => {
+    const { nodeLabel } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const navigate = useNavigate()
     const theme = useTheme()
     const { error } = useError()
     const { hasAssignedWorkspace } = useAuth()
+    const { t } = useTranslation()
 
     const getNodeDetailsApi = useApi(nodesApi.getSpecificNode)
     const getNodesByCategoryApi = useApi(nodesApi.getNodesByCategory)
@@ -397,11 +401,17 @@ const LoaderConfigPreviewChunks = () => {
                                 }}
                             >
                                 <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
-                                    <StyledFab size='small' color='secondary' aria-label='back' title='Back' onClick={() => navigate(-1)}>
+                                    <StyledFab
+                                        size='small'
+                                        color='secondary'
+                                        aria-label='back'
+                                        title={t('rem.back')}
+                                        onClick={() => navigate(-1)}
+                                    >
                                         <IconArrowLeft />
                                     </StyledFab>
                                     <Typography sx={{ ml: 2, mr: 2 }} variant='h3'>
-                                        {selectedDocumentLoader?.label}
+                                        {nodeLabel(selectedDocumentLoader)}
                                     </Typography>
                                     <div
                                         style={{
@@ -439,7 +449,7 @@ const LoaderConfigPreviewChunks = () => {
                                         sx={{ borderRadius: 2, height: '100%' }}
                                         startIcon={<IconDatabaseImport />}
                                     >
-                                        Process
+                                        {t('rem.process')}
                                     </StyledButton>
                                 </Box>
                             </Toolbar>
@@ -486,7 +496,7 @@ const LoaderConfigPreviewChunks = () => {
                                                     <Typography sx={{ mr: 2 }} variant='h3'>
                                                         {(splitterOptions ?? []).find(
                                                             (splitter) => splitter.name === selectedTextSplitter?.name
-                                                        )?.label ?? 'Select Text Splitter'}
+                                                        )?.label ?? t('rem.selectTextSplitter')}
                                                     </Typography>
                                                     <div
                                                         style={{
@@ -518,7 +528,7 @@ const LoaderConfigPreviewChunks = () => {
                                                     </div>
                                                 </Box>
                                                 <Box sx={{ p: 2 }}>
-                                                    <Typography>Splitter</Typography>
+                                                    <Typography>{t('rem.splitter')}</Typography>
                                                     <Dropdown
                                                         key={JSON.stringify(selectedTextSplitter)}
                                                         name='textSplitter'
@@ -601,12 +611,12 @@ const LoaderConfigPreviewChunks = () => {
                                                     <StyledFab
                                                         color='secondary'
                                                         aria-label='preview'
-                                                        title='Preview'
+                                                        title={t('rem.preview')}
                                                         variant='extended'
                                                         onClick={onPreviewChunks}
                                                     >
                                                         <IconEye style={{ marginRight: '5px' }} />
-                                                        Preview Chunks
+                                                        {t('rem.previewChunks')}
                                                     </StyledFab>
                                                 </div>
                                             </div>
@@ -614,10 +624,10 @@ const LoaderConfigPreviewChunks = () => {
                                     {documentChunks && documentChunks.length > 0 && (
                                         <>
                                             <Typography sx={{ wordWrap: 'break-word', textAlign: 'left', mb: 2 }} variant='h3'>
-                                                {currentPreviewCount} of {totalChunks} Chunks
+                                                {t('rem.chunksProgress', { current: currentPreviewCount, total: totalChunks })}
                                             </Typography>
                                             <Box sx={{ mb: 3 }}>
-                                                <Typography>Show Chunks in Preview</Typography>
+                                                <Typography>{t('rem.showChunksInPreview')}</Typography>
                                                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                                                     <OutlinedInput
                                                         size='small'
@@ -631,12 +641,12 @@ const LoaderConfigPreviewChunks = () => {
                                                     <StyledFab
                                                         color='secondary'
                                                         aria-label='preview'
-                                                        title='Preview'
+                                                        title={t('rem.preview')}
                                                         variant='extended'
                                                         onClick={onPreviewChunks}
                                                     >
                                                         <IconEye style={{ marginRight: '5px' }} />
-                                                        Preview
+                                                        {t('rem.preview')}
                                                     </StyledFab>
                                                 </div>
                                             </Box>

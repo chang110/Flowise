@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // Material
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, Typography, OutlinedInput } from '@mui/material'
@@ -24,14 +25,15 @@ import useNotifier from '@/utils/useNotifier'
 // store
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const statuses = [
     {
-        label: 'Active',
+        labelKey: 'admin.active',
         name: 'active'
     },
     {
-        label: 'Inactive',
+        labelKey: 'admin.inactive',
         name: 'inactive'
     }
 ]
@@ -40,6 +42,7 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
     const portalElement = document.getElementById('portal')
     const currentUser = useSelector((state) => state.auth.user)
 
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     useNotifier()
@@ -51,6 +54,8 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
     const [userEmail, setUserEmail] = useState('')
     const [status, setStatus] = useState('active')
     const [user, setUser] = useState({})
+
+    const statusOptions = statuses.map((option) => ({ ...option, label: t(option.labelKey) }))
 
     useEffect(() => {
         if (dialogProps.type === 'EDIT' && dialogProps.data) {
@@ -86,7 +91,7 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
             const saveResp = await userApi.updateOrganizationUser(saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'User Details Updated',
+                    message: t('admin.userDetailsUpdated'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -101,10 +106,9 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
             }
         } catch (error) {
             setError(err)
+            const errorMessage = typeof error.response.data === 'object' ? error.response.data.message : error.response.data
             enqueueSnackbar({
-                message: `Failed to update User: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('admin.failedToUpdateUser', { error: errorMessage }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -132,14 +136,15 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconUser style={{ marginRight: '10px' }} />
-                    {'Edit User'}
+                    {t('admin.editUser')}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Email<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('auth.email')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
 
                         <div style={{ flexGrow: 1 }}></div>
@@ -157,7 +162,7 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
                 </Box>
                 <Box sx={{ p: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Typography>Name</Typography>
+                        <Typography>{t('common.name')}</Typography>
 
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -175,7 +180,8 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
                 <Box sx={{ p: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Account Status<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('admin.accountStatus')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -183,21 +189,21 @@ const EditUserDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) =>
                         key={status}
                         name='status'
                         disabled={dialogProps?.data?.isOrgOwner}
-                        options={statuses}
+                        options={statusOptions}
                         onSelect={(newValue) => setStatus(newValue)}
-                        value={status ?? 'choose an option'}
+                        value={status ?? t('admin.chooseAnOption')}
                         id='dropdown_status'
                     />
                     {dialogProps?.data?.isOrgOwner && (
                         <Typography variant='caption'>
-                            <i>Cannot change status of the organization owner!</i>
+                            <i>{t('admin.cannotChangeOrgOwnerStatus')}</i>
                         </Typography>
                     )}
                 </Box>
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <StyledButton disabled={!userEmail} variant='contained' onClick={() => updateUser()} id='btn_confirmInviteUser'>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

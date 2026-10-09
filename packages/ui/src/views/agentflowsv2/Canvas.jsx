@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactFlow, { addEdge, Controls, MiniMap, Background, useNodesState, useEdgesState } from 'reactflow'
 import 'reactflow/dist/style.css'
 import './index.css'
@@ -68,6 +69,7 @@ const edgeTypes = { agentFlow: AgentFlowEdge }
 
 const AgentflowCanvas = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const customization = useSelector((state) => state.customization)
 
@@ -804,7 +806,7 @@ const AgentflowCanvas = () => {
                                         }}
                                         size='small'
                                         aria-label='sync'
-                                        title='Sync Nodes'
+                                        title={t('canvas.syncNodes')}
                                         onClick={() => syncNodes()}
                                     >
                                         <IconRefreshAlert />

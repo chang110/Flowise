@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction, SET_CHATFLOW } from '@/store/actions'
 import PropTypes from 'prop-types'
 
@@ -21,6 +22,7 @@ import useNotifier from '@/utils/useNotifier'
 
 const RateLimit = ({ dialogProps, hideTitle = false }) => {
     const dispatch = useDispatch()
+    const { t } = useTranslation()
     const chatflow = useSelector((state) => state.canvas.chatflow)
     const chatflowid = chatflow.id
     const apiConfig = chatflow.apiConfig ? JSON.parse(chatflow.apiConfig) : {}
@@ -46,7 +48,7 @@ const RateLimit = ({ dialogProps, hideTitle = false }) => {
             const rateLimitValuesBoolean = [!limitMax, !limitDuration, !limitMsg]
             const rateLimitFilledValues = rateLimitValuesBoolean.filter((value) => value === false)
             if (rateLimitFilledValues.length >= 1 && rateLimitFilledValues.length <= 2) {
-                throw new Error('Need to fill all rate limit input fields')
+                throw new Error(t('uic.rateLimit.fillAllFields'))
             } else if (rateLimitFilledValues.length === 3) {
                 obj = {
                     ...obj,
@@ -80,7 +82,7 @@ const RateLimit = ({ dialogProps, hideTitle = false }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Rate Limit Configuration Saved',
+                    message: t('uic.rateLimit.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -95,9 +97,9 @@ const RateLimit = ({ dialogProps, hideTitle = false }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Rate Limit Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.rateLimit.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -150,26 +152,20 @@ const RateLimit = ({ dialogProps, hideTitle = false }) => {
         <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
             {!hideTitle && (
                 <Typography variant='h3'>
-                    Rate Limit{' '}
-                    <TooltipWithParser
-                        style={{ marginLeft: 10 }}
-                        title={
-                            'Visit <a target="_blank" href="https://docs.flowiseai.com/configuration/rate-limit">Rate Limit Setup Guide</a> to set up Rate Limit correctly in your hosting environment.'
-                        }
-                    />
+                    {t('uic.rateLimit.title')} <TooltipWithParser style={{ marginLeft: 10 }} title={t('uic.rateLimit.tooltip')} />
                 </Typography>
             )}
-            <SwitchInput label='Enable Rate Limit' onChange={handleChange} value={rateLimitStatus} />
+            <SwitchInput label={t('uic.rateLimit.enable')} onChange={handleChange} value={rateLimitStatus} />
             {rateLimitStatus && (
                 <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
-                    {textField(limitMax, 'limitMax', 'Message Limit per Duration', 'number', '5')}
-                    {textField(limitDuration, 'limitDuration', 'Duration in Second', 'number', '60')}
-                    {textField(limitMsg, 'limitMsg', 'Limit Message', 'string', 'You have reached the quota')}
+                    {textField(limitMax, 'limitMax', t('uic.rateLimit.messageLimit'), 'number', '5')}
+                    {textField(limitDuration, 'limitDuration', t('uic.rateLimit.duration'), 'number', '60')}
+                    {textField(limitMsg, 'limitMsg', t('uic.rateLimit.limitMessage'), 'string', t('uic.rateLimit.limitMessagePlaceholder'))}
                 </Stack>
             )}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
                 <StyledButton disabled={checkDisabled()} variant='contained' onClick={() => onSave()} sx={{ minWidth: 100 }}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </Stack>

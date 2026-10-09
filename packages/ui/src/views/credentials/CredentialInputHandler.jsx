@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Box, Typography, IconButton } from '@mui/material'
@@ -13,11 +14,14 @@ import { SensitiveInput } from '@/ui-component/input/SensitiveInput'
 import { SwitchInput } from '@/ui-component/switch/Switch'
 import { JsonEditorInput } from '@/ui-component/json/JsonEditor'
 import { TooltipWithParser } from '@/ui-component/tooltip/TooltipWithParser'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 // ===========================|| NodeInputHandler ||=========================== //
 
 const CredentialInputHandler = ({ inputParam, data, disabled = false, onReveal }) => {
+    const { paramLabel, paramDescription } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
     const ref = useRef(null)
 
     const [showExpandDialog, setShowExpandDialog] = useState(false)
@@ -47,9 +51,11 @@ const CredentialInputHandler = ({ inputParam, data, disabled = false, onReveal }
                     <Box sx={{ p: 2 }}>
                         <div style={{ display: 'flex', flexDirection: 'row' }}>
                             <Typography>
-                                {inputParam.label}
+                                {paramLabel(inputParam.label)}
                                 {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
-                                {inputParam.description && <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />}
+                                {inputParam.description && (
+                                    <TooltipWithParser style={{ marginLeft: 10 }} title={paramDescription(inputParam.description)} />
+                                )}
                             </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                             {inputParam.type === 'string' && inputParam.rows && (
@@ -59,7 +65,7 @@ const CredentialInputHandler = ({ inputParam, data, disabled = false, onReveal }
                                         height: 25,
                                         width: 25
                                     }}
-                                    title='Expand'
+                                    title={t('canvas.expand')}
                                     color='primary'
                                     onClick={() => onExpandDialogClicked(data[inputParam.name] ?? inputParam.default ?? '', inputParam)}
                                 >
@@ -128,7 +134,7 @@ const CredentialInputHandler = ({ inputParam, data, disabled = false, onReveal }
                                 name={inputParam.name}
                                 options={inputParam.options}
                                 onSelect={(newValue) => (data[inputParam.name] = newValue)}
-                                value={data[inputParam.name] ?? inputParam.default ?? 'choose an option'}
+                                value={data[inputParam.name] ?? inputParam.default ?? t('canvas.chooseAnOption')}
                             />
                         )}
                     </Box>

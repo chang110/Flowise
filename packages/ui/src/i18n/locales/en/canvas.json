@@ -1,0 +1,8 @@
+{
+    "canvas": {
+        "saveItem": "Save {{item}}",
+        "saveNewItem": "Save New {{item}}",
+        "saveBeforeTemplate": "Please save the flow before exporting as template",
+        "parametersOf": "{{item}} Parameters"
+    }
+}

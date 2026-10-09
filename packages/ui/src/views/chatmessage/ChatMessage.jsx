@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, Fragment, useContext, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { cloneDeep } from 'lodash'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
@@ -160,7 +161,7 @@ const CardWithDeleteOverlay = ({ item, disabled, customization, onDelete }) => {
                     disabled={disabled}
                     onClick={() => onDelete(item)}
                     startIcon={<IconTrash color='white' size={22} />}
-                    title='Remove attachment'
+                    title={t('chat.removeAttachment')}
                     sx={{
                         position: 'absolute',
                         top: 0,
@@ -187,6 +188,7 @@ CardWithDeleteOverlay.propTypes = {
 
 const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setPreviews }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const ps = useRef()
@@ -840,7 +842,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
         })
     }
 
-    const handleError = (message = 'Oops! There seems to be an error. Please try again.') => {
+    const handleError = (message = t('rem.oopsError')) => {
         message = message.replace(`Unable to parse JSON response from chat agent.\n\n`, '')
         setMessages((prevMessages) => [...prevMessages, { message, type: 'apiMessage' }])
         setLoading(false)
@@ -2234,7 +2236,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
             return (
                 /* eslint-disable jsx-a11y/media-has-caption */
                 <audio controls='controls'>
-                    Your browser does not support the &lt;audio&gt; tag.
+                    {t('rem.audioTagNotSupported')}
                     <source src={item.data} type={item.mime} />
                 </audio>
             )
@@ -2426,7 +2428,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                 background: 'linear-gradient(45deg, #673ab7 30%, #1e88e5 90%)'
                             }}
                         >
-                            {loading ? 'Submitting...' : 'Submit'}
+                            {loading ? t('rem.submitting') : t('rem.submit')}
                         </Button>
                     </Box>
                 </Box>
@@ -2448,7 +2450,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
             {isDragActive &&
                 (getAllowChatFlowUploads.data?.isImageUploadAllowed || getAllowChatFlowUploads.data?.isRAGFileUploadAllowed) && (
                     <Box className='drop-overlay'>
-                        <Typography variant='h2'>Drop here to upload</Typography>
+                        <Typography variant='h2'>{t('chat.dropHereToUpload')}</Typography>
                         {[
                             ...getAllowChatFlowUploads.data.imgUploadSizeAndTypes,
                             ...getAllowChatFlowUploads.data.fileUploadSizeAndTypes
@@ -2671,7 +2673,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                                                 id='leadName'
                                                                 type='text'
                                                                 fullWidth
-                                                                placeholder='Name'
+                                                                placeholder={t('chat.namePlaceholder')}
                                                                 name='leadName'
                                                                 value={leadName}
                                                                 // eslint-disable-next-line
@@ -2684,7 +2686,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                                                 id='leadEmail'
                                                                 type='email'
                                                                 fullWidth
-                                                                placeholder='Email Address'
+                                                                placeholder={t('chat.emailPlaceholder')}
                                                                 name='leadEmail'
                                                                 value={leadEmail}
                                                                 onChange={(e) => setLeadEmail(e.target.value)}
@@ -2695,7 +2697,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                                                 id='leadPhone'
                                                                 type='number'
                                                                 fullWidth
-                                                                placeholder='Phone Number'
+                                                                placeholder={t('chat.phonePlaceholder')}
                                                                 name='leadPhone'
                                                                 value={leadPhone}
                                                                 onChange={(e) => setLeadPhone(e.target.value)}
@@ -2940,7 +2942,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                         <Stack sx={{ flexDirection: 'row', alignItems: 'center', px: 1.5, gap: 0.5 }}>
                             <IconSparkles size={12} />
                             <Typography sx={{ fontSize: '0.75rem' }} variant='body2'>
-                                Try these prompts
+                                {t('rem.tryThesePrompts')}
                             </Typography>
                         </Stack>
                         <FollowUpPromptsCard
@@ -2968,9 +2970,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                         {recordingNotSupported ? (
                             <div className='overlay'>
                                 <div className='browser-not-supporting-audio-recording-box'>
-                                    <Typography variant='body1'>
-                                        To record audio, use modern browsers like Chrome or Firefox that support audio recording.
-                                    </Typography>
+                                    <Typography variant='body1'>{t('rem.recordAudioUnsupported')}</Typography>
                                     <Button
                                         variant='contained'
                                         color='error'
@@ -2978,7 +2978,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                         type='button'
                                         onClick={() => onRecordingCancelled()}
                                     >
-                                        Okay
+                                        {t('rem.okay')}
                                     </Button>
                                 </div>
                             </div>
@@ -3002,7 +3002,7 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                                         <IconCircleDot />
                                     </span>
                                     <Typography id='elapsed-time'>00:00</Typography>
-                                    {isLoadingRecording && <Typography ml={1.5}>Sending...</Typography>}
+                                    {isLoadingRecording && <Typography ml={1.5}>{t('rem.sending')}</Typography>}
                                 </div>
                                 <div className='recording-control-buttons-container'>
                                     <IconButton onClick={onRecordingCancelled} size='small'>
@@ -3208,13 +3208,13 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                     setFeedback('')
                 }}
             >
-                <DialogTitle variant='h5'>Provide Feedback</DialogTitle>
+                <DialogTitle variant='h5'>{t('chat.provideFeedback')}</DialogTitle>
                 <DialogContent>
                     <TextField
                         // eslint-disable-next-line
                         autoFocus
                         margin='dense'
-                        label='Feedback'
+                        label={t('chat.feedback')}
                         fullWidth
                         multiline
                         rows={4}
@@ -3223,9 +3223,9 @@ const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, previews, setP
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleSubmitFeedback}>Cancel</Button>
+                    <Button onClick={handleSubmitFeedback}>{t('common.cancel')}</Button>
                     <Button onClick={handleSubmitFeedback} variant='contained'>
-                        Submit
+                        {t('rem.submit')}
                     </Button>
                 </DialogActions>
             </Dialog>

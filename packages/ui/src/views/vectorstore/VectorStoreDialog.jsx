@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useContext, useState, useEffect } from 'react'
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -81,6 +82,7 @@ function a11yProps(index) {
 const VectorStoreDialog = ({ show, dialogProps, onCancel, onIndexResult }) => {
     const portalElement = document.getElementById('portal')
     const { reactFlowInstance } = useContext(flowContext)
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     useNotifier()
@@ -491,7 +493,7 @@ formData.append("openAIApiKey[openAIEmbeddings_0]", "sk-my-openai-2nd-key")`
                                     <Box sx={{ p: 2 }}>
                                         <CheckboxInput
                                             key={JSON.stringify(nodeCheckboxExpanded)}
-                                            label='Show API'
+                                            label={t('rem.showApi')}
                                             value={nodeCheckboxExpanded[data.vectorNode.data.id]}
                                             onChange={() => onCheckBoxChanged(data.vectorNode.data.id)}
                                         />
@@ -606,8 +608,7 @@ formData.append("openAIApiKey[openAIEmbeddings_0]", "sk-my-openai-2nd-key")`
                                                                     >
                                                                         <IconBulb size={30} color='#2d6a4f' />
                                                                         <span style={{ color: '#2d6a4f', marginLeft: 10, fontWeight: 500 }}>
-                                                                            You can also specify multiple values for a config parameter by
-                                                                            specifying the node id
+                                                                            {t('rem.specifyMultipleValues')}
                                                                         </span>
                                                                     </div>
                                                                     <div style={{ padding: 10 }}>
@@ -638,10 +639,10 @@ formData.append("openAIApiKey[openAIEmbeddings_0]", "sk-my-openai-2nd-key")`
                                                 fullWidth
                                                 variant='contained'
                                                 color='teal'
-                                                title='Upsert'
+                                                title={t('rem.upsert')}
                                                 onClick={() => onUpsertClicked(data.vectorNode)}
                                             >
-                                                Upsert
+                                                {t('rem.upsert')}
                                             </Button>
                                         )}
                                     </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
 import { styled } from '@mui/material/styles'
@@ -88,6 +89,7 @@ const getIconColor = (state) => {
 
 export const ExecutionsListTable = ({ data, isLoading, onExecutionRowClick, onSelectionChange }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const localStorageKeyOrder = 'executions_order'
@@ -173,29 +175,29 @@ export const ExecutionsListTable = ({ data, isLoading, onExecutionRowClick, onSe
                                     }}
                                 />
                             </StyledTableCell>
-                            <StyledTableCell>Status</StyledTableCell>
+                            <StyledTableCell>{t('table.status')}</StyledTableCell>
                             <StyledTableCell>
                                 <TableSortLabel
                                     active={orderBy === 'updatedDate'}
                                     direction={order}
                                     onClick={() => handleRequestSort('updatedDate')}
                                 >
-                                    Last Updated
+                                    {t('rem.lastUpdated')}
                                 </TableSortLabel>
                             </StyledTableCell>
                             <StyledTableCell component='th' scope='row'>
                                 <TableSortLabel active={orderBy === 'name'} direction={order} onClick={() => handleRequestSort('name')}>
-                                    Agentflow
+                                    {t('nouns.agentflow')}
                                 </TableSortLabel>
                             </StyledTableCell>
-                            <StyledTableCell>Session</StyledTableCell>
+                            <StyledTableCell>{t('table.session')}</StyledTableCell>
                             <StyledTableCell>
                                 <TableSortLabel
                                     active={orderBy === 'createdDate'}
                                     direction={order}
                                     onClick={() => handleRequestSort('createdDate')}
                                 >
-                                    Created
+                                    {t('table.created')}
                                 </TableSortLabel>
                             </StyledTableCell>
                         </TableRow>

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { styled } from '@mui/material/styles'
@@ -9,6 +10,7 @@ import { Box, Grid, Tooltip, Typography, useTheme } from '@mui/material'
 import MainCard from '@/ui-component/cards/MainCard'
 import MoreItemsTooltip from '../tooltip/MoreItemsTooltip'
 import ScheduleStatusBadge from '@/ui-component/extended/ScheduleStatusBadge'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
     background: theme.palette.card.main,
@@ -34,6 +36,8 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 const ItemCard = ({ data, images, icons, scheduleStatus, onClick }) => {
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
+    const { template: localizeTemplate, templateDescription } = useNodeLocale()
 
     return (
         <CardWrapper content={false} onClick={onClick} sx={{ border: 1, borderColor: theme.palette.grey[900] + 25, borderRadius: 2 }}>
@@ -89,7 +93,7 @@ const ItemCard = ({ data, images, icons, scheduleStatus, onClick }) => {
                                     overflow: 'hidden'
                                 }}
                             >
-                                {data.templateName || data.name}
+                                {localizeTemplate(data)}
                             </Typography>
                         </div>
                         {data.description && (
@@ -104,7 +108,7 @@ const ItemCard = ({ data, images, icons, scheduleStatus, onClick }) => {
                                     overflow: 'hidden'
                                 }}
                             >
-                                {data.description}
+                                {templateDescription(data)}
                             </span>
                         )}
                     </Box>
@@ -184,7 +188,7 @@ const ItemCard = ({ data, images, icons, scheduleStatus, onClick }) => {
                                                 fontWeight: 200
                                             }}
                                         >
-                                            + {(images?.length || 0) + (icons?.length || 0) - 3} More
+                                            {t('uic.moreItems', { number: (images?.length || 0) + (icons?.length || 0) - 3 })}
                                         </Typography>
                                     </MoreItemsTooltip>
                                 )}

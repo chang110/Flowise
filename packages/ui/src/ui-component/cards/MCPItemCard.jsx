@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { styled } from '@mui/material/styles'
@@ -49,6 +50,7 @@ const MCPItemCard = ({ data, onClick }) => {
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
     const isDarkMode = customization.isDarkMode
+    const { t } = useTranslation()
 
     const toolCount = typeof data.toolCount === 'number' ? data.toolCount : 0
 
@@ -185,7 +187,7 @@ const MCPItemCard = ({ data, onClick }) => {
                             }}
                         >
                             <IconTool style={{ marginRight: 5 }} size={15} />
-                            {toolCount} {toolCount === 1 ? 'tool' : 'tools'}
+                            {toolCount} {toolCount === 1 ? t('uic.mcpItemCard.toolSingular') : t('uic.mcpItemCard.toolPlural')}
                         </div>
                     </Grid>
                 </Grid>

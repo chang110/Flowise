@@ -18,6 +18,7 @@ import {
 } from '@mui/material'
 import { IconEraser, IconPlus, IconTrash, IconX } from '@tabler/icons-react'
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import { useTranslation } from 'react-i18next'
 
 import { StyledButton } from '@/ui-component/button/StyledButton'
 import { BackdropLoader } from '@/ui-component/loading/BackdropLoader'
@@ -34,6 +35,7 @@ import {
 } from '@/store/actions'
 
 const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
 
@@ -69,7 +71,7 @@ const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
             if (fetchLinksResp.data) {
                 setSelectedLinks(fetchLinksResp.data.links)
                 enqueueSnackbar({
-                    message: 'Successfully fetched links',
+                    message: t('dlg.successfullyFetchedLinks'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -134,7 +136,7 @@ const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
             aria-describedby='manage-scraped-links-dialog-description'
         >
             <DialogTitle sx={{ fontSize: '1rem' }} id='manage-scraped-links-dialog-title'>
-                {dialogProps.title || `Manage Scraped Links - ${url}`}
+                {dialogProps.title || t('dlg.manageScrapedLinks', { url })}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ mb: 4 }}>
@@ -158,12 +160,12 @@ const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
                             variant='contained'
                             onClick={handleFetchLinks}
                         >
-                            Fetch Links
+                            {t('dlg.fetchLinks')}
                         </Button>
                     </Stack>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                    <Typography sx={{ fontWeight: 500 }}>Scraped Links</Typography>
+                    <Typography sx={{ fontWeight: 500 }}>{t('dlg.scrapedLinks')}</Typography>
                     <Box sx={{ width: 'auto', flexGrow: 1 }}>
                         <IconButton
                             sx={{ height: 30, width: 30, marginLeft: '8px' }}
@@ -179,11 +181,11 @@ const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
                             sx={{ height: 'max-content', width: 'max-content' }}
                             variant='outlined'
                             color='error'
-                            title='Clear All Links'
+                            title={t('dlg.clearAllLinks')}
                             onClick={handleRemoveAllLinks}
                             startIcon={<IconEraser />}
                         >
-                            Clear All
+                            {t('dlg.clearAll')}
                         </Button>
                     ) : null}
                 </Box>
@@ -229,15 +231,15 @@ const ManageScrapedLinksDialog = ({ show, dialogProps, onCancel, onSave }) => {
                         </PerfectScrollbar>
                     ) : (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Typography sx={{ my: 2 }}>Links scraped from the URL will appear here</Typography>
+                            <Typography sx={{ my: 2 }}>{t('dlg.linksWillAppearHere')}</Typography>
                         </div>
                     )}
                 </>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
+                <Button onClick={onCancel}>{t('common.cancel')}</Button>
                 <StyledButton variant='contained' onClick={handleSaveLinks}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </DialogActions>
         </Dialog>

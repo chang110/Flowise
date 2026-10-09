@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useContext, useState, useEffect, memo } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
@@ -19,12 +20,15 @@ import NodeInfoDialog from '@/ui-component/dialog/NodeInfoDialog'
 import { baseURL } from '@/store/constant'
 import { IconTrash, IconCopy, IconInfoCircle, IconAlertTriangle } from '@tabler/icons-react'
 import { flowContext } from '@/store/context/ReactFlowContext'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 import LlamaindexPNG from '@/assets/images/llamaindex.png'
 
 // ===========================|| CANVAS NODE ||=========================== //
 
 const CanvasNode = ({ data }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { nodeLabel } = useNodeLocale()
     const canvas = useSelector((state) => state.canvas)
     const { deleteNode, duplicateNode } = useContext(flowContext)
 
@@ -114,7 +118,7 @@ const CanvasNode = ({ data }) => {
                             }}
                         >
                             <IconButton
-                                title='Duplicate'
+                                title={t('common.duplicate')}
                                 onClick={() => {
                                     duplicateNode(data.id)
                                 }}
@@ -124,7 +128,7 @@ const CanvasNode = ({ data }) => {
                                 <IconCopy />
                             </IconButton>
                             <IconButton
-                                title='Delete'
+                                title={t('common.delete')}
                                 onClick={() => {
                                     deleteNode(data.id)
                                 }}
@@ -134,7 +138,7 @@ const CanvasNode = ({ data }) => {
                                 <IconTrash />
                             </IconButton>
                             <IconButton
-                                title='Info'
+                                title={t('canvas.info')}
                                 onClick={() => {
                                     setInfoDialogProps({ data })
                                     setShowInfoDialog(true)
@@ -177,7 +181,7 @@ const CanvasNode = ({ data }) => {
                                         mr: 2
                                     }}
                                 >
-                                    {data.label}
+                                    {nodeLabel(data)}
                                 </Typography>
                             </Box>
                             <div style={{ flexGrow: 1 }}></div>
@@ -217,7 +221,7 @@ const CanvasNode = ({ data }) => {
                                             textAlign: 'center'
                                         }}
                                     >
-                                        Inputs
+                                        {t('rem.inputs')}
                                     </Typography>
                                 </Box>
                                 <Divider />
@@ -255,7 +259,7 @@ const CanvasNode = ({ data }) => {
                                 }}
                             >
                                 <Button sx={{ borderRadius: 25, width: '90%', mb: 2 }} variant='outlined' onClick={onDialogClicked}>
-                                    Additional Parameters
+                                    {t('rem.additionalParameters')}
                                 </Button>
                             </div>
                         )}
@@ -268,7 +272,7 @@ const CanvasNode = ({ data }) => {
                                         textAlign: 'center'
                                     }}
                                 >
-                                    Output
+                                    {t('rem.output')}
                                 </Typography>
                             </Box>
                         )}

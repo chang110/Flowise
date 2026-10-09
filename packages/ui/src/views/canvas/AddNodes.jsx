@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
@@ -47,6 +48,9 @@ import utilNodesPNG from '@/assets/images/utilNodes.png'
 import { baseURL, AGENTFLOW_ICONS } from '@/store/constant'
 import { SET_COMPONENT_NODES } from '@/store/actions'
 
+// i18n
+import { useNodeLocale } from '@/i18n/nodeLocale'
+
 // ==============================|| ADD NODES||============================== //
 function a11yProps(index) {
     return {
@@ -72,6 +76,16 @@ const blacklistForChatflowCanvas = {
 
 const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerated }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { nodeLabel, nodeDescription, category: localizeCategory } = useNodeLocale()
+
+    // Category strings may carry a badge suffix (`Category;BADGE`). Localize the
+    // name part and keep the badge verbatim.
+    const categoryLabel = (category) => {
+        const [name, badge] = String(category ?? '').split(';')
+        const localized = localizeCategory(name)
+        return badge ? `${localized};${badge}` : localized
+    }
     const customization = useSelector((state) => state.customization)
     const dispatch = useDispatch()
 
@@ -203,8 +217,11 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
         const nodesWithScores = nodes.map((nd) => {
             const nameScore = fuzzyScore(searchValue, nd.name)
             const labelScore = fuzzyScore(searchValue, nd.label)
+            // Match against the localized label too, so Chinese queries find nodes
+            const localizedLabelScore = fuzzyScore(searchValue, nodeLabel(nd))
             const categoryScore = fuzzyScore(searchValue, nd.category) * 0.5 // Lower weight for category
-            const maxScore = Math.max(nameScore, labelScore, categoryScore)
+            const localizedCategoryScore = fuzzyScore(searchValue, localizeCategory(nd.category)) * 0.5
+            const maxScore = Math.max(nameScore, labelScore, localizedLabelScore, categoryScore, localizedCategoryScore)
 
             return { node: nd, score: maxScore }
         })
@@ -414,7 +431,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                 size='small'
                 color='primary'
                 aria-label='add'
-                title='Add Node'
+                title={t('canvas.addNode')}
                 onClick={handleToggle}
             >
                 {open ? <IconMinus /> : <IconPlus />}
@@ -433,7 +450,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                     size='small'
                     color='primary'
                     aria-label='generate'
-                    title='Generate Agentflow'
+                    title={t('canvas.generateAgentflow')}
                 >
                     <IconSparkles />
                 </StyledFab>
@@ -472,7 +489,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
-                                            <Typography variant='h4'>Add Nodes</Typography>
+                                            <Typography variant='h4'>{t('canvas.addNodes')}</Typography>
                                         </Stack>
                                         <OutlinedInput
                                             // eslint-disable-next-line
@@ -481,7 +498,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                             id='input-search-node'
                                             value={searchValue}
                                             onChange={(e) => filterSearch(e.target.value)}
-                                            placeholder='Search nodes'
+                                            placeholder={t('canvas.searchNodes')}
                                             startAdornment={
                                                 <InputAdornment position='start'>
                                                     <IconSearch stroke={1.5} size='1rem' color={theme.palette.grey[500]} />
@@ -497,7 +514,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                                             color: theme.palette.grey[900]
                                                         }
                                                     }}
-                                                    title='Clear Search'
+                                                    title={t('canvas.clearSearch')}
                                                 >
                                                     <IconX
                                                         stroke={1.5}
@@ -650,7 +667,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                                                         />
                                                                     </div>
                                                                 ) : (
-                                                                    <Typography variant='h5'>{category}</Typography>
+                                                                    <Typography variant='h5'>{categoryLabel(category)}</Typography>
                                                                 )}
                                                             </AccordionSummary>
                                                             <AccordionDetails>
@@ -716,7 +733,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                                                                                     alignItems: 'center'
                                                                                                 }}
                                                                                             >
-                                                                                                <span>{node.label}</span>
+                                                                                                <span>{nodeLabel(node)}</span>
                                                                                                 &nbsp;
                                                                                                 {node.badge && (
                                                                                                     <Chip
@@ -752,7 +769,7 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
                                                                                             )}
                                                                                         </>
                                                                                     }
-                                                                                    secondary={node.description}
+                                                                                    secondary={nodeDescription(node)}
                                                                                 />
                                                                             </ListItem>
                                                                         </ListItemButton>

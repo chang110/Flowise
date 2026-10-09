@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
+import { useTranslation } from 'react-i18next'
 import { styled } from '@mui/material/styles'
 import {
     Box,
@@ -70,6 +71,7 @@ export const FlowListTable = ({
         ? hasPermission('agentflows:update,agentflows:delete,agentflows:config,agentflows:domains,templates:flowexport,agentflows:export')
         : hasPermission('chatflows:update,chatflows:delete,chatflows:config,chatflows:domains,templates:flowexport,chatflows:export')
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const localStorageKeyOrder = getLocalStorageKeyName('order', isAgentCanvas)
@@ -121,14 +123,14 @@ export const FlowListTable = ({
                         <TableRow>
                             <StyledTableCell component='th' scope='row' style={{ width: '20%' }} key='0'>
                                 <TableSortLabel active={orderBy === 'name'} direction={order} onClick={() => handleRequestSort('name')}>
-                                    Name
+                                    {t('table.name')}
                                 </TableSortLabel>
                             </StyledTableCell>
                             <StyledTableCell style={{ width: '25%' }} key='1'>
-                                Category
+                                {t('table.category')}
                             </StyledTableCell>
                             <StyledTableCell style={{ width: '30%' }} key='2'>
-                                Nodes
+                                {t('table.nodes')}
                             </StyledTableCell>
                             <StyledTableCell style={{ width: '15%' }} key='3'>
                                 <TableSortLabel
@@ -136,12 +138,12 @@ export const FlowListTable = ({
                                     direction={order}
                                     onClick={() => handleRequestSort('updatedDate')}
                                 >
-                                    Last Modified Date
+                                    {t('table.lastModifiedDate')}
                                 </TableSortLabel>
                             </StyledTableCell>
                             {isActionsAvailable && (
                                 <StyledTableCell style={{ width: '10%' }} key='4'>
-                                    Actions
+                                    {t('common.actions')}
                                 </StyledTableCell>
                             )}
                         </TableRow>

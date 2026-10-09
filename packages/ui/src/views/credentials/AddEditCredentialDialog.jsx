@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
 import parser from 'html-react-parser'
 
@@ -32,11 +33,15 @@ import { initializeDefaultNodeData } from '@/utils/genericHelper'
 import { baseURL, REDACTED_CREDENTIAL_VALUE } from '@/store/constant'
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import keySVG from '@/assets/images/key.svg'
+import { translateLabel } from '@/i18n/translateLabel'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
     const portalElement = document.getElementById('portal')
 
     const dispatch = useDispatch()
+    const { t } = useTranslation()
+    const { credentialLabel, credentialDescription } = useNodeLocale()
 
     // ==============================|| Snackbar ||============================== //
 
@@ -145,7 +150,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
             const createResp = await credentialsApi.createCredential(obj)
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New Credential added',
+                    message: t('dv.credentialAdded'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -161,9 +166,10 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
         } catch (error) {
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `Failed to add new Credential: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToAddItem', {
+                    item: t('nouns.credential'),
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -197,7 +203,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
             const saveResp = await credentialsApi.updateCredential(credential.id, saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Credential saved',
+                    message: t('dv.credentialSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -213,9 +219,10 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
         } catch (error) {
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `Failed to save Credential: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToSaveItem', {
+                    item: t('nouns.credential'),
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -269,7 +276,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
             }
 
             if (!credentialId) {
-                throw new Error('Failed to save credential')
+                throw new Error(t('dv.failedToSaveCredential'))
             }
 
             const authResponse = await oauth2Api.authorize(credentialId)
@@ -283,7 +290,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                 )
 
                 if (!authWindow) {
-                    throw new Error('Failed to open authorization window. Please check if popups are blocked.')
+                    throw new Error(t('dv.popupBlocked'))
                 }
 
                 // Listen for messages from the popup window
@@ -294,7 +301,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
 
                         if (event.data.type === 'OAUTH2_SUCCESS') {
                             enqueueSnackbar({
-                                message: 'OAuth2 authorization completed successfully',
+                                message: t('dv.oauth2Success'),
                                 options: {
                                     key: new Date().getTime() + Math.random(),
                                     variant: 'success',
@@ -308,7 +315,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                             onConfirm(credentialId)
                         } else if (event.data.type === 'OAUTH2_ERROR') {
                             enqueueSnackbar({
-                                message: event.data.message || 'OAuth2 authorization failed',
+                                message: event.data.message || t('dv.oauth2Failed'),
                                 options: {
                                     key: new Date().getTime() + Math.random(),
                                     variant: 'error',
@@ -353,13 +360,15 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                     }
                 }, 300000) // 5 minutes
             } else {
-                throw new Error('Invalid response from authorization endpoint')
+                throw new Error(t('dv.invalidAuthResponse'))
             }
         } catch (error) {
             console.error('OAuth2 authorization error:', error)
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `OAuth2 authorization failed: ${error.response?.data?.message || error.message || 'Unknown error'}`,
+                message: t('dv.oauth2FailedWithError', {
+                    error: error.response?.data?.message || error.message || t('dv.unknownError')
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -412,7 +421,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                                 }}
                             />
                         </div>
-                        {componentCredential.label}
+                        {credentialLabel(componentCredential)}
                     </div>
                 )}
             </DialogTitle>
@@ -437,7 +446,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                             }}
                         >
                             <IconHandStop size={25} color='white' />
-                            <span style={{ color: 'white', marginLeft: 10, fontWeight: 400 }}>Cannot edit shared credential.</span>
+                            <span style={{ color: 'white', marginLeft: 10, fontWeight: 400 }}>{t('dv.cannotEditSharedCredential')}</span>
                         </div>
                     </div>
                 )}
@@ -454,7 +463,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                                 marginBottom: 10
                             }}
                         >
-                            <span style={{ color: 'rgb(116,66,16)' }}>{parser(componentCredential.description)}</span>
+                            <span style={{ color: 'rgb(116,66,16)' }}>{parser(credentialDescription(componentCredential))}</span>
                         </div>
                     </Box>
                 )}
@@ -462,7 +471,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                     <Box sx={{ p: 2 }}>
                         <Stack sx={{ position: 'relative' }} direction='row'>
                             <Typography variant='overline'>
-                                Credential Name
+                                {t('dv.credentialName')}
                                 <span style={{ color: 'red' }}>&nbsp;*</span>
                             </Typography>
                         </Stack>
@@ -470,7 +479,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                             id='credName'
                             type='string'
                             fullWidth
-                            placeholder={componentCredential.label}
+                            placeholder={credentialLabel(componentCredential)}
                             value={name}
                             name='name'
                             onChange={(e) => setName(e.target.value)}
@@ -480,7 +489,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                 {!shared && componentCredential && componentCredential.name && componentCredential.name.includes('OAuth2') && (
                     <Box sx={{ p: 2 }}>
                         <Stack sx={{ position: 'relative' }} direction='row'>
-                            <Typography variant='overline'>OAuth Redirect URL</Typography>
+                            <Typography variant='overline'>{t('dv.oauthRedirectUrl')}</Typography>
                         </Stack>
                         <OutlinedInput
                             id='oauthRedirectUrl'
@@ -508,7 +517,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                 {!shared && componentCredential && componentCredential.name && componentCredential.name.includes('OAuth2') && (
                     <Box sx={{ p: 2 }}>
                         <Button variant='contained' color='secondary' onClick={() => setOAuth2()}>
-                            Authenticate
+                            {t('dv.authenticate')}
                         </Button>
                     </Box>
                 )}
@@ -520,7 +529,7 @@ const AddEditCredentialDialog = ({ show, dialogProps, onCancel, onConfirm, setEr
                         variant='contained'
                         onClick={() => (dialogProps.type === 'ADD' ? addNewCredential() : saveCredential())}
                     >
-                        {dialogProps.confirmButtonName}
+                        {translateLabel(dialogProps.confirmButtonName, t)}
                     </StyledButton>
                 )}
             </DialogActions>

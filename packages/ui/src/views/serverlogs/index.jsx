@@ -1,5 +1,6 @@
 import { useState, useEffect, forwardRef } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 // project imports
 import MainCard from '@/ui-component/cards/MainCard'
@@ -51,6 +52,21 @@ const searchTimeRanges = [
     'Custom'
 ]
 
+// Display labels for the ranges above — the raw values are also used as switch cases,
+// so they must stay untouched.
+const searchTimeRangeLabelKeys = {
+    'Last hour': 'admin.lastHour',
+    'Last 4 hours': 'admin.last4Hours',
+    'Last 24 hours': 'admin.last24Hours',
+    'Last 2 days': 'admin.last2Days',
+    'Last 7 days': 'admin.last7Days',
+    'Last 14 days': 'admin.last14Days',
+    'Last 1 month': 'admin.last1Month',
+    'Last 2 months': 'admin.last2Months',
+    'Last 3 months': 'admin.last3Months',
+    Custom: 'admin.custom'
+}
+
 const getDateBefore = (unit, value) => {
     const now = new Date()
     if (unit === 'hours') now.setHours(now.getHours() - value)
@@ -100,6 +116,7 @@ const subtractTime = (months, days, hours) => {
 
 const Logs = () => {
     const colorTheme = useTheme()
+    const { t } = useTranslation()
 
     const customStyle = EditorView.baseTheme({
         '&': {
@@ -207,7 +224,7 @@ const Logs = () => {
                 <ErrorBoundary error={error} />
             ) : (
                 <Stack flexDirection='column' sx={{ gap: 2 }}>
-                    <ViewHeader title='Logs' />
+                    <ViewHeader title={t('menu.logs')} />
                     {isLoading ? (
                         <Box display='flex' flexDirection='column' gap={gridSpacing}>
                             <Skeleton width='25%' height={32} />
@@ -235,14 +252,14 @@ const Logs = () => {
                                 >
                                     {searchTimeRanges.map((range) => (
                                         <MenuItem key={range} value={range}>
-                                            {range}
+                                            {t(searchTimeRangeLabelKeys[range])}
                                         </MenuItem>
                                     ))}
                                 </Select>
                                 {selectedTimeSearch === 'Custom' && (
                                     <>
                                         <Stack sx={{ alignItems: 'center', justifyContent: 'flex-start', gap: 2 }} flexDirection='row'>
-                                            <b>From</b>
+                                            <b>{t('admin.from')}</b>
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(date) => onStartDateSelected(date)}
@@ -258,7 +275,7 @@ const Logs = () => {
                                             />
                                         </Stack>
                                         <Stack sx={{ alignItems: 'center', justifyContent: 'flex-start', gap: 2 }} flexDirection='row'>
-                                            <b>To</b>
+                                            <b>{t('admin.to')}</b>
                                             <DatePicker
                                                 selected={endDate}
                                                 onChange={(date) => onEndDateSelected(date)}
@@ -301,7 +318,7 @@ const Logs = () => {
                                             alt='LogsEmptySVG'
                                         />
                                     </Box>
-                                    <div>No Logs Yet</div>
+                                    <div>{t('pages.logs.noItems')}</div>
                                 </Stack>
                             )}
                         </>

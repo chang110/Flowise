@@ -7,6 +7,7 @@ import { cloneDeep } from 'lodash'
 
 // Material
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Box, Stack, OutlinedInput, Typography } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 // Project imports
 import { StyledButton } from '@/ui-component/button/StyledButton'
@@ -28,8 +29,10 @@ import useNotifier from '@/utils/useNotifier'
 
 // const
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => {
+    const { t } = useTranslation()
     const portalElement = document.getElementById('portal')
 
     const dispatch = useDispatch()
@@ -63,10 +66,10 @@ const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => 
 
     const columns = useMemo(
         () => [
-            { field: 'workspaceName', headerName: 'Workspace', editable: false, flex: 1 },
-            { field: 'shared', headerName: 'Share', type: 'boolean', editable: true, width: 180 }
+            { field: 'workspaceName', headerName: t('nouns.workspace'), editable: false, flex: 1 },
+            { field: 'shared', headerName: t('common.share'), type: 'boolean', editable: true, width: 180 }
         ],
-        []
+        [t]
     )
 
     useEffect(() => {
@@ -130,7 +133,7 @@ const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => 
             const sharedResp = await workspaceApi.setSharedWorkspacesForItem(dialogProps.data.id, obj)
             if (sharedResp.data) {
                 enqueueSnackbar({
-                    message: 'Items Shared Successfully',
+                    message: t('dlg.itemsShared'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -146,9 +149,9 @@ const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => 
         } catch (error) {
             if (setError) setError(error)
             enqueueSnackbar({
-                message: `Failed to share Item: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dlg.failedToShareItem', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -182,7 +185,7 @@ const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => 
             <DialogContent>
                 <Box sx={{ p: 2 }}>
                     <Stack sx={{ position: 'relative' }} direction='row'>
-                        <Typography variant='overline'>Name</Typography>
+                        <Typography variant='overline'>{t('common.name')}</Typography>
                     </Stack>
                     <OutlinedInput id='name' type='string' disabled={true} fullWidth placeholder={name} value={name} name='name' />
                 </Box>
@@ -191,9 +194,9 @@ const ShareWithWorkspaceDialog = ({ show, dialogProps, onCancel, setError }) => 
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => onCancel()}>{dialogProps.cancelButtonName}</Button>
+                <Button onClick={() => onCancel()}>{translateLabel(dialogProps.cancelButtonName, t)}</Button>
                 <StyledButton onClick={shareItemRequest} variant='contained'>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

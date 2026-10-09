@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect, useRef, useContext, memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useUpdateNodeInternals } from 'reactflow'
 import PropTypes from 'prop-types'
 import { Stack, Box, Typography, TextField, Dialog, DialogContent, ButtonBase, Avatar } from '@mui/material'
@@ -15,6 +16,7 @@ const EditNodeDialog = ({ show, dialogProps, onCancel }) => {
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const nodeNameRef = useRef()
     const { reactFlowInstance } = useContext(flowContext)
@@ -125,7 +127,7 @@ const EditNodeDialog = ({ show, dialogProps, onCancel }) => {
                                 </Typography>
 
                                 {data?.id && (
-                                    <ButtonBase title='Edit Name' sx={{ borderRadius: '50%' }}>
+                                    <ButtonBase title={t('canvas.editName')} sx={{ borderRadius: '50%' }}>
                                         <Avatar
                                             variant='rounded'
                                             sx={{
@@ -171,7 +173,7 @@ const EditNodeDialog = ({ show, dialogProps, onCancel }) => {
                                         }
                                     }}
                                 />
-                                <ButtonBase title='Save Name' sx={{ borderRadius: '50%' }}>
+                                <ButtonBase title={t('canvas.saveName')} sx={{ borderRadius: '50%' }}>
                                     <Avatar
                                         variant='rounded'
                                         sx={{
@@ -197,7 +199,7 @@ const EditNodeDialog = ({ show, dialogProps, onCancel }) => {
                                         <IconCheck stroke={1.5} size='1rem' />
                                     </Avatar>
                                 </ButtonBase>
-                                <ButtonBase title='Cancel' sx={{ borderRadius: '50%' }}>
+                                <ButtonBase title={t('common.cancel')} sx={{ borderRadius: '50%' }}>
                                     <Avatar
                                         variant='rounded'
                                         sx={{

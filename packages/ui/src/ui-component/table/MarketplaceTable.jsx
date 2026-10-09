@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 import { styled } from '@mui/material/styles'
 import { tableCellClasses } from '@mui/material/TableCell'
 import {
@@ -53,6 +55,15 @@ export const MarketplaceTable = ({
     onShare
 }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const {
+        template: localizeTemplate,
+        templateDescription,
+        templateType,
+        framework: localizeFramework,
+        usecase: localizeUsecase,
+        badge: localizeBadge
+    } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
 
     const openTemplate = (selectedTemplate) => {
@@ -75,19 +86,19 @@ export const MarketplaceTable = ({
                     >
                         <TableRow>
                             <StyledTableCell sx={{ minWidth: '150px' }} component='th' scope='row' key='0'>
-                                Name
+                                {t('common.name')}
                             </StyledTableCell>
                             <StyledTableCell sx={{ minWidth: '100px' }} component='th' scope='row' key='1'>
-                                Type
+                                {t('rem.type')}
                             </StyledTableCell>
-                            <StyledTableCell key='2'>Description</StyledTableCell>
+                            <StyledTableCell key='2'>{t('table.description')}</StyledTableCell>
                             <StyledTableCell sx={{ minWidth: '100px' }} key='3'>
-                                Framework
+                                {t('rem.framework')}
                             </StyledTableCell>
                             <StyledTableCell sx={{ minWidth: '100px' }} key='4'>
-                                Use cases
+                                {t('rem.useCases')}
                             </StyledTableCell>
-                            <StyledTableCell key='5'>Badges</StyledTableCell>
+                            <StyledTableCell key='5'>{t('table.badges')}</StyledTableCell>
                             <StyledTableCell component='th' scope='row' key='6'></StyledTableCell>
                         </TableRow>
                     </TableHead>
@@ -164,16 +175,16 @@ export const MarketplaceTable = ({
                                                     }}
                                                 >
                                                     <Button onClick={() => openTemplate(row)} sx={{ textAlign: 'left' }}>
-                                                        {row.templateName || row.name}
+                                                        {localizeTemplate(row)}
                                                     </Button>
                                                 </Typography>
                                             </StyledTableCell>
                                             <StyledTableCell key='1'>
-                                                <Typography>{row.type}</Typography>
+                                                <Typography>{templateType(row.type)}</Typography>
                                             </StyledTableCell>
                                             <StyledTableCell key='2'>
                                                 <Typography sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-line' }}>
-                                                    {row.description || ''}
+                                                    {templateDescription(row) || ''}
                                                 </Typography>
                                             </StyledTableCell>
                                             <StyledTableCell key='3'>
@@ -185,7 +196,7 @@ export const MarketplaceTable = ({
                                                                 variant='outlined'
                                                                 key={index}
                                                                 size='small'
-                                                                label={framework}
+                                                                label={localizeFramework(framework)}
                                                                 style={{ marginRight: 3, marginBottom: 3 }}
                                                             />
                                                         ))}
@@ -200,7 +211,7 @@ export const MarketplaceTable = ({
                                                                 variant='outlined'
                                                                 key={index}
                                                                 size='small'
-                                                                label={usecase}
+                                                                label={localizeUsecase(usecase)}
                                                                 style={{ marginRight: 3, marginBottom: 3 }}
                                                             />
                                                         ))}
@@ -222,7 +233,7 @@ export const MarketplaceTable = ({
                                                                     }
                                                                     key={index}
                                                                     size='small'
-                                                                    label={tag.toUpperCase()}
+                                                                    label={localizeBadge(tag.toUpperCase())}
                                                                     style={{ marginRight: 5, marginBottom: 5 }}
                                                                 />
                                                             ))}
@@ -230,14 +241,14 @@ export const MarketplaceTable = ({
                                             </StyledTableCell>
                                             <StyledTableCell key='6' colSpan={row.shared ? 2 : undefined}>
                                                 {row.shared ? (
-                                                    <Typography>Shared Template</Typography>
+                                                    <Typography>{t('table.sharedTemplate')}</Typography>
                                                 ) : (
                                                     <>
                                                         {onShare && (
                                                             <PermissionIconButton
                                                                 display={'feat:workspaces'}
                                                                 permissionId={'templates:custom-share'}
-                                                                title='Share'
+                                                                title={t('common.share')}
                                                                 color='primary'
                                                                 onClick={() => onShare(row)}
                                                             >
@@ -247,7 +258,7 @@ export const MarketplaceTable = ({
                                                         {onDelete && (
                                                             <PermissionIconButton
                                                                 permissionId={'templates:custom-delete'}
-                                                                title='Delete'
+                                                                title={t('common.delete')}
                                                                 color='error'
                                                                 onClick={() => onDelete(row)}
                                                             >

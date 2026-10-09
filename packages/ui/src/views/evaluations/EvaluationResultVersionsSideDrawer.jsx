@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import moment from 'moment/moment'
 
@@ -20,6 +21,7 @@ import useApi from '@/hooks/useApi'
 
 const EvaluationResultVersionsSideDrawer = ({ show, dialogProps, onClickFunction, onSelectVersion }) => {
     const onOpen = () => {}
+    const { t } = useTranslation()
     const [versions, setVersions] = useState([])
 
     const getVersionsApi = useApi(evaluationApi.getVersions)
@@ -43,7 +45,7 @@ const EvaluationResultVersionsSideDrawer = ({ show, dialogProps, onClickFunction
     return (
         <SwipeableDrawer anchor='right' open={show} onClose={() => onClickFunction()} onOpen={onOpen}>
             <Button startIcon={<IconSquareRoundedChevronsRight />} onClick={() => onClickFunction()}>
-                Close
+                {t('common.close')}
             </Button>
             <Box style={{ width: 350, margin: 10 }} role='presentation' onClick={onClickFunction}>
                 <Timeline
@@ -64,7 +66,9 @@ const EvaluationResultVersionsSideDrawer = ({ show, dialogProps, onClickFunction
                                     {index !== versions.length - 1 && <TimelineConnector />}
                                 </TimelineSeparator>
                                 <TimelineContent>
-                                    <Button onClick={() => navigateToEvaluationResult(`${version.id}`)}>Version {version.version}</Button>
+                                    <Button onClick={() => navigateToEvaluationResult(`${version.id}`)}>
+                                        {`${t('evals.evaluations.version')} ${version.version}`}
+                                    </Button>
                                 </TimelineContent>
                             </TimelineItem>
                         ))}

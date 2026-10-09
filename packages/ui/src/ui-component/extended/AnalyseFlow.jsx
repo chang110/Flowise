@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction, SET_CHATFLOW } from '@/store/actions'
 
 // material-ui
@@ -38,8 +39,9 @@ import useNotifier from '@/utils/useNotifier'
 
 // API
 import chatflowsApi from '@/api/chatflows'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
-const analyticProviders = [
+const getAnalyticProviders = (t) => [
     {
         label: 'LangSmith',
         name: 'langSmith',
@@ -47,21 +49,21 @@ const analyticProviders = [
         url: 'https://smith.langchain.com',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['langsmithApi']
             },
             {
-                label: 'Project Name',
+                label: t('uic.analyseFlow.projectName'),
                 name: 'projectName',
                 type: 'string',
                 optional: true,
-                description: 'If not provided, default will be used',
-                placeholder: 'default'
+                description: t('uic.analyseFlow.projectNameHint'),
+                placeholder: t('uic.analyseFlow.defaultPlaceholder')
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -75,20 +77,20 @@ const analyticProviders = [
         url: 'https://langfuse.com',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['langfuseApi']
             },
             {
-                label: 'Release',
+                label: t('uic.analyseFlow.release'),
                 name: 'release',
                 type: 'string',
                 optional: true,
-                description: 'The release number/hash of the application to provide analytics grouped by release'
+                description: t('uic.analyseFlow.releaseDescription')
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -102,13 +104,13 @@ const analyticProviders = [
         url: 'https://lunary.ai',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['lunaryApi']
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -122,13 +124,13 @@ const analyticProviders = [
         url: 'https://langwatch.ai',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['langwatchApi']
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -142,21 +144,21 @@ const analyticProviders = [
         url: 'https://arize.com',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['arizeApi']
             },
             {
-                label: 'Project Name',
+                label: t('uic.analyseFlow.projectName'),
                 name: 'projectName',
                 type: 'string',
                 optional: true,
-                description: 'If not provided, default will be used.',
-                placeholder: 'default'
+                description: t('uic.analyseFlow.projectNameHintPeriod'),
+                placeholder: t('uic.analyseFlow.defaultPlaceholder')
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -170,21 +172,21 @@ const analyticProviders = [
         url: 'https://phoenix.arize.com',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['phoenixApi']
             },
             {
-                label: 'Project Name',
+                label: t('uic.analyseFlow.projectName'),
                 name: 'projectName',
                 type: 'string',
                 optional: true,
-                description: 'If not provided, default will be used.',
-                placeholder: 'default'
+                description: t('uic.analyseFlow.projectNameHintPeriod'),
+                placeholder: t('uic.analyseFlow.defaultPlaceholder')
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -198,20 +200,20 @@ const analyticProviders = [
         url: 'https://www.comet.com/opik',
         inputs: [
             {
-                label: 'Connect Credential',
+                label: t('uic.connectCredential'),
                 name: 'credential',
                 type: 'credential',
                 credentialNames: ['opikApi']
             },
             {
-                label: 'Project Name',
+                label: t('uic.analyseFlow.projectName'),
                 name: 'opikProjectName',
                 type: 'string',
-                description: 'Name of your Opik project',
-                placeholder: 'default'
+                description: t('uic.analyseFlow.opikProjectNameDescription'),
+                placeholder: t('uic.analyseFlow.defaultPlaceholder')
             },
             {
-                label: 'On/Off',
+                label: t('uic.analyseFlow.onOff'),
                 name: 'status',
                 type: 'boolean',
                 optional: true
@@ -221,8 +223,11 @@ const analyticProviders = [
 ]
 
 const AnalyseFlow = ({ dialogProps }) => {
+    const { paramDescription } = useNodeLocale()
     const dispatch = useDispatch()
     const theme = useTheme()
+    const { t } = useTranslation()
+    const analyticProviders = getAnalyticProviders(t)
 
     useNotifier()
 
@@ -239,7 +244,7 @@ const AnalyseFlow = ({ dialogProps }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Analytic Configuration Saved',
+                    message: t('uic.analyseFlow.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -254,9 +259,9 @@ const AnalyseFlow = ({ dialogProps }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Analytic Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.analyseFlow.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -374,7 +379,7 @@ const AnalyseFlow = ({ dialogProps }) => {
                                             backgroundColor: '#70e000'
                                         }}
                                     />
-                                    <span style={{ color: '#006400', marginLeft: 10 }}>ON</span>
+                                    <span style={{ color: '#006400', marginLeft: 10 }}>{t('uic.analyseFlow.on')}</span>
                                 </div>
                             )}
                         </ListItem>
@@ -387,7 +392,10 @@ const AnalyseFlow = ({ dialogProps }) => {
                                         {inputParam.label}
                                         {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
                                         {inputParam.description && (
-                                            <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />
+                                            <TooltipWithParser
+                                                style={{ marginLeft: 10 }}
+                                                title={paramDescription(inputParam.description)}
+                                            />
                                         )}
                                     </Typography>
                                 </div>
@@ -425,7 +433,7 @@ const AnalyseFlow = ({ dialogProps }) => {
             ))}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
                 <StyledButton variant='contained' onClick={onSave} sx={{ minWidth: 100 }}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </>

@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction, SET_CHATFLOW } from '@/store/actions'
 
 // material-ui
@@ -19,6 +20,7 @@ import chatflowsApi from '@/api/chatflows'
 
 const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
     const dispatch = useDispatch()
+    const { t } = useTranslation()
 
     useNotifier()
 
@@ -60,7 +62,7 @@ const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Allowed Origins Saved',
+                    message: t('uic.allowedDomains.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -76,9 +78,9 @@ const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Allowed Origins: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.allowedDomains.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -122,16 +124,13 @@ const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
         <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
             {!hideTitle && (
                 <Typography variant='h3'>
-                    Allowed Domains
-                    <TooltipWithParser
-                        style={{ mb: 1, mt: 2, marginLeft: 10 }}
-                        title={'Your chatbot will only work when used from the following domains.'}
-                    />
+                    {t('uic.allowedDomains.title')}
+                    <TooltipWithParser style={{ mb: 1, mt: 2, marginLeft: 10 }} title={t('uic.allowedDomains.tooltip')} />
                 </Typography>
             )}
             <Stack direction='column' spacing={2} sx={{ width: '100%' }}>
                 <Stack direction='column' spacing={2}>
-                    <Typography>Domains</Typography>
+                    <Typography>{t('uic.allowedDomains.domains')}</Typography>
                     {inputFields.map((origin, index) => {
                         return (
                             <div key={index} style={{ display: 'flex', width: '100%' }}>
@@ -176,18 +175,15 @@ const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
                 </Stack>
                 <Stack direction='column' spacing={1}>
                     <Typography>
-                        Error Message
-                        <TooltipWithParser
-                            style={{ mb: 1, mt: 2, marginLeft: 10 }}
-                            title={'Custom error message that will be shown when for unauthorized domain'}
-                        />
+                        {t('uic.allowedDomains.errorMessage')}
+                        <TooltipWithParser style={{ mb: 1, mt: 2, marginLeft: 10 }} title={t('uic.allowedDomains.errorMessageTooltip')} />
                     </Typography>
                     <OutlinedInput
                         sx={{ width: '100%' }}
                         type='text'
                         size='small'
                         fullWidth
-                        placeholder='Unauthorized domain!'
+                        placeholder={t('uic.allowedDomains.errorMessagePlaceholder')}
                         value={errorMessage}
                         onChange={(e) => {
                             setErrorMessage(e.target.value)
@@ -197,7 +193,7 @@ const AllowedDomains = ({ dialogProps, onConfirm, hideTitle = false }) => {
             </Stack>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mt: 2 }}>
                 <StyledButton variant='contained' onClick={onSave} sx={{ minWidth: 100 }}>
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
         </Stack>

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, forwardRef, memo } from 'react'
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 // MUI
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView'
@@ -116,6 +117,7 @@ const StyledTreeItemLabelText = styled(Typography)(({ theme }) => ({
 }))
 
 function CustomLabel({ icon: Icon, itemStatus, children, name, label, data, metadata, ...other }) {
+    const { t } = useTranslation()
     const [openDialog, setOpenDialog] = useState(false)
 
     const handleOpenDialog = (event) => {
@@ -179,7 +181,7 @@ function CustomLabel({ icon: Icon, itemStatus, children, name, label, data, meta
                 <IconButton
                     onClick={handleOpenDialog}
                     size='small'
-                    title='View Details'
+                    title={t('chat.viewDetails')}
                     sx={{
                         ml: 2,
                         zIndex: 10 // Increase z-index to ensure the button is clickable
@@ -194,11 +196,11 @@ function CustomLabel({ icon: Icon, itemStatus, children, name, label, data, meta
                     {data ? (
                         <NodeExecutionDetails data={data} label={label} metadata={metadata} />
                     ) : (
-                        <Typography color='text.secondary'>No data available for this item</Typography>
+                        <Typography color='text.secondary'>{t('chat.noDataAvailable')}</Typography>
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Close</Button>
+                    <Button onClick={handleCloseDialog}>{t('common.close')}</Button>
                 </DialogActions>
             </Dialog>
         </TreeItem2Label>
@@ -330,6 +332,7 @@ const AgentExecutedDataCard = ({ status, execution, agentflowId, sessionId }) =>
     const [selectedItem, setSelectedItem] = useState(null)
     const [isAccordionExpanded, setIsAccordionExpanded] = useState(false)
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const getAllNodeIds = (nodes) => {
@@ -718,7 +721,7 @@ const AgentExecutedDataCard = ({ status, execution, agentflowId, sessionId }) =>
                             fontWeight: 500
                         }}
                     >
-                        Process Flow
+                        {t('rem.processFlow')}
                     </Typography>
                 </AccordionSummary>
                 <Divider />

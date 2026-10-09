@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { IconButton } from '@mui/material'
@@ -18,6 +19,7 @@ import { FLOWISE_CREDENTIAL_ID } from '@/store/constant'
 // ===========================|| CredentialInputHandler ||=========================== //
 
 const CredentialInputHandler = ({ inputParam, data, onSelect, disabled = false }) => {
+    const { t } = useTranslation()
     const ref = useRef(null)
     const [credentialId, setCredentialId] = useState(data?.credential || (data?.inputs && data.inputs[FLOWISE_CREDENTIAL_ID]) || '')
     const [showCredentialListDialog, setShowCredentialListDialog] = useState(false)
@@ -115,7 +117,12 @@ const CredentialInputHandler = ({ inputParam, data, onSelect, disabled = false }
                                 onCreateNew={() => addAsyncOption(inputParam.name)}
                             />
                             {credentialId && hasPermission('credentials:update') && (
-                                <IconButton title='Edit' color='primary' size='small' onClick={() => editCredential(credentialId)}>
+                                <IconButton
+                                    title={t('common.edit')}
+                                    color='primary'
+                                    size='small'
+                                    onClick={() => editCredential(credentialId)}
+                                >
                                     <IconEdit />
                                 </IconButton>
                             )}

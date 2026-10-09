@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { Handle, Position, useUpdateNodeInternals } from 'reactflow'
 import { useEffect, useRef, useState, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles'
@@ -9,6 +10,7 @@ import { tooltipClasses } from '@mui/material/Tooltip'
 import { flowContext } from '@/store/context/ReactFlowContext'
 import { isValidConnection } from '@/utils/genericHelper'
 import { Dropdown } from '@/ui-component/dropdown/Dropdown'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 const CustomWidthTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)({
     [`& .${tooltipClasses.tooltip}`]: {
@@ -20,6 +22,8 @@ const CustomWidthTooltip = styled(({ className, ...props }) => <Tooltip {...prop
 
 const NodeOutputHandler = ({ outputAnchor, data, disabled = false }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { paramLabel } = useNodeLocale()
     const ref = useRef(null)
     const updateNodeInternals = useUpdateNodeInternals()
     const [position, setPosition] = useState(0)
@@ -86,7 +90,7 @@ const NodeOutputHandler = ({ outputAnchor, data, disabled = false }) => {
                         />
                     </CustomWidthTooltip>
                     <Box sx={{ p: 2, textAlign: 'end' }}>
-                        <Typography>{outputAnchor.label}</Typography>
+                        <Typography>{paramLabel(outputAnchor.label)}</Typography>
                     </Box>
                 </>
             )}
@@ -148,7 +152,7 @@ const NodeOutputHandler = ({ outputAnchor, data, disabled = false }) => {
                         </CustomWidthTooltip>
                         <div style={{ flex: 1 }}></div>
                         <Box sx={{ p: 2, textAlign: 'end' }}>
-                            <Typography>True</Typography>
+                            <Typography>{t('canvas.true')}</Typography>
                         </Box>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -175,7 +179,7 @@ const NodeOutputHandler = ({ outputAnchor, data, disabled = false }) => {
                         </CustomWidthTooltip>
                         <div style={{ flex: 1 }}></div>
                         <Box sx={{ p: 2, textAlign: 'end' }}>
-                            <Typography>False</Typography>
+                            <Typography>{t('canvas.false')}</Typography>
                         </Box>
                     </div>
                 </div>

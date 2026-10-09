@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback, useContext } from 'react'
 import ReactFlow, { addEdge, Controls, Background, useNodesState, useEdgesState } from 'reactflow'
 import 'reactflow/dist/style.css'
+import { useTranslation } from 'react-i18next'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -62,6 +63,7 @@ const edgeTypes = { buttonedge: ButtonEdge }
 
 const Canvas = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const { hasAssignedWorkspace } = useAuth()
 
@@ -649,7 +651,7 @@ const Canvas = () => {
                                         }}
                                         size='small'
                                         aria-label='sync'
-                                        title='Sync Nodes'
+                                        title={t('canvas.syncNodes')}
                                         onClick={() => syncNodes()}
                                     >
                                         <IconRefreshAlert />

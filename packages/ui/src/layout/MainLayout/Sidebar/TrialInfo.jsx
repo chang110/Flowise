@@ -1,10 +1,12 @@
 import { Box, Skeleton, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import { StyledButton } from '@/ui-component/button/StyledButton'
 
 const TrialInfo = ({ billingPortalUrl, isLoading, paymentMethodExists, trialDaysLeft }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
 
     return (
         <Box
@@ -29,16 +31,16 @@ const TrialInfo = ({ billingPortalUrl, isLoading, paymentMethodExists, trialDays
             ) : (
                 <>
                     <Typography variant='body1' color='inherit' sx={{ lineHeight: '1.5' }}>
-                        There are{' '}
+                        {t('rem.trialThereAre')}{' '}
                         <Typography variant='' color='error'>
-                            {trialDaysLeft} days left
+                            {t('rem.trialDaysLeft', { days: trialDaysLeft })}
                         </Typography>{' '}
-                        in your trial. {!paymentMethodExists ? 'Update your payment method to avoid service interruption.' : ''}
+                        {t('rem.trialInYour')} {!paymentMethodExists ? t('rem.trialUpdatePayment') : ''}
                     </Typography>
                     {!paymentMethodExists && (
                         <a href={billingPortalUrl} target='_blank' rel='noreferrer' style={{ width: '100%' }}>
                             <StyledButton variant='contained' sx={{ borderRadius: 2, height: 32, width: '100%' }}>
-                                Update Payment Method
+                                {t('rem.updatePaymentMethod')}
                             </StyledButton>
                         </a>
                     )}

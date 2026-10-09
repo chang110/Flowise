@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useContext, memo, useRef, useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Handle, Position, useUpdateNodeInternals, NodeToolbar } from 'reactflow'
 
@@ -9,6 +10,7 @@ import { ButtonGroup, Avatar, Box, Typography, IconButton, Tooltip } from '@mui/
 
 // project imports
 import MainCard from '@/ui-component/cards/MainCard'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 import { flowContext } from '@/store/context/ReactFlowContext'
 import NodeInfoDialog from '@/ui-component/dialog/NodeInfoDialog'
 
@@ -60,6 +62,8 @@ const StyledNodeToolbar = styled(NodeToolbar)(({ theme }) => ({
 
 const AgentFlowNode = ({ data }) => {
     const theme = useTheme()
+    const { t } = useTranslation()
+    const { nodeLabel } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
     const canvas = useSelector((state) => state.canvas)
     const ref = useRef(null)
@@ -212,7 +216,7 @@ const AgentFlowNode = ({ data }) => {
                     {data.name !== 'startAgentflow' && (
                         <IconButton
                             size={'small'}
-                            title='Duplicate'
+                            title={t('common.duplicate')}
                             onClick={() => {
                                 duplicateNode(data.id)
                             }}
@@ -228,7 +232,7 @@ const AgentFlowNode = ({ data }) => {
                     )}
                     <IconButton
                         size={'small'}
-                        title='Delete'
+                        title={t('common.delete')}
                         onClick={() => {
                             deleteNode(data.id)
                         }}
@@ -243,7 +247,7 @@ const AgentFlowNode = ({ data }) => {
                     </IconButton>
                     <IconButton
                         size={'small'}
-                        title='Info'
+                        title={t('canvas.info')}
                         onClick={() => {
                             setInfoDialogProps({ data })
                             setShowInfoDialog(true)
@@ -399,7 +403,7 @@ const AgentFlowNode = ({ data }) => {
                                     fontWeight: 500
                                 }}
                             >
-                                {data.label}
+                                {nodeLabel(data)}
                             </Typography>
 
                             {/* Render the icon for "Start" node to help users determine it's started by user's input or schedule */}

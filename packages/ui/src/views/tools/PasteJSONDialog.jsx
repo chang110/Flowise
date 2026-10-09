@@ -1,12 +1,14 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { StyledButton } from '@/ui-component/button/StyledButton'
 import { CodeEditor } from '@/ui-component/editor/CodeEditor'
 
 const PasteJSONDialog = ({ show, onCancel, onConfirm, customization }) => {
     const portalElement = document.getElementById('portal')
+    const { t } = useTranslation()
     const [jsonInput, setJsonInput] = useState('')
     const [error, setError] = useState('')
 
@@ -24,7 +26,7 @@ const PasteJSONDialog = ({ show, onCancel, onConfirm, customization }) => {
             onConfirm(formattedData)
             setError('')
         } catch (err) {
-            setError('Invalid JSON format. Please check your input.')
+            setError(t('dv.invalidJsonFormat'))
         }
     }
 
@@ -46,12 +48,12 @@ const PasteJSONDialog = ({ show, onCancel, onConfirm, customization }) => {
     const component = show ? (
         <Dialog fullWidth maxWidth='md' open={show} onClose={onCancel} aria-labelledby='paste-json-dialog-title'>
             <DialogTitle sx={{ fontSize: '1rem' }} id='paste-json-dialog-title'>
-                Paste JSON Schema
+                {t('dv.pasteJsonSchema')}
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ mt: 2 }}>
                     <Button variant='outlined' size='small' onClick={() => setJsonInput(exampleJSON)} sx={{ mb: 2 }}>
-                        See Example
+                        {t('canvas.seeExample')}
                     </Button>
                     <CodeEditor
                         value={jsonInput}
@@ -66,9 +68,9 @@ const PasteJSONDialog = ({ show, onCancel, onConfirm, customization }) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
+                <Button onClick={onCancel}>{t('common.cancel')}</Button>
                 <StyledButton variant='contained' onClick={handleConfirm}>
-                    Confirm
+                    {t('common.confirm')}
                 </StyledButton>
             </DialogActions>
         </Dialog>

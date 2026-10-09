@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useState, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 // material-ui
@@ -25,11 +26,14 @@ import { flowContext } from '@/store/context/ReactFlowContext'
 
 // const
 import { FLOWISE_CREDENTIAL_ID } from '@/store/constant'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 // ===========================|| DocStoreInputHandler ||=========================== //
 
 const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataChange }) => {
+    const { paramLabel, paramDescription } = useNodeLocale()
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
     const flowContextValue = useContext(flowContext)
     const nodeDataChangeHandler = onNodeDataChange || flowContextValue?.onNodeDataChange
 
@@ -97,9 +101,11 @@ const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataCh
                     <Box sx={{ p: 2 }}>
                         <div style={{ display: 'flex', flexDirection: 'row' }}>
                             <Typography>
-                                {inputParam.label}
+                                {paramLabel(inputParam.label)}
                                 {!inputParam.optional && <span style={{ color: 'red' }}>&nbsp;*</span>}
-                                {inputParam.description && <TooltipWithParser style={{ marginLeft: 10 }} title={inputParam.description} />}
+                                {inputParam.description && (
+                                    <TooltipWithParser style={{ marginLeft: 10 }} title={paramDescription(inputParam.description)} />
+                                )}
                             </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                             {((inputParam.type === 'string' && inputParam.rows) || inputParam.type === 'code') && (
@@ -109,7 +115,7 @@ const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataCh
                                         height: 25,
                                         width: 25
                                     }}
-                                    title='Expand'
+                                    title={t('canvas.expand')}
                                     color='primary'
                                     onClick={() =>
                                         onExpandDialogClicked(data.inputs[inputParam.name] ?? inputParam.default ?? '', inputParam)
@@ -157,7 +163,7 @@ const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataCh
                                 disabled={disabled}
                                 fileType={inputParam.fileType || '*'}
                                 onChange={(newValue) => handleDataChange({ inputParam, newValue })}
-                                value={data.inputs[inputParam.name] ?? inputParam.default ?? 'Choose a file to upload'}
+                                value={data.inputs[inputParam.name] ?? inputParam.default ?? t('canvas.chooseFileToUpload')}
                             />
                         )}
                         {inputParam.type === 'boolean' && (
@@ -252,7 +258,7 @@ const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataCh
                                     </div>
                                     {inputParam.refresh && (
                                         <IconButton
-                                            title='Refresh'
+                                            title={t('common.refresh')}
                                             color='primary'
                                             size='small'
                                             onClick={() => setReloadTimestamp(Date.now().toString())}
@@ -289,7 +295,7 @@ const DocStoreInputHandler = ({ inputParam, data, disabled = false, onNodeDataCh
                                             )
                                         }
                                     >
-                                        Manage Links
+                                        {t('evals.docstore.manageLinks')}
                                     </Button>
                                     <ManageScrapedLinksDialog
                                         show={showManageScrapedLinksDialog}

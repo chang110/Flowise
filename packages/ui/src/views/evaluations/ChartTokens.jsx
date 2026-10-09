@@ -1,7 +1,9 @@
 import { CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar, BarChart } from 'recharts'
+import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 
 export const ChartTokens = ({ data, flowNames }) => {
+    const { t } = useTranslation()
     return (
         <ResponsiveContainer width='95%' height={200}>
             <BarChart
@@ -20,7 +22,7 @@ export const ChartTokens = ({ data, flowNames }) => {
                 <XAxis
                     dataKey='y'
                     label={{
-                        value: 'Input',
+                        value: t('evals.result.input'),
                         position: 'insideBottom',
                         offset: 0,
                         style: {
@@ -30,7 +32,7 @@ export const ChartTokens = ({ data, flowNames }) => {
                 />
                 <YAxis
                     label={{
-                        value: 'Tokens',
+                        value: t('evals.result.tokens'),
                         angle: -90,
                         position: 'insideLeft',
                         offset: 10,

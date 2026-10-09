@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { store } from '@/store'
 import { loginSuccess } from '@/store/reducers/authSlice'
 import authApi from '@/api/auth'
 
 const SSOSuccess = () => {
+    const { t } = useTranslation()
     const location = useLocation()
     const navigate = useNavigate()
 
@@ -37,8 +39,8 @@ const SSOSuccess = () => {
 
     return (
         <div>
-            <h1>Loading dashboard...</h1>
-            <p>Loading data...</p>
+            <h1>{t('dv.loadingDashboard')}</h1>
+            <p>{t('dv.loadingData')}</p>
         </div>
     )
 }

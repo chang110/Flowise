@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Material
@@ -19,6 +20,7 @@ import { Available } from '@/ui-component/rbac/available'
 const ShareExecutionDialog = ({ show, executionId, onClose, onUnshare }) => {
     const portalElement = document.getElementById('portal')
     const theme = useTheme()
+    const { t } = useTranslation()
     const dispatch = useDispatch()
     const customization = useSelector((state) => state.customization)
     const [copied, setCopied] = useState(false)
@@ -36,7 +38,7 @@ const ShareExecutionDialog = ({ show, executionId, onClose, onUnshare }) => {
         // Show success message
         dispatch(
             enqueueSnackbarAction({
-                message: 'Link copied to clipboard',
+                message: t('evals.executions.linkCopied'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'success',
@@ -64,11 +66,11 @@ const ShareExecutionDialog = ({ show, executionId, onClose, onUnshare }) => {
     const component = show ? (
         <Dialog open={show} onClose={onClose} maxWidth='sm' fullWidth aria-labelledby='share-dialog-title'>
             <DialogTitle id='share-dialog-title' sx={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                Public Trace Link
+                {t('evals.executions.publicTraceLink')}
             </DialogTitle>
             <DialogContent>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                    Anyone with the link below can view this execution trace.
+                    {t('evals.executions.publicTraceLinkDescription')}
                 </Typography>
 
                 {/* Link Display Box */}
@@ -96,9 +98,9 @@ const ShareExecutionDialog = ({ show, executionId, onClose, onUnshare }) => {
                     >
                         {shareableLink}
                     </Typography>
-                    <Tooltip title={copied ? 'Copied!' : 'Copy link'}>
+                    <Tooltip title={copied ? t('common.copied') : t('evals.executions.copyLink')}>
                         <Button variant='text' color='primary' onClick={copyToClipboard} startIcon={<IconCopy size={18} />}>
-                            Copy
+                            {t('common.copy')}
                         </Button>
                     </Tooltip>
                 </Box>
@@ -107,10 +109,10 @@ const ShareExecutionDialog = ({ show, executionId, onClose, onUnshare }) => {
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Available permission='executions:update'>
                         <Button color='error' onClick={handleUnshare} sx={{ mr: 1 }}>
-                            Unshare
+                            {t('evals.executions.unshare')}
                         </Button>
                     </Available>
-                    <Button onClick={onClose}>Close</Button>
+                    <Button onClick={onClose}>{t('common.close')}</Button>
                 </Box>
             </DialogContent>
         </Dialog>

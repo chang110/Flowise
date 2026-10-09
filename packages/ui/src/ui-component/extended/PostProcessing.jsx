@@ -2,6 +2,7 @@ import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import {
@@ -50,6 +51,7 @@ const PostProcessing = ({ dialogProps }) => {
     useNotifier()
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
 
     const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args))
     const closeSnackbar = (...args) => dispatch(closeSnackbarAction(...args))
@@ -68,15 +70,15 @@ const PostProcessing = ({ dialogProps }) => {
         const dialogProps = {
             value,
             inputParam: {
-                label: 'Post Processing Function',
+                label: t('uic.postProcessing.functionLabel'),
                 name: 'postProcessingFunction',
                 type: 'code',
                 placeholder: sampleFunction,
                 hideCodeExecute: true
             },
             languageType: 'js',
-            confirmButtonName: 'Save',
-            cancelButtonName: 'Cancel'
+            confirmButtonName: t('common.save'),
+            cancelButtonName: t('common.cancel')
         }
         setExpandDialogProps(dialogProps)
         setShowExpandDialog(true)
@@ -96,7 +98,7 @@ const PostProcessing = ({ dialogProps }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Post Processing Settings Saved',
+                    message: t('uic.postProcessing.saved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -111,9 +113,9 @@ const PostProcessing = ({ dialogProps }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Post Processing Settings: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('uic.postProcessing.saveFailed', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -146,11 +148,11 @@ const PostProcessing = ({ dialogProps }) => {
     return (
         <>
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <SwitchInput label='Enable Post Processing' onChange={handleChange} value={postProcessingEnabled} />
+                <SwitchInput label={t('uic.postProcessing.enable')} onChange={handleChange} value={postProcessingEnabled} />
             </Box>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
                 <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                    <Typography>JS Function</Typography>
+                    <Typography>{t('uic.postProcessing.jsFunction')}</Typography>
                     <Button
                         sx={{ ml: 2 }}
                         variant='outlined'
@@ -158,7 +160,7 @@ const PostProcessing = ({ dialogProps }) => {
                             setPostProcessingFunction(sampleFunction)
                         }}
                     >
-                        See Example
+                        {t('canvas.seeExample')}
                     </Button>
                     <div style={{ flex: 1 }} />
                     <IconButton
@@ -167,7 +169,7 @@ const PostProcessing = ({ dialogProps }) => {
                             height: 25,
                             width: 25
                         }}
-                        title='Expand'
+                        title={t('canvas.expand')}
                         color='primary'
                         onClick={() => onExpandDialogClicked(postProcessingFunction)}
                     >
@@ -215,7 +217,7 @@ const PostProcessing = ({ dialogProps }) => {
                     }}
                 >
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500 }}>Available Variables</Typography>
+                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500 }}>{t('uic.postProcessing.availableVariables')}</Typography>
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 0 }}>
                         <TableContainer component={Paper} elevation={0} sx={{ boxShadow: 'none', bgcolor: 'transparent' }}>
@@ -232,7 +234,7 @@ const PostProcessing = ({ dialogProps }) => {
                                                 borderColor: customization.isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
                                             }}
                                         >
-                                            Variable
+                                            {t('uic.postProcessing.variable')}
                                         </TableCell>
                                         <TableCell
                                             sx={{
@@ -244,7 +246,7 @@ const PostProcessing = ({ dialogProps }) => {
                                                 borderColor: customization.isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
                                             }}
                                         >
-                                            Type
+                                            {t('uic.postProcessing.type')}
                                         </TableCell>
                                         <TableCell
                                             sx={{
@@ -256,7 +258,7 @@ const PostProcessing = ({ dialogProps }) => {
                                                 borderColor: customization.isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
                                             }}
                                         >
-                                            Description
+                                            {t('common.description')}
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -275,70 +277,70 @@ const PostProcessing = ({ dialogProps }) => {
                                             <code>$flow.rawOutput</code>
                                         </TableCell>
                                         <TableCell>string</TableCell>
-                                        <TableCell>The raw output response from the flow</TableCell>
+                                        <TableCell>{t('uic.postProcessing.rawOutputDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.input</code>
                                         </TableCell>
                                         <TableCell>string</TableCell>
-                                        <TableCell>The user input message</TableCell>
+                                        <TableCell>{t('uic.postProcessing.inputDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.chatHistory</code>
                                         </TableCell>
                                         <TableCell>array</TableCell>
-                                        <TableCell>Array of previous messages in the conversation</TableCell>
+                                        <TableCell>{t('uic.postProcessing.chatHistoryDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.chatflowId</code>
                                         </TableCell>
                                         <TableCell>string</TableCell>
-                                        <TableCell>Unique identifier for the chatflow</TableCell>
+                                        <TableCell>{t('uic.postProcessing.chatflowIdDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.sessionId</code>
                                         </TableCell>
                                         <TableCell>string</TableCell>
-                                        <TableCell>Current session identifier</TableCell>
+                                        <TableCell>{t('uic.postProcessing.sessionIdDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.chatId</code>
                                         </TableCell>
                                         <TableCell>string</TableCell>
-                                        <TableCell>Current chat identifier</TableCell>
+                                        <TableCell>{t('uic.postProcessing.chatIdDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.sourceDocuments</code>
                                         </TableCell>
                                         <TableCell>array</TableCell>
-                                        <TableCell>Source documents used in retrieval (if applicable)</TableCell>
+                                        <TableCell>{t('uic.postProcessing.sourceDocumentsDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.usedTools</code>
                                         </TableCell>
                                         <TableCell>array</TableCell>
-                                        <TableCell>List of tools used during execution</TableCell>
+                                        <TableCell>{t('uic.postProcessing.usedToolsDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.artifacts</code>
                                         </TableCell>
                                         <TableCell>array</TableCell>
-                                        <TableCell>List of artifacts generated during execution</TableCell>
+                                        <TableCell>{t('uic.postProcessing.artifactsDesc')}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>
                                             <code>$flow.fileAnnotations</code>
                                         </TableCell>
                                         <TableCell>array</TableCell>
-                                        <TableCell>File annotations associated with the response</TableCell>
+                                        <TableCell>{t('uic.postProcessing.fileAnnotationsDesc')}</TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -353,7 +355,7 @@ const PostProcessing = ({ dialogProps }) => {
                     onClick={onSave}
                     sx={{ minWidth: 100 }}
                 >
-                    Save
+                    {t('common.save')}
                 </StyledButton>
             </Box>
             <ExpandTextDialog

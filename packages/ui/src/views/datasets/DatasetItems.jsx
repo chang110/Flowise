@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 // material-ui
@@ -51,6 +52,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 
 const EvalDatasetRows = () => {
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
     const dispatch = useDispatch()
     useNotifier()
@@ -211,8 +213,8 @@ const EvalDatasetRows = () => {
 
     const deleteDatasetItems = async () => {
         const confirmPayload = {
-            title: `Delete`,
-            description: `Delete ${selected.length} dataset items?`,
+            title: t('common.delete'),
+            description: t('evals.datasets.deleteItemsConfirm', { count: selected.length }),
             confirmButtonName: 'Delete',
             cancelButtonName: 'Cancel'
         }
@@ -223,7 +225,7 @@ const EvalDatasetRows = () => {
                 const deleteResp = await datasetsApi.deleteDatasetItems(selected)
                 if (deleteResp.data) {
                     enqueueSnackbar({
-                        message: 'Dataset Items deleted',
+                        message: t('evals.datasets.itemsDeleted'),
                         options: {
                             key: new Date().getTime() + Math.random(),
                             variant: 'success',
@@ -238,9 +240,9 @@ const EvalDatasetRows = () => {
                 }
             } catch (error) {
                 enqueueSnackbar({
-                    message: `Failed to delete dataset items: ${
-                        typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                    }`,
+                    message: t('evals.datasets.itemsDeleteFailed', {
+                        error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                    }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -295,7 +297,7 @@ const EvalDatasetRows = () => {
                             onEdit={editDs}
                             onBack={() => window.history.back()}
                             search={false}
-                            title={`Dataset : ${dataset?.name || ''}`}
+                            title={`${t('nouns.dataset')} : ${dataset?.name || ''}`}
                             description={dataset?.description}
                         >
                             <StyledPermissionButton
@@ -306,7 +308,7 @@ const EvalDatasetRows = () => {
                                 onClick={uploadCSV}
                                 startIcon={<IconUpload />}
                             >
-                                Upload CSV
+                                {t('evals.datasets.uploadCsv')}
                             </StyledPermissionButton>
                             <StyledPermissionButton
                                 permissionId={'datasets:create,datasets:update'}
@@ -315,7 +317,7 @@ const EvalDatasetRows = () => {
                                 onClick={addNew}
                                 startIcon={<IconPlus />}
                             >
-                                New Item
+                                {t('common.newItem', { item: t('evals.dialog.item') })}
                             </StyledPermissionButton>
                         </ViewHeader>
                         {selected.length > 0 && (
@@ -327,7 +329,7 @@ const EvalDatasetRows = () => {
                                 color='error'
                                 startIcon={<IconTrash />}
                             >
-                                Delete {selected.length} {selected.length === 1 ? 'item' : 'items'}
+                                {t('evals.datasets.deleteCount', { count: selected.length })}
                             </PermissionButton>
                         )}
                         {!isLoading && dataset?.rows?.length <= 0 ? (
@@ -339,7 +341,7 @@ const EvalDatasetRows = () => {
                                         alt='empty_datasetSVG'
                                     />
                                 </Box>
-                                <div>No Dataset Items Yet</div>
+                                <div>{t('evals.datasets.noItems')}</div>
                                 <StyledPermissionButton
                                     permissionId={'datasets:create,datasets:update'}
                                     variant='contained'
@@ -347,7 +349,7 @@ const EvalDatasetRows = () => {
                                     startIcon={<IconPlus />}
                                     onClick={addNew}
                                 >
-                                    New Item
+                                    {t('common.newItem', { item: t('evals.dialog.item') })}
                                 </StyledPermissionButton>
                             </Stack>
                         ) : (
@@ -376,8 +378,8 @@ const EvalDatasetRows = () => {
                                                         }}
                                                     />
                                                 </StyledTableCell>
-                                                <StyledTableCell>Input</StyledTableCell>
-                                                <StyledTableCell>Expected Output</StyledTableCell>
+                                                <StyledTableCell>{t('evals.result.input')}</StyledTableCell>
+                                                <StyledTableCell>{t('evals.result.expectedOutput')}</StyledTableCell>
                                                 <StyledTableCell style={{ width: '1%' }}>
                                                     <IconArrowsDownUp />
                                                 </StyledTableCell>
@@ -470,7 +472,7 @@ const EvalDatasetRows = () => {
                                     </Table>
                                 </TableContainer>
                                 <Typography sx={{ color: theme.palette.grey[600], marginTop: -2 }} variant='subtitle2'>
-                                    <i>Use the drag icon at (extreme right) to reorder the dataset items</i>
+                                    <i>{t('evals.datasets.dragHint')}</i>
                                 </Typography>
                                 {/* Pagination and Page Size Controls */}
                                 <TablePagination currentPage={currentPage} limit={pageLimit} total={total} onChange={onChange} />

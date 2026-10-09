@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Button, Box, Typography, IconButton, OutlinedInput, InputAdornment, Alert } from '@mui/material'
@@ -28,6 +29,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
     const { confirm } = useConfirm()
+    const { t } = useTranslation()
 
     useNotifier()
 
@@ -48,9 +50,9 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     const endpointUrl = chatflowId ? `${window.location.origin}/api/v1/mcp/${chatflowId}` : ''
 
     const validateToolName = (name) => {
-        if (!name) return 'Tool name is required'
-        if (name.length > 64) return 'Tool name must be 64 characters or less'
-        if (!/^[A-Za-z0-9_-]+$/.test(name)) return 'Only letters, numbers, underscores, and hyphens allowed'
+        if (!name) return t('uic.mcpServer.toolNameRequired')
+        if (name.length > 64) return t('uic.mcpServer.toolNameTooLong')
+        if (!/^[A-Za-z0-9_-]+$/.test(name)) return t('uic.mcpServer.toolNameInvalid')
         return ''
     }
 
@@ -124,7 +126,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                         setToolName(resp.data.toolName || '')
                         setDescription(resp.data.description || '')
                         onStatusChange?.(resp.data.enabled)
-                        showSuccess('MCP Server settings saved')
+                        showSuccess(t('uic.mcpServer.saved'))
                     }
                 } else {
                     const resp = await mcpServerApi.createMcpServerConfig(dialogProps.chatflow.id, {
@@ -138,21 +140,21 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                         setDescription(resp.data.description || '')
                         setHasExistingConfig(true)
                         onStatusChange?.(resp.data.enabled)
-                        showSuccess('MCP Server settings saved')
+                        showSuccess(t('uic.mcpServer.saved'))
                     }
                 }
             } else {
                 await mcpServerApi.deleteMcpServerConfig(dialogProps.chatflow.id)
                 setMcpEnabled(false)
                 onStatusChange?.(false)
-                showSuccess('MCP Server disabled')
+                showSuccess(t('uic.mcpServer.disabled'))
             }
             await refreshChatflowStore()
         } catch (error) {
             showError(
-                `Failed to save MCP Server settings: ${
-                    typeof error.response?.data === 'object' ? error.response.data.message : error.response?.data || error.message
-                }`
+                t('uic.mcpServer.saveFailed', {
+                    error: typeof error.response?.data === 'object' ? error.response.data.message : error.response?.data || error.message
+                })
             )
         } finally {
             setLoading(false)
@@ -162,16 +164,15 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     const handleCopyUrl = (url) => {
         if (!url) return
         navigator.clipboard.writeText(url)
-        showSuccess('URL copied to clipboard')
+        showSuccess(t('uic.mcpServer.urlCopied'))
     }
 
     const handleRefreshCode = async () => {
         const confirmPayload = {
-            title: 'Rotate Token',
-            description:
-                'This will invalidate the existing token. Any clients using the old token will need to be updated with the new one. Are you sure?',
-            confirmButtonName: 'Rotate',
-            cancelButtonName: 'Cancel'
+            title: t('uic.mcpServer.rotateTokenTitle'),
+            description: t('uic.mcpServer.rotateTokenDescription'),
+            confirmButtonName: t('uic.mcpServer.rotate'),
+            cancelButtonName: t('common.cancel')
         }
         const isConfirmed = await confirm(confirmPayload)
         if (!isConfirmed) return
@@ -182,14 +183,14 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
             const resp = await mcpServerApi.refreshMcpToken(dialogProps.chatflow.id)
             if (resp.data) {
                 setToken(resp.data.token || '')
-                showSuccess('Token rotated successfully')
+                showSuccess(t('uic.mcpServer.tokenRotated'))
             }
             await refreshChatflowStore()
         } catch (error) {
             showError(
-                `Failed to rotate token: ${
-                    typeof error.response?.data === 'object' ? error.response.data.message : error.response?.data || error.message
-                }`
+                t('uic.mcpServer.rotateFailed', {
+                    error: typeof error.response?.data === 'object' ? error.response.data.message : error.response?.data || error.message
+                })
             )
         } finally {
             setLoading(false)
@@ -206,11 +207,12 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     useEffect(() => {
         if (getMcpServerConfigApi.error) {
             showError(
-                `Failed to load MCP Server configuration: ${
-                    typeof getMcpServerConfigApi.error.response?.data === 'object'
-                        ? getMcpServerConfigApi.error.response.data.message
-                        : getMcpServerConfigApi.error.response?.data || getMcpServerConfigApi.error.message
-                }`
+                t('uic.mcpServer.loadFailed', {
+                    error:
+                        typeof getMcpServerConfigApi.error.response?.data === 'object'
+                            ? getMcpServerConfigApi.error.response.data.message
+                            : getMcpServerConfigApi.error.response?.data || getMcpServerConfigApi.error.message
+                })
             )
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,7 +233,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     if (getMcpServerConfigApi.loading) {
         return (
             <Box sx={{ p: 2, textAlign: 'center' }}>
-                <Typography>Loading MCP Server configuration...</Typography>
+                <Typography>{t('uic.mcpServer.loading')}</Typography>
             </Box>
         )
     }
@@ -239,7 +241,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
     return (
         <>
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <SwitchInput label='Expose as MCP Server' onChange={handleToggle} value={mcpEnabled} disabled={loading} />
+                <SwitchInput label={t('uic.mcpServer.expose')} onChange={handleToggle} value={mcpEnabled} disabled={loading} />
             </Box>
 
             {mcpEnabled && (
@@ -247,14 +249,14 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                     {/* Tool Name (required) */}
                     <Box>
                         <Typography sx={{ mb: 1 }}>
-                            Tool Name <span style={{ color: theme.palette.error.main }}>*</span>
+                            {t('uic.mcpServer.toolName')} <span style={{ color: theme.palette.error.main }}>*</span>
                         </Typography>
                         <OutlinedInput
                             fullWidth
                             size='small'
                             value={toolName}
                             onChange={(e) => handleToolNameChange(e.target.value)}
-                            placeholder='e.g. product_qa'
+                            placeholder={t('uic.mcpServer.toolNamePlaceholder')}
                             error={!!toolNameError}
                             disabled={loading}
                         />
@@ -267,14 +269,14 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                             variant='caption'
                             sx={{ mt: 0.5, display: 'block', color: customization.isDarkMode ? theme.palette.grey[400] : 'text.secondary' }}
                         >
-                            Used as the MCP tool identifier by LLM clients.
+                            {t('uic.mcpServer.toolNameHint')}
                         </Typography>
                     </Box>
 
                     {/* Description (required) */}
                     <Box>
                         <Typography sx={{ mb: 1 }}>
-                            Description <span style={{ color: theme.palette.error.main }}>*</span>
+                            {t('common.description')} <span style={{ color: theme.palette.error.main }}>*</span>
                         </Typography>
                         <OutlinedInput
                             fullWidth
@@ -283,21 +285,21 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                             rows={3}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder='e.g. Answers product catalog questions'
+                            placeholder={t('uic.mcpServer.descriptionPlaceholder')}
                             disabled={loading}
                         />
                         <Typography
                             variant='caption'
                             sx={{ mt: 0.5, display: 'block', color: customization.isDarkMode ? theme.palette.grey[400] : 'text.secondary' }}
                         >
-                            Helps LLMs understand when to route queries to this tool. Good descriptions improve tool selection accuracy.
+                            {t('uic.mcpServer.descriptionHint')}
                         </Typography>
                     </Box>
 
                     {/* MCP Endpoint URL — visible only when has token */}
                     {token && (
                         <Box>
-                            <Typography sx={{ mb: 1 }}>Streamable HTTP Endpoint</Typography>
+                            <Typography sx={{ mb: 1 }}>{t('uic.mcpServer.endpoint')}</Typography>
                             <OutlinedInput
                                 fullWidth
                                 size='small'
@@ -312,7 +314,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                                         <IconButton
                                             size='small'
                                             onClick={() => handleCopyUrl(endpointUrl)}
-                                            title='Copy URL to clipboard'
+                                            title={t('uic.mcpServer.copyUrl')}
                                             sx={{ color: customization.isDarkMode ? theme.palette.grey[300] : 'inherit' }}
                                         >
                                             <IconCopy size={18} />
@@ -328,10 +330,10 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                                     color: customization.isDarkMode ? theme.palette.grey[400] : 'text.secondary'
                                 }}
                             >
-                                For clients that support the Streamable HTTP transport
+                                {t('uic.mcpServer.endpointHint')}
                             </Typography>
 
-                            <Typography sx={{ mb: 1, mt: 2 }}>Token (Bearer Token)</Typography>
+                            <Typography sx={{ mb: 1, mt: 2 }}>{t('uic.mcpServer.token')}</Typography>
                             <OutlinedInput
                                 fullWidth
                                 size='small'
@@ -348,9 +350,9 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                                             size='small'
                                             onClick={() => {
                                                 navigator.clipboard.writeText(token)
-                                                showSuccess('Token copied to clipboard')
+                                                showSuccess(t('uic.mcpServer.tokenCopied'))
                                             }}
-                                            title='Copy token'
+                                            title={t('uic.mcpServer.copyToken')}
                                             sx={{ color: customization.isDarkMode ? theme.palette.grey[300] : 'inherit' }}
                                         >
                                             <IconCopy size={18} />
@@ -358,7 +360,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                                         <IconButton
                                             size='small'
                                             onClick={handleRefreshCode}
-                                            title='Rotate token'
+                                            title={t('uic.mcpServer.rotateToken')}
                                             disabled={loading}
                                             sx={{ color: customization.isDarkMode ? theme.palette.grey[300] : 'inherit' }}
                                         >
@@ -380,8 +382,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                                     })
                                 }}
                             >
-                                Use the URL above as the MCP endpoint and pass the token as a Bearer token in the Authorization header.
-                                Configure your MCP client with:{' '}
+                                {t('uic.mcpServer.authHint')}{' '}
                                 <code
                                     style={{
                                         display: 'block',
@@ -403,7 +404,7 @@ const McpServer = ({ dialogProps, onStatusChange }) => {
                     onClick={onSave}
                     sx={{ minWidth: 100 }}
                 >
-                    {loading ? 'Saving...' : 'Save'}
+                    {loading ? t('uic.mcpServer.saving') : t('common.save')}
                 </StyledButton>
             </Box>
         </>

@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 // Material
 import {
@@ -37,6 +38,7 @@ import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
 import useApi from '@/hooks/useApi'
 import { autocompleteClasses } from '@mui/material/Autocomplete'
+import { translateLabel } from '@/i18n/translateLabel'
 
 const StyledPopper = styled(Popper)({
     boxShadow: '0px 8px 10px -5px rgb(0 0 0 / 20%), 0px 16px 24px 2px rgb(0 0 0 / 14%), 0px 6px 30px 5px rgb(0 0 0 / 12%)',
@@ -54,6 +56,7 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
     const portalElement = document.getElementById('portal')
     const currentUser = useSelector((state) => state.auth.user)
 
+    const { t } = useTranslation()
     const dispatch = useDispatch()
 
     useNotifier()
@@ -118,7 +121,7 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
             const saveResp = await workspaceApi.updateWorkspaceUserRole(saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'WorkspaceUser Details Updated',
+                    message: t('admin.workspaceUserDetailsUpdated'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -132,10 +135,9 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
                 onConfirm(saveResp.data.id)
             }
         } catch (error) {
+            const errorMessage = typeof error.response.data === 'object' ? error.response.data.message : error.response.data
             enqueueSnackbar({
-                message: `Failed to update WorkspaceUser: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('admin.failedToUpdateWorkspaceUser', { error: errorMessage }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -166,14 +168,15 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconUser style={{ marginRight: '10px' }} />
-                    {'Change Workspace Role - '} {userEmail || ''} {user.name ? `(${user.name})` : ''}
+                    {t('admin.changeWorkspaceRole')} - {userEmail || ''} {user.name ? `(${user.name})` : ''}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            New Role to Assign<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('admin.newRoleToAssign')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -183,7 +186,7 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
                         onChange={handleRoleChange}
                         getOptionLabel={(option) => option.label || ''}
                         options={availableRoles}
-                        renderInput={(params) => <TextField {...params} variant='outlined' placeholder='Select Role' />}
+                        renderInput={(params) => <TextField {...params} variant='outlined' placeholder={t('admin.selectRole')} />}
                         value={selectedRole}
                         PopperComponent={StyledPopper}
                     />
@@ -191,7 +194,7 @@ const EditWorkspaceUserRoleDialog = ({ show, dialogProps, onCancel, onConfirm })
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <StyledButton variant='contained' onClick={() => updateUser()} id='btn_confirmEditUser'>
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />

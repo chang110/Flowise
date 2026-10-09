@@ -1,0 +1,33 @@
+{
+    "nodes": {
+        "conversationChain": "对话链",
+        "conversationalRetrievalQAChain": "对话检索问答链",
+        "getApiChain": "GET API 链",
+        "graphCypherQAChain": "图 Cypher 问答链",
+        "llmChain": "LLM 链",
+        "multiPromptChain": "多提示词链",
+        "multiRetrievalQAChain": "多检索问答链",
+        "openApiChain": "OpenAPI 链",
+        "postApiChain": "POST API 链",
+        "retrievalQAChain": "检索问答链",
+        "sqlDatabaseChain": "SQL 数据库链",
+        "vectaraQAChain": "Vectara 问答链",
+        "vectorDBQAChain": "向量库问答链"
+    },
+    "descriptions": {
+        "conversationChain": "带记忆的聊天模型专用对话链",
+        "conversationalRetrievalQAChain": "文档问答 —— 基于 RetrievalQAChain 构建,提供聊天历史能力",
+        "getApiChain": "针对 GET API 执行查询的链",
+        "graphCypherQAChain": "通过生成 Cypher 语句对 Neo4j 图数据库进行问答的高级链",
+        "llmChain": "针对 LLM 执行查询的链",
+        "multiPromptChain": "从多个提示词模板中自动选择合适提示词的链",
+        "multiRetrievalQAChain": "从多个检索器中自动选择合适的向量库的问答链",
+        "openApiChain": "仅依据 OpenAPI 规范自动选择并调用 API 的链",
+        "postApiChain": "针对 POST API 执行查询的链",
+        "retrievalQAChain": "基于检索到的文档回答问题的问答链",
+        "sqlDatabaseChain": "在 SQL 数据库上回答问题",
+        "vectaraQAChain": "Vectara 的问答链",
+        "vectorDBQAChain": "向量数据库的问答链"
+    },
+    "params": {}
+}

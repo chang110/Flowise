@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { Box, CircularProgress, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { IconClock } from '@tabler/icons-react'
@@ -18,6 +19,7 @@ const PAUSED = {
 const ScheduleStatusBadge = ({ scheduleStatus, size = 'md' }) => {
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
 
     if (!scheduleStatus?.isScheduled) return null
 
@@ -27,12 +29,12 @@ const ScheduleStatusBadge = ({ scheduleStatus, size = 'md' }) => {
     const colors = isActive ? ACTIVE[palette] : PAUSED[palette]
 
     const tooltipText = isLoading
-        ? 'Checking schedule status…'
+        ? t('uic.scheduleStatus.checking')
         : isActive
         ? scheduleStatus.nextRunAt
-            ? `Schedule active — next run ${moment(scheduleStatus.nextRunAt).format('MMM D, YYYY h:mm A')}`
-            : 'Schedule active'
-        : 'Schedule configured but turned off'
+            ? t('uic.scheduleStatus.activeNextRun', { date: moment(scheduleStatus.nextRunAt).format('MMM D, YYYY h:mm A') })
+            : t('uic.scheduleStatus.active')
+        : t('uic.scheduleStatus.off')
 
     const dims =
         size === 'sm'
@@ -85,7 +87,11 @@ const ScheduleStatusBadge = ({ scheduleStatus, size = 'md' }) => {
                 ) : (
                     <IconClock size={dims.icon} stroke={2} />
                 )}
-                {isLoading ? 'Loading…' : isActive ? 'Scheduled' : 'Paused'}
+                {isLoading
+                    ? t('uic.scheduleStatus.loading')
+                    : isActive
+                    ? t('uic.scheduleStatus.scheduled')
+                    : t('uic.scheduleStatus.paused')}
             </Box>
         </Tooltip>
     )

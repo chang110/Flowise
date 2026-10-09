@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction, SET_CHATFLOW } from '@/store/actions'
 import { SketchPicker } from 'react-color'
 import PropTypes from 'prop-types'
@@ -48,6 +49,7 @@ const defaultConfig = {
 const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
     const dispatch = useDispatch()
     const theme = useTheme()
+    const { t } = useTranslation()
     const chatflow = useSelector((state) => state.canvas.chatflow)
     const chatflowid = chatflow.id
     const chatbotConfig = chatflow.chatbotConfig ? JSON.parse(chatflow.chatbotConfig) : {}
@@ -184,7 +186,7 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
             })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Chatbot Configuration Saved',
+                    message: t('dv.chatbotConfigSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -199,9 +201,9 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Chatbot Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToSaveChatbotConfig', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -221,7 +223,7 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
             const saveResp = await chatflowsApi.updateChatflow(chatflowid, { isPublic: checked })
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Chatbot Configuration Saved',
+                    message: t('dv.chatbotConfigSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -236,9 +238,9 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
             }
         } catch (error) {
             enqueueSnackbar({
-                message: `Failed to save Chatbot Configuration: ${
-                    typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                }`,
+                message: t('dv.failedToSaveChatbotConfig', {
+                    error: typeof error.response.data === 'object' ? error.response.data.message : error.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -429,7 +431,7 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
                     {`${baseURL}/chatbot/${chatflowid}`}
                 </Typography>
                 <IconButton
-                    title='Copy Link'
+                    title={t('dv.copyLink')}
                     color='success'
                     onClick={(event) => {
                         navigator.clipboard.writeText(`${baseURL}/chatbot/${chatflowid}`)
@@ -441,7 +443,11 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
                 >
                     <IconCopy />
                 </IconButton>
-                <IconButton title='Open New Tab' color='primary' onClick={() => window.open(`${baseURL}/chatbot/${chatflowid}`, '_blank')}>
+                <IconButton
+                    title={t('dv.openNewTab')}
+                    color='primary'
+                    onClick={() => window.open(`${baseURL}/chatbot/${chatflowid}`, '_blank')}
+                >
                     <IconArrowUpRightCircle />
                 </IconButton>
                 <div style={{ flex: 1 }} />
@@ -454,86 +460,88 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
                                 onSwitchChange(event.target.checked)
                             }}
                         />
-                        <Typography>Make Public</Typography>
-                        <TooltipWithParser
-                            style={{ marginLeft: 10 }}
-                            title={'Making public will allow anyone to access the chatbot without authentication'}
-                        />
+                        <Typography>{t('dv.makePublic')}</Typography>
+                        <TooltipWithParser style={{ marginLeft: 10 }} title={t('dv.makePublicTooltip')} />
                     </div>
                 </Available>
             </Stack>
 
             <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 3, mt: 2 }} variant='outlined'>
                 <Stack sx={{ mt: 1, mb: 2, alignItems: 'center' }} direction='row' spacing={2}>
-                    <Typography variant='h4'>Title Settings</Typography>
+                    <Typography variant='h4'>{t('dv.titleSettings')}</Typography>
                 </Stack>
-                {textField(title, 'title', 'Title', 'string', 'Flowise Assistant')}
+                {textField(title, 'title', t('dv.title'), 'string', t('dv.flowiseAssistant'))}
                 {textField(
                     titleAvatarSrc,
                     'titleAvatarSrc',
-                    'Title Avatar Link',
+                    t('dv.titleAvatarLink'),
                     'string',
                     `https://raw.githubusercontent.com/FlowiseAI/Flowise/main/assets/FloWiseAI_dark.png`
                 )}
-                {colorField(titleBackgroundColor, 'titleBackgroundColor', 'Title Background Color')}
-                {colorField(titleTextColor, 'titleTextColor', 'Title TextColor')}
+                {colorField(titleBackgroundColor, 'titleBackgroundColor', t('dv.titleBackgroundColor'))}
+                {colorField(titleTextColor, 'titleTextColor', t('dv.titleTextColor'))}
             </Card>
 
             <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 3, mt: 2 }} variant='outlined'>
                 <Stack sx={{ mt: 1, mb: 2, alignItems: 'center' }} direction='row' spacing={2}>
-                    <Typography variant='h4'>General Settings</Typography>
+                    <Typography variant='h4'>{t('dv.generalSettings')}</Typography>
                 </Stack>
-                {textField(welcomeMessage, 'welcomeMessage', 'Welcome Message', 'string', 'Hello! This is custom welcome message')}
-                {textField(errorMessage, 'errorMessage', 'Error Message', 'string', 'This is custom error message')}
-                {colorField(backgroundColor, 'backgroundColor', 'Background Color')}
-                {textField(fontSize, 'fontSize', 'Font Size', 'number')}
-                {colorField(poweredByTextColor, 'poweredByTextColor', 'PoweredBy TextColor')}
-                {isAgentCanvas && booleanField(showAgentMessages, 'showAgentMessages', 'Show agent reasonings when using Agentflow')}
-                {booleanField(renderHTML, 'renderHTML', 'Render HTML on the chat')}
-                {isSessionMemory &&
-                    booleanField(generateNewSession, 'generateNewSession', 'Start new session when chatbot link is opened or refreshed')}
+                {textField(welcomeMessage, 'welcomeMessage', t('dv.welcomeMessage'), 'string', t('dv.welcomeMessagePlaceholder'))}
+                {textField(errorMessage, 'errorMessage', t('dv.errorMessage'), 'string', t('dv.errorMessagePlaceholder'))}
+                {colorField(backgroundColor, 'backgroundColor', t('dv.backgroundColor'))}
+                {textField(fontSize, 'fontSize', t('dv.fontSize'), 'number')}
+                {colorField(poweredByTextColor, 'poweredByTextColor', t('dv.poweredByTextColor'))}
+                {isAgentCanvas && booleanField(showAgentMessages, 'showAgentMessages', t('dv.showAgentReasonings'))}
+                {booleanField(renderHTML, 'renderHTML', t('dv.renderHTML'))}
+                {isSessionMemory && booleanField(generateNewSession, 'generateNewSession', t('dv.startNewSession'))}
             </Card>
 
             <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 3, mt: 2 }} variant='outlined'>
                 <Stack sx={{ mt: 1, mb: 2, alignItems: 'center' }} direction='row' spacing={2}>
-                    <Typography variant='h4'>Bot Message</Typography>
+                    <Typography variant='h4'>{t('dv.botMessage')}</Typography>
                 </Stack>
-                {colorField(botMessageBackgroundColor, 'botMessageBackgroundColor', 'Background Color')}
-                {colorField(botMessageTextColor, 'botMessageTextColor', 'Text Color')}
+                {colorField(botMessageBackgroundColor, 'botMessageBackgroundColor', t('dv.backgroundColor'))}
+                {colorField(botMessageTextColor, 'botMessageTextColor', t('dv.textColor'))}
                 {textField(
                     botMessageAvatarSrc,
                     'botMessageAvatarSrc',
-                    'Avatar Link',
+                    t('dv.avatarLink'),
                     'string',
                     `https://raw.githubusercontent.com/zahidkhawaja/langchain-chat-nextjs/main/public/parroticon.png`
                 )}
-                {booleanField(botMessageShowAvatar, 'botMessageShowAvatar', 'Show Avatar')}
+                {booleanField(botMessageShowAvatar, 'botMessageShowAvatar', t('dv.showAvatar'))}
             </Card>
 
             <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 3, mt: 2 }} variant='outlined'>
                 <Stack sx={{ mt: 1, mb: 2, alignItems: 'center' }} direction='row' spacing={2}>
-                    <Typography variant='h4'>User Message</Typography>
+                    <Typography variant='h4'>{t('dv.userMessage')}</Typography>
                 </Stack>
-                {colorField(userMessageBackgroundColor, 'userMessageBackgroundColor', 'Background Color')}
-                {colorField(userMessageTextColor, 'userMessageTextColor', 'Text Color')}
+                {colorField(userMessageBackgroundColor, 'userMessageBackgroundColor', t('dv.backgroundColor'))}
+                {colorField(userMessageTextColor, 'userMessageTextColor', t('dv.textColor'))}
                 {textField(
                     userMessageAvatarSrc,
                     'userMessageAvatarSrc',
-                    'Avatar Link',
+                    t('dv.avatarLink'),
                     'string',
                     `https://raw.githubusercontent.com/zahidkhawaja/langchain-chat-nextjs/main/public/usericon.png`
                 )}
-                {booleanField(userMessageShowAvatar, 'userMessageShowAvatar', 'Show Avatar')}
+                {booleanField(userMessageShowAvatar, 'userMessageShowAvatar', t('dv.showAvatar'))}
             </Card>
 
             <Card sx={{ borderColor: theme.palette.primary[200] + 75, p: 3, mt: 2 }} variant='outlined'>
                 <Stack sx={{ mt: 1, mb: 2, alignItems: 'center' }} direction='row' spacing={2}>
-                    <Typography variant='h4'>Text Input</Typography>
+                    <Typography variant='h4'>{t('dv.textInput')}</Typography>
                 </Stack>
-                {colorField(textInputBackgroundColor, 'textInputBackgroundColor', 'Background Color')}
-                {colorField(textInputTextColor, 'textInputTextColor', 'Text Color')}
-                {textField(textInputPlaceholder, 'textInputPlaceholder', 'TextInput Placeholder', 'string', `Type question..`)}
-                {colorField(textInputSendButtonColor, 'textInputSendButtonColor', 'TextIntput Send Button Color')}
+                {colorField(textInputBackgroundColor, 'textInputBackgroundColor', t('dv.backgroundColor'))}
+                {colorField(textInputTextColor, 'textInputTextColor', t('dv.textColor'))}
+                {textField(
+                    textInputPlaceholder,
+                    'textInputPlaceholder',
+                    t('dv.textInputPlaceholder'),
+                    'string',
+                    t('dv.typeQuestionPlaceholder')
+                )}
+                {colorField(textInputSendButtonColor, 'textInputSendButtonColor', t('dv.textInputSendButtonColor'))}
             </Card>
 
             <StyledPermissionButton
@@ -548,7 +556,7 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
                 variant='contained'
                 onClick={() => onSave()}
             >
-                Save Changes
+                {t('dv.saveChanges')}
             </StyledPermissionButton>
             <Popover
                 open={openColorPopOver}
@@ -579,7 +587,7 @@ const ShareChatbot = ({ isSessionMemory, isAgentCanvas }) => {
                 }}
             >
                 <Typography variant='h6' sx={{ pl: 1, pr: 1, color: 'white', background: theme.palette.success.dark }}>
-                    Copied!
+                    {t('dv.copiedExclamation')}
                 </Typography>
             </Popover>
         </>

@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Box, List, ListItemButton, ListItem, ListItemAvatar, ListItemText, Typography, Stack } from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import robotPNG from '@/assets/images/robot.png'
@@ -11,24 +12,25 @@ import { baseURL } from '@/store/constant'
 const sequentialStateMessagesSelection = [
     {
         primary: '$flow.state.messages',
-        secondary: `All messages from the start of the conversation till now`
+        secondaryLabel: 'uic.selectVariable.allMessages'
     },
     {
         primary: '$flow.state.<replace-with-key>',
-        secondary: `Current value of the state variable with specified key`
+        secondaryLabel: 'uic.selectVariable.stateVariableValue'
     },
     {
         primary: '$flow.state.messages[0].content',
-        secondary: `First message content`
+        secondaryLabel: 'uic.selectVariable.firstMessageContent'
     },
     {
         primary: '$flow.state.messages[-1].content',
-        secondary: `Last message content`
+        secondaryLabel: 'uic.selectVariable.lastMessageContent'
     }
 ]
 
 const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectAndReturnVal, isSequentialAgent }) => {
     const customization = useSelector((state) => state.customization)
+    const { t } = useTranslation()
 
     const onSelectOutputResponseClick = (node, prefix) => {
         let variablePath = node ? `${node.id}.data.instance` : prefix
@@ -41,7 +43,7 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
             {!disabled && (
                 <div style={{ flex: 30 }}>
                     <Stack flexDirection='row' sx={{ mb: 1, ml: 2, mt: 2 }}>
-                        <Typography variant='h5'>Select Variable</Typography>
+                        <Typography variant='h5'>{t('uic.selectVariable.title')}</Typography>
                     </Stack>
                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 220px)', overflowX: 'hidden' }}>
                         <Box sx={{ pl: 2, pr: 2 }}>
@@ -78,7 +80,7 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
                                                 />
                                             </div>
                                         </ListItemAvatar>
-                                        <ListItemText sx={{ ml: 1 }} primary='question' secondary={`User's question from chatbox`} />
+                                        <ListItemText sx={{ ml: 1 }} primary='question' secondary={t('uic.suggestions.question')} />
                                     </ListItem>
                                 </ListItemButton>
                                 <ListItemButton
@@ -113,11 +115,7 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
                                                 />
                                             </div>
                                         </ListItemAvatar>
-                                        <ListItemText
-                                            sx={{ ml: 1 }}
-                                            primary='chat_history'
-                                            secondary={`Past conversation history between user and AI`}
-                                        />
+                                        <ListItemText sx={{ ml: 1 }} primary='chat_history' secondary={t('uic.suggestions.chatHistory')} />
                                     </ListItem>
                                 </ListItemButton>
                                 <ListItemButton
@@ -155,7 +153,7 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
                                         <ListItemText
                                             sx={{ ml: 1 }}
                                             primary='file_attachment'
-                                            secondary={`Files uploaded from the chat when Full File Upload is enabled on the Configuration`}
+                                            secondary={t('uic.selectVariable.fileAttachment')}
                                         />
                                     </ListItem>
                                 </ListItemButton>
@@ -211,7 +209,12 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
                                                         secondary={
                                                             node.data.name === 'ifElseFunction'
                                                                 ? `${node.data.description}`
-                                                                : `${selectedOutputAnchor?.label ?? 'output'} from ${node.data.label}`
+                                                                : t('uic.selectVariable.outputFrom', {
+                                                                      output:
+                                                                          selectedOutputAnchor?.label ??
+                                                                          t('uic.selectVariable.outputLabel'),
+                                                                      node: node.data.label
+                                                                  })
                                                         }
                                                     />
                                                 </ListItem>
@@ -253,7 +256,7 @@ const SelectVariable = ({ availableNodesForVariable, disabled = false, onSelectA
                                                         />
                                                     </div>
                                                 </ListItemAvatar>
-                                                <ListItemText sx={{ ml: 1 }} primary={item.primary} secondary={item.secondary} />
+                                                <ListItemText sx={{ ml: 1 }} primary={item.primary} secondary={t(item.secondaryLabel)} />
                                             </ListItem>
                                         </ListItemButton>
                                     ))}

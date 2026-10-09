@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Box, Chip, IconButton, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
@@ -36,6 +37,7 @@ import { IconAlertTriangle, IconLayoutGrid, IconList, IconPlus, IconX } from '@t
 const Agentflows = () => {
     const navigate = useNavigate()
     const theme = useTheme()
+    const { t } = useTranslation()
     const customization = useSelector((state) => state.customization)
 
     const [isLoading, setLoading] = useState(true)
@@ -219,9 +221,9 @@ const Agentflows = () => {
                     <ViewHeader
                         onSearchChange={onSearchChange}
                         search={true}
-                        searchPlaceholder='Search Name or Category'
-                        title='Agentflows'
-                        description='Multi-agent systems, workflow orchestration'
+                        searchPlaceholder={t('pages.agentflows.searchPlaceholder')}
+                        title={t('pages.agentflows.title')}
+                        description={t('pages.agentflows.description')}
                     >
                         <ToggleButtonGroup
                             sx={{ borderRadius: 2, maxHeight: 40 }}
@@ -272,7 +274,7 @@ const Agentflows = () => {
                                 }}
                                 variant='contained'
                                 value='card'
-                                title='Card View'
+                                title={t('common.cardView')}
                             >
                                 <IconLayoutGrid />
                             </ToggleButton>
@@ -284,7 +286,7 @@ const Agentflows = () => {
                                 }}
                                 variant='contained'
                                 value='list'
-                                title='List View'
+                                title={t('common.listView')}
                             >
                                 <IconList />
                             </ToggleButton>
@@ -296,7 +298,7 @@ const Agentflows = () => {
                             startIcon={<IconPlus />}
                             sx={{ borderRadius: 2, height: 40 }}
                         >
-                            Add New
+                            {t('common.addNew')}
                         </StyledPermissionButton>
                     </ViewHeader>
 
@@ -387,7 +389,7 @@ const Agentflows = () => {
                                     alt='AgentsEmptySVG'
                                 />
                             </Box>
-                            <div>No Agents Yet</div>
+                            <div>{t('pages.agentflows.noItems')}</div>
                         </Stack>
                     )}
                 </Stack>

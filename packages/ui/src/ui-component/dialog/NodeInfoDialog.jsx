@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 // Material
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import { TableViewOnly } from '@/ui-component/table/Table'
 import { IconBook2 } from '@tabler/icons-react'
 import { useTheme } from '@mui/material/styles'
@@ -12,12 +13,15 @@ import { useTheme } from '@mui/material/styles'
 // Store
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import { baseURL, AGENTFLOW_ICONS } from '@/store/constant'
+import { useNodeLocale } from '@/i18n/nodeLocale'
 
 // API
 import configApi from '@/api/config'
 import useApi from '@/hooks/useApi'
 
 const NodeInfoDialog = ({ show, dialogProps, onCancel }) => {
+    const { t } = useTranslation()
+    const { nodeLabel, nodeDescription } = useNodeLocale()
     const portalElement = document.getElementById('portal')
     const dispatch = useDispatch()
     const theme = useTheme()
@@ -102,7 +106,7 @@ const NodeInfoDialog = ({ show, dialogProps, onCancel }) => {
                             </div>
                         )}
                         <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 10 }}>
-                            {dialogProps.data.label}
+                            {nodeLabel(dialogProps.data)}
                             <div style={{ display: 'flex', flexDirection: 'row' }}>
                                 <div
                                     style={{
@@ -136,7 +140,9 @@ const NodeInfoDialog = ({ show, dialogProps, onCancel }) => {
                                             marginBottom: 5
                                         }}
                                     >
-                                        <span style={{ color: '#606c38', fontSize: '0.825rem' }}>version {dialogProps.data.version}</span>
+                                        <span style={{ color: '#606c38', fontSize: '0.825rem' }}>
+                                            {t('dlg.versionLabel')} {dialogProps.data.version}
+                                        </span>
                                     </div>
                                 )}
                                 {dialogProps.data.badge && (
@@ -201,13 +207,13 @@ const NodeInfoDialog = ({ show, dialogProps, onCancel }) => {
                             <Button
                                 variant='outlined'
                                 color='primary'
-                                title='Open Documentation'
+                                title={t('dlg.openDocumentation')}
                                 onClick={() => {
                                     window.open(dialogProps.data.documentation, '_blank', 'noopener,noreferrer')
                                 }}
                                 startIcon={<IconBook2 />}
                             >
-                                Documentation
+                                {t('dlg.documentation')}
                             </Button>
                         )}
                     </div>
@@ -221,7 +227,7 @@ const NodeInfoDialog = ({ show, dialogProps, onCancel }) => {
                             marginBottom: 10
                         }}
                     >
-                        <span>{dialogProps.data.description}</span>
+                        <span>{nodeDescription(dialogProps.data)}</span>
                     </div>
                 )}
                 {getNodeConfigApi.data && getNodeConfigApi.data.length > 0 && (

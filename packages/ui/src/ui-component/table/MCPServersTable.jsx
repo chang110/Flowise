@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { styled } from '@mui/material/styles'
 import { tableCellClasses } from '@mui/material/TableCell'
 import {
@@ -81,6 +82,7 @@ StatusBadge.propTypes = {
 }
 
 export const MCPServersTable = ({ data, isLoading, onSelect }) => {
+    const { t } = useTranslation()
     const theme = useTheme()
     const customization = useSelector((state) => state.customization)
 
@@ -94,10 +96,10 @@ export const MCPServersTable = ({ data, isLoading, onSelect }) => {
                     }}
                 >
                     <TableRow>
-                        <StyledTableCell>Name</StyledTableCell>
-                        <StyledTableCell>Server URL</StyledTableCell>
-                        <StyledTableCell>Status</StyledTableCell>
-                        <StyledTableCell>Tools</StyledTableCell>
+                        <StyledTableCell>{t('table.name')}</StyledTableCell>
+                        <StyledTableCell>{t('table.serverUrl')}</StyledTableCell>
+                        <StyledTableCell>{t('table.status')}</StyledTableCell>
+                        <StyledTableCell>{t('table.tools')}</StyledTableCell>
                         <StyledTableCell>&nbsp;</StyledTableCell>
                     </TableRow>
                 </TableHead>

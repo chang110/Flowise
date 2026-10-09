@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
@@ -53,6 +54,7 @@ const WorkspaceDetails = () => {
     const customization = useSelector((state) => state.customization)
     const currentUser = useSelector((state) => state.auth.user)
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const dispatch = useDispatch()
     useNotifier()
@@ -176,8 +178,8 @@ const WorkspaceDetails = () => {
         const userList = usersSelected.map((user) => (user.name ? `${user.name} (${user.email})` : user.email)).join(', ')
 
         const confirmPayload = {
-            title: `Remove Users`,
-            description: `Remove the following users from the workspace?\n${userList}`,
+            title: t('admin.removeUsers'),
+            description: t('admin.removeUsersConfirmDescription', { users: userList }),
             confirmButtonName: 'Remove',
             cancelButtonName: 'Cancel'
         }
@@ -187,7 +189,7 @@ const WorkspaceDetails = () => {
         )
         if (orgOwner) {
             enqueueSnackbar({
-                message: `Organization owner cannot be removed from workspace.`,
+                message: t('admin.orgOwnerCannotBeRemoved'),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -209,7 +211,7 @@ const WorkspaceDetails = () => {
                 await Promise.all(deletePromises)
 
                 enqueueSnackbar({
-                    message: `${usersSelected.length} User(s) removed from workspace.`,
+                    message: t('admin.usersRemovedFromWorkspace', { num: usersSelected.length }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -230,10 +232,9 @@ const WorkspaceDetails = () => {
 
                 onConfirm()
             } catch (error) {
+                const errorMessage = typeof error.response.data === 'object' ? error.response.data.message : error.response.data
                 enqueueSnackbar({
-                    message: `Failed to unlink users: ${
-                        typeof error.response.data === 'object' ? error.response.data.message : error.response.data
-                    }`,
+                    message: t('admin.failedToUnlinkUsers', { error: errorMessage }),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'error',
@@ -316,9 +317,9 @@ const WorkspaceDetails = () => {
                             onBack={() => window.history.back()}
                             search={workspaceUsers.length > 0}
                             onSearchChange={onSearchChange}
-                            searchPlaceholder={'Search Users'}
-                            title={(workspace?.name || '') + ': Workspace Users'}
-                            description={'Manage workspace users and permissions.'}
+                            searchPlaceholder={t('admin.searchUsers')}
+                            title={(workspace?.name || '') + ': ' + t('admin.workspaceUsers')}
+                            description={t('admin.manageWorkspaceUsersDescription')}
                         >
                             {workspaceUsers.length > 0 && (
                                 <>
@@ -331,7 +332,7 @@ const WorkspaceDetails = () => {
                                         color='error'
                                         startIcon={<IconUnlink />}
                                     >
-                                        Remove Users
+                                        {t('admin.removeUsers')}
                                     </PermissionButton>
                                     <StyledPermissionButton
                                         permissionId={'workspace:add-user'}
@@ -340,7 +341,7 @@ const WorkspaceDetails = () => {
                                         onClick={addUser}
                                         startIcon={<IconUserPlus />}
                                     >
-                                        Add User
+                                        {t('admin.addUser')}
                                     </StyledPermissionButton>
                                 </>
                             )}
@@ -354,7 +355,7 @@ const WorkspaceDetails = () => {
                                         alt='empty_datasetSVG'
                                     />
                                 </Box>
-                                <div>No Assigned Users Yet</div>
+                                <div>{t('admin.noAssignedUsersYet')}</div>
                                 <StyledPermissionButton
                                     permissionId={'workspace:add-user'}
                                     variant='contained'
@@ -362,7 +363,7 @@ const WorkspaceDetails = () => {
                                     startIcon={<IconUserPlus />}
                                     onClick={addUser}
                                 >
-                                    Add User
+                                    {t('admin.addUser')}
                                 </StyledPermissionButton>
                             </Stack>
                         ) : (
@@ -391,10 +392,10 @@ const WorkspaceDetails = () => {
                                                         }}
                                                     />
                                                 </StyledTableCell>
-                                                <StyledTableCell>Email/Name</StyledTableCell>
-                                                <StyledTableCell>Role</StyledTableCell>
-                                                <StyledTableCell>Status</StyledTableCell>
-                                                <StyledTableCell>Last Login</StyledTableCell>
+                                                <StyledTableCell>{t('admin.emailName')}</StyledTableCell>
+                                                <StyledTableCell>{t('admin.role')}</StyledTableCell>
+                                                <StyledTableCell>{t('table.status')}</StyledTableCell>
+                                                <StyledTableCell>{t('admin.lastLogin')}</StyledTableCell>
                                                 <StyledTableCell> </StyledTableCell>
                                             </TableRow>
                                         </TableHead>
@@ -473,7 +474,7 @@ const WorkspaceDetails = () => {
                                                             </StyledTableCell>
                                                             <StyledTableCell>
                                                                 {item.isOrgOwner ? (
-                                                                    <Chip size='small' label={'ORGANIZATION OWNER'} />
+                                                                    <Chip size='small' label={t('admin.organizationOwner')} />
                                                                 ) : (
                                                                     item.role.name
                                                                 )}
@@ -497,13 +498,13 @@ const WorkspaceDetails = () => {
                                                             </StyledTableCell>
                                                             <StyledTableCell>
                                                                 {!item.lastLogin
-                                                                    ? 'Never'
+                                                                    ? t('admin.never')
                                                                     : moment(item.lastLogin).format('DD/MM/YYYY HH:mm')}
                                                             </StyledTableCell>
                                                             <StyledTableCell>
                                                                 {!item.isOrgOwner && item.status.toUpperCase() === 'INVITED' && (
                                                                     <IconButton
-                                                                        title='Edit'
+                                                                        title={t('common.edit')}
                                                                         color='primary'
                                                                         onClick={() => onEditClick(item)}
                                                                     >
@@ -512,7 +513,7 @@ const WorkspaceDetails = () => {
                                                                 )}
                                                                 {!item.isOrgOwner && item.status.toUpperCase() === 'ACTIVE' && (
                                                                     <IconButton
-                                                                        title='Change Role'
+                                                                        title={t('admin.changeRole')}
                                                                         color='primary'
                                                                         onClick={() => onEditClick(item)}
                                                                     >

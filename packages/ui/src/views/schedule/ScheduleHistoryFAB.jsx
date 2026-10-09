@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 import { Badge, Tooltip } from '@mui/material'
 import { IconHistory } from '@tabler/icons-react'
 
@@ -10,6 +11,7 @@ import useApi from '@/hooks/useApi'
 import ScheduleHistoryDrawer from './ScheduleHistoryDrawer'
 
 const ScheduleHistoryFAB = ({ chatflowid, onOpenChange }) => {
+    const { t } = useTranslation()
     const [open, setOpen] = useState(false)
     const [runningCount, setRunningCount] = useState(0)
 
@@ -39,7 +41,7 @@ const ScheduleHistoryFAB = ({ chatflowid, onOpenChange }) => {
 
     return (
         <>
-            <Tooltip title='Schedule History'>
+            <Tooltip title={t('rem.scheduleHistory')}>
                 <Badge
                     color='warning'
                     variant='dot'

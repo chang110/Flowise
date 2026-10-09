@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 // material-ui
 import { Stack, Typography, Box, useTheme, CircularProgress } from '@mui/material'
@@ -17,6 +18,7 @@ import useApi from '@/hooks/useApi'
 import { IconCheck, IconX } from '@tabler/icons-react'
 
 const ConfirmEmailChange = () => {
+    const { t } = useTranslation()
     const confirmApi = useApi(accountApi.confirmEmailChange)
 
     const [searchParams] = useSearchParams()
@@ -71,7 +73,7 @@ const ConfirmEmailChange = () => {
                                         height: '48px'
                                     }}
                                 />
-                                <Typography variant='h1'>Confirming email change...</Typography>
+                                <Typography variant='h1'>{t('dv.confirmingEmailChange')}</Typography>
                             </>
                         )}
                         {errorMessage && (
@@ -90,7 +92,7 @@ const ConfirmEmailChange = () => {
                                 >
                                     <IconX />
                                 </Box>
-                                <Typography variant='h1'>Confirmation failed.</Typography>
+                                <Typography variant='h1'>{t('dv.confirmationFailed')}</Typography>
                                 <Typography variant='body2' color='textSecondary' sx={{ textAlign: 'center' }}>
                                     {errorMessage}
                                 </Typography>
@@ -112,9 +114,9 @@ const ConfirmEmailChange = () => {
                                 >
                                     <IconCheck />
                                 </Box>
-                                <Typography variant='h1'>Email updated successfully.</Typography>
+                                <Typography variant='h1'>{t('dv.emailUpdatedSuccessfully')}</Typography>
                                 <Typography variant='body2' color='textSecondary' sx={{ textAlign: 'center' }}>
-                                    Please sign in with your new email address.
+                                    {t('dv.signInWithNewEmail')}
                                 </Typography>
                             </>
                         )}

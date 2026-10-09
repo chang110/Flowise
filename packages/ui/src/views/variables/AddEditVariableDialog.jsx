@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import PropTypes from 'prop-types'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
 
 // Material
@@ -25,24 +26,26 @@ import useNotifier from '@/utils/useNotifier'
 // const
 import { HIDE_CANVAS_DIALOG, SHOW_CANVAS_DIALOG } from '@/store/actions'
 import { Dropdown } from '@/ui-component/dropdown/Dropdown'
-
-const variableTypes = [
-    {
-        label: 'Static',
-        name: 'static',
-        description: 'Variable value will be read from the value entered below'
-    },
-    {
-        label: 'Runtime',
-        name: 'runtime',
-        description: 'Variable value will be read from .env file'
-    }
-]
+import { translateLabel } from '@/i18n/translateLabel'
 
 const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setError }) => {
     const portalElement = document.getElementById('portal')
 
     const dispatch = useDispatch()
+    const { t } = useTranslation()
+
+    const variableTypes = [
+        {
+            label: t('dv.static'),
+            name: 'static',
+            description: t('dv.staticVariableDescription')
+        },
+        {
+            label: t('dv.runtime'),
+            name: 'runtime',
+            description: t('dv.runtimeVariableDescription')
+        }
+    ]
 
     // ==============================|| Snackbar ||============================== //
 
@@ -97,7 +100,7 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
             const createResp = await variablesApi.createVariable(obj)
             if (createResp.data) {
                 enqueueSnackbar({
-                    message: 'New Variable added',
+                    message: t('dv.variableAdded'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -113,9 +116,10 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
         } catch (err) {
             if (setError) setError(err)
             enqueueSnackbar({
-                message: `Failed to add new Variable: ${
-                    typeof err.response.data === 'object' ? err.response.data.message : err.response.data
-                }`,
+                message: t('dv.failedToAddItem', {
+                    item: t('nouns.variable'),
+                    error: typeof err.response.data === 'object' ? err.response.data.message : err.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -142,7 +146,7 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
             const saveResp = await variablesApi.updateVariable(variable.id, saveObj)
             if (saveResp.data) {
                 enqueueSnackbar({
-                    message: 'Variable saved',
+                    message: t('dv.variableSaved'),
                     options: {
                         key: new Date().getTime() + Math.random(),
                         variant: 'success',
@@ -158,9 +162,10 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
         } catch (err) {
             if (setError) setError(err)
             enqueueSnackbar({
-                message: `Failed to save Variable: ${
-                    typeof err.response.data === 'object' ? err.response.data.message : err.response.data
-                }`,
+                message: t('dv.failedToSaveItem', {
+                    item: t('nouns.variable'),
+                    error: typeof err.response.data === 'object' ? err.response.data.message : err.response.data
+                }),
                 options: {
                     key: new Date().getTime() + Math.random(),
                     variant: 'error',
@@ -188,14 +193,15 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
             <DialogTitle sx={{ fontSize: '1rem' }} id='alert-dialog-title'>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <IconVariable style={{ marginRight: '10px' }} />
-                    {dialogProps.type === 'ADD' ? 'Add Variable' : 'Edit Variable'}
+                    {dialogProps.type === 'ADD' ? t('dv.addVariable') : t('dv.editVariable')}
                 </div>
             </DialogTitle>
             <DialogContent>
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Variable Name<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('dv.variableName')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
 
                         <div style={{ flexGrow: 1 }}></div>
@@ -214,7 +220,8 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
                 <Box sx={{ p: 2 }}>
                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                         <Typography>
-                            Type<span style={{ color: 'red' }}>&nbsp;*</span>
+                            {t('dv.type')}
+                            <span style={{ color: 'red' }}>&nbsp;*</span>
                         </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                     </div>
@@ -223,7 +230,7 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
                         name='variableType'
                         options={variableTypes}
                         onSelect={(newValue) => setVariableType(newValue)}
-                        value={variableType ?? 'choose an option'}
+                        value={variableType ?? t('canvas.chooseAnOption')}
                         id='dropdown_variableType'
                     />
                 </Box>
@@ -231,7 +238,8 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
                     <Box sx={{ p: 2 }}>
                         <div style={{ display: 'flex', flexDirection: 'row' }}>
                             <Typography>
-                                Value<span style={{ color: 'red' }}>&nbsp;*</span>
+                                {t('dv.value')}
+                                <span style={{ color: 'red' }}>&nbsp;*</span>
                             </Typography>
                             <div style={{ flexGrow: 1 }}></div>
                         </div>
@@ -255,7 +263,7 @@ const AddEditVariableDialog = ({ show, dialogProps, onCancel, onConfirm, setErro
                     onClick={() => (dialogType === 'ADD' ? addNewVariable() : saveVariable())}
                     id='btn_confirmAddingNewVariable'
                 >
-                    {dialogProps.confirmButtonName}
+                    {translateLabel(dialogProps.confirmButtonName, t)}
                 </StyledButton>
             </DialogActions>
             <ConfirmDialog />
